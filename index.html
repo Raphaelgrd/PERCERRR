@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -71,16 +71,16 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .avstack .av:not(:first-child){margin-left:-7px}
 
 /* ---------- board ---------- */
-.board{display:flex;gap:14px;padding:18px 20px 40px;overflow-x:auto;min-height:calc(100vh - 66px);align-items:flex-start}
+.board{display:flex;gap:14px;padding:18px 20px 40px;overflow:auto;height:calc(100vh - 110px);align-items:flex-start}
 .col{flex:0 0 282px;background:rgba(255,255,255,.55);border:1px solid var(--border);border-radius:var(--radius);
-  display:flex;flex-direction:column;max-height:calc(100vh - 110px)}
+  display:flex;flex-direction:column}
 .col-head{display:flex;align-items:center;gap:9px;padding:11px 12px;border-radius:11px 11px 0 0}
 .col-dot{width:9px;height:9px;border-radius:50%;flex:none}
 .col-title{font-weight:600;font-size:13px;font-family:'Space Grotesk',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .col-count{font-size:12px;font-weight:700;font-family:'Space Grotesk',sans-serif;margin-left:2px}
 .col-add{margin-left:auto;width:24px;height:24px;border-radius:7px;color:var(--muted);display:grid;place-items:center;transition:.15s}
 .col-add:hover{background:var(--accent-soft);color:var(--accent)}
-.col-body{padding:0 10px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;flex:1}
+.col-body{padding:0 10px 12px;display:flex;flex-direction:column;gap:9px}
 .col-body.drag-over{background:var(--accent-soft);border-radius:10px;outline:2px dashed var(--accent)}
 .col-empty{font-size:12px;color:var(--faint);text-align:center;padding:18px 8px;border:1px dashed var(--border-strong);border-radius:10px}
 .col-newcard{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:10px;border:1px dashed var(--border-strong);
@@ -369,6 +369,21 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .pickopt:hover{background:var(--paper)}
 .pickopt .ck{margin-left:auto;color:var(--accent);font-weight:700}
 .pick-empty{font-size:12.5px;color:var(--faint);padding:8px 9px;line-height:1.4}
+/* ---------- pièces jointes ---------- */
+.files{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.file-row{display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid var(--border);border-radius:9px;background:var(--paper)}
+.file-ic{font-size:15px;flex:none}
+.file-nm{flex:1;min-width:0;font-size:13px;font-weight:500;color:var(--ink);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-nm:hover{color:var(--accent);text-decoration:underline}
+.file-sz{font-size:11px;color:var(--faint);flex:none}
+.file-del{flex:none;width:22px;height:22px;border-radius:6px;color:var(--faint);font-size:17px;line-height:1;display:grid;place-items:center}
+.file-del:hover{background:rgba(194,65,12,.1);color:var(--bloque)}
+.file-add{display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:9px;border:1px dashed var(--border-strong);
+  background:var(--paper);font-size:13px;font-weight:600;color:var(--muted);transition:.12s}
+.file-add:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.file-add svg{width:14px;height:14px}
+.file-add:disabled{opacity:.6}
+.files-empty{font-size:12.5px;color:var(--faint)}
 
 /* ---------- chat d'équipe (panneau latéral) ---------- */
 .chat-tab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:55;
@@ -515,6 +530,16 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
       <div class="prop">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg>Détails</div>
         <div class="prop-v"><textarea id="fDesc" placeholder="Notes, lien, contexte…"></textarea></div>
+      </div>
+      <div class="prop" style="align-items:flex-start">
+        <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.4 11.05 12.25 20.2a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 0 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.48-8.49" stroke-linecap="round" stroke-linejoin="round"/></svg>Fichiers</div>
+        <div class="prop-v">
+          <div id="fFiles" class="files"></div>
+          <input type="file" id="fFileInput" multiple style="display:none" onchange="addFiles(this)">
+          <button type="button" class="file-add" id="fFileBtn" onclick="document.getElementById('fFileInput').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Ajouter un fichier
+          </button>
+        </div>
       </div>
       <button class="peek-del" id="mDel" style="display:none" onclick="deleteTask()">Supprimer la tâche</button>
     </div>
@@ -736,6 +761,7 @@ let editingOccDate = null;
 let origSnap = null;
 let modalReadOnly = false;   // true quand on ouvre une tâche d'un·e autre depuis le calendrier
 let draft = {urg:'prioritaire', en:'haute', cal:'strategie', people:[]};
+let draftKind = 'board';        // 'board' (Notion) ou 'cal' (Calendrier) — deux entités séparées
 let activeUsers = new Set();   // utilisateurs affichés en plus de moi
 let activeCats = new Set();     // catégories affichées dans le calendrier
 
@@ -751,9 +777,9 @@ function seedState(){
     members:[],   // les membres = les comptes ; ils apparaissent dès qu'une personne se connecte
     categories: DEFAULT_CATS.map(c=>({...c})),
     tasks:[
-      {id:uid(),title:'Bienvenue 👋 clique sur une carte pour l\'ouvrir',desc:'Tu peux tout modifier, déplacer, supprimer.',col:'backlog',urg:'prioritaire',en:'haute',cal:'percer',people:[],date:'',time:'',dur:60,rec:'none'},
-      {id:uid(),title:'Exemple : maquette de la landing',desc:'',col:'prochainement',urg:'prioritaire',en:'haute',cal:'design',people:[],date:'',time:'',dur:90,rec:'none'},
-      {id:uid(),title:'Exemple : préparer le call client',desc:'',col:'check',urg:'accessoire',en:'basse',cal:'call',people:[],date:'',time:'',dur:60,rec:'none'},
+      {id:uid(),kind:'board',title:'Bienvenue 👋 clique sur une carte pour l\'ouvrir',desc:'Tu peux tout modifier, déplacer, supprimer.',col:'backlog',urg:'prioritaire',en:'haute',cal:'percer',people:[],date:'',time:'',dur:60,rec:'none'},
+      {id:uid(),kind:'board',title:'Exemple : maquette de la landing',desc:'',col:'prochainement',urg:'prioritaire',en:'haute',cal:'design',people:[],date:'',time:'',dur:90,rec:'none'},
+      {id:uid(),kind:'board',title:'Exemple : préparer le call client',desc:'',col:'check',urg:'accessoire',en:'basse',cal:'call',people:[],date:'',time:'',dur:60,rec:'none'},
     ],
     notifs:[],
     sortOrder:['deadline','importance','energie'],
@@ -770,6 +796,8 @@ function ensureState(){
   state.categories.forEach(c=>{ if(c.id==='divers'){ c.id='repos'; if(c.name==='Divers') c.name='Repos'; } });
   state.tasks.forEach(t=>{ if(t.cal==='divers') t.cal='repos'; });
   state.members.forEach(m=>{ if(m.themes && m.themes.divers!==undefined && m.themes.repos===undefined){ m.themes.repos=m.themes.divers; } });
+  // séparation tableau / calendrier : les tâches existantes deviennent des éléments « tableau »
+  state.tasks.forEach(t=>{ if(!t.kind) t.kind='board'; if(!t.files) t.files=[]; });
 }
 async function ensureMember(){
   if(memberById(me)) return;
@@ -855,9 +883,11 @@ function cardHTML(t){
   const blockRow = (t.col==='bloquant' && t.block)
     ? `<div class="card-block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" stroke-linejoin="round"/></svg><span>${esc(t.block)}</span></div>`
     : '';
+  const nf=(t.files||[]).length;
+  const filesRow = nf ? `<div class="crow"><span class="chip" style="background:var(--paper);color:var(--muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21.4 11.05 12.25 20.2a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 0 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.48-8.49" stroke-linecap="round" stroke-linejoin="round"/></svg>${nf}</span></div>` : '';
   return `<div class="card" draggable="true" data-id="${t.id}" onclick="openModal('${t.id}')">
     <p class="ttl">${esc(t.title)}</p>
-    ${blockRow}${personRow}${calRow}${impRow}${enRow}
+    ${blockRow}${personRow}${calRow}${impRow}${enRow}${filesRow}
   </div>`;
 }
 /* ---------- tri configurable ---------- */
@@ -935,9 +965,9 @@ function buildColumns(){
 }
 function tasksForColumn(c){
   if(c.col==='encours'){
-    return sortTasks(state.tasks.filter(t=>t.col==='encours' && t.cal!=='repos' && t.people.includes(c.owner)));
+    return sortTasks(state.tasks.filter(t=>t.kind==='board' && t.col==='encours' && t.cal!=='repos' && t.people.includes(c.owner)));
   }
-  return sortTasks(state.tasks.filter(t=>t.col===c.col && t.cal!=='repos' && isVisible(t)));
+  return sortTasks(state.tasks.filter(t=>t.kind==='board' && t.col===c.col && t.cal!=='repos' && isVisible(t)));
 }
 
 function renderBoard(){
@@ -1039,7 +1069,7 @@ function occursOn(t,dateISO){
   if(t.rec==='weekly'){ const o=(new Date(t.date+'T00:00').getDay()+6)%7; return dateISO>=t.date && dayIdx===o; }
   return t.date===dateISO;
 }
-function eventsOn(dateISO){ return state.tasks.filter(t=>occursOn(t,dateISO)); }
+function eventsOn(dateISO){ return state.tasks.filter(t=>t.kind==='cal' && occursOn(t,dateISO)); }
 function eventsVisibleOn(dateISO){ return eventsOn(dateISO).filter(t=>isVisible(t) && (!t.cal || activeCats.has(t.cal))); }
 function effStart(t){ return t.time || (t.en==='haute'?'09:00':'14:00'); } // énergie haute = tôt, basse = aprèm
 function effStartMin(t){ const[h,m]=effStart(t).split(':').map(Number); return h*60+(m||0); }
@@ -1062,7 +1092,7 @@ function calShift(n){
   renderCal();
 }
 function calToday(){ calCursor=new Date(); renderCal(); }
-function calNewAt(date,time,dur){ openModal(null, colForDate(date), {date,time,dur}); }
+function calNewAt(date,time,dur){ openModal(null, colForDate(date), {date,time,dur,kind:'cal'}); }
 
 function rangeLabel(){
   if(calMode==='day'){ const d=calCursor; return `${DAYFULL[(d.getDay()+6)%7]} ${d.getDate()} ${MONTHS_FULL[d.getMonth()]} ${d.getFullYear()}`; }
@@ -1331,7 +1361,10 @@ function monthHTML(){
 /* ============ modal ============ */
 function updateDiversRows(){
   const busy = draft.cal==='repos';                 // « repos » = bloc sans état/importance/énergie
-  ['rowEtat','rowImp','rowEn'].forEach(id=>{ const el=$('#'+id); if(el) el.style.display = busy?'none':''; });
+  // l'État (colonne du tableau) n'a pas de sens pour un événement de calendrier
+  $('#rowEtat').style.display = (busy || draftKind==='cal') ? 'none' : '';
+  $('#rowImp').style.display = busy ? 'none' : '';
+  $('#rowEn').style.display = busy ? 'none' : '';
 }
 
 /* ---- propriétés style Notion : on n'affiche que la sélection, on clique pour choisir ---- */
@@ -1408,9 +1441,11 @@ function openModal(id=null, presetCol=null, preset={}){
     $('#fDate').value=t.date||''; $('#fTime').value=t.time||'';
     $('#fRec').value=t.rec||'none'; $('#fCol').value=t.col; $('#fBlock').value=t.block||'';
     draft={urg:t.urg||'',en:t.en||'',cal:catById(t.cal)?t.cal:'',people:[...t.people],recDays:[...(t.recDays||[])],dur:t.dur||60};
+    draftKind = t.kind || 'board';
     origSnap = snapTask(t);
   }else{
     modalReadOnly = false;
+    draftKind = preset.kind || 'board';
     $('#mDel').style.display='none';
     $('#fTitle').value='';$('#fDesc').value='';$('#fBlock').value='';
     $('#fDate').value=preset.date||''; $('#fTime').value=preset.time||''; $('#fRec').value='none';
@@ -1419,7 +1454,7 @@ function openModal(id=null, presetCol=null, preset={}){
     origSnap = null;
   }
   onColChange(); onRecChange(); renderRecDays(); updateDiversRows();
-  renderProps();
+  renderProps(); renderFiles();
   applyReadOnly();
   $('#scrim').classList.add('open');
   if(!modalReadOnly) setTimeout(()=>$('#fTitle').focus(),50);
@@ -1452,7 +1487,7 @@ function commitDraft(){
     tTitle=t.title;
   }else{
     if(!title) return;                                  // pas de tâche vide
-    const t={id:uid(),dur:draft.dur||60,title,...fields}; state.tasks.push(t); tid=t.id;
+    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],...fields}; state.tasks.push(t); tid=t.id;
   }
   notifyAssign(prevPeople, fields.people, tTitle, tid);
   save();
@@ -1462,6 +1497,69 @@ function notifyAssign(prevPeople, people, title, tid){
   newly.forEach(p=>pushNotif(p, `${memberById(me).name} t'a assigné·e à « ${title} »`, tid));
   if(newly.length){ const first=memberById(newly[0]); toast(`🔔 Notification envoyée à ${newly.map(x=>memberById(x).name).join(', ')}`, first.color, initials(first.name)); }
 }
+/* ---- pièces jointes (Supabase Storage) ---- */
+function currentTask(){ return editingId ? state.tasks.find(x=>x.id===editingId) : null; }
+// crée la tâche si elle n'existe pas encore (pour pouvoir y rattacher un fichier)
+function ensureTask(){
+  let t=currentTask(); if(t) return t;
+  const fields={ desc:$('#fDesc').value.trim(), col:$('#fCol').value, urg:draft.urg, en:draft.en, cal:draft.cal,
+    people:[...draft.people], date:$('#fDate').value, time:$('#fTime').value, rec:$('#fRec').value,
+    recDays: $('#fRec').value==='custom'?[...draft.recDays]:[], block: $('#fCol').value==='bloquant'?$('#fBlock').value.trim():'' };
+  t={ id:uid(), kind:draftKind, dur:draft.dur||60, title:($('#fTitle').value.trim()||'Sans titre'), files:[], ...fields };
+  state.tasks.push(t); editingId=t.id; $('#mDel').style.display=''; origSnap=snapTask(t);
+  return t;
+}
+function fileExt(n){ const m=/\.([a-z0-9]+)$/i.exec(n||''); return m?m[1].toLowerCase():''; }
+function fileEmoji(f){
+  const e=fileExt(f.name), ty=f.type||'';
+  if(ty.startsWith('image/')||['png','jpg','jpeg','gif','webp','svg'].includes(e)) return '🖼️';
+  if(e==='pdf') return '📕';
+  if(['doc','docx'].includes(e)) return '📘';
+  if(['xls','xlsx','csv'].includes(e)) return '📗';
+  if(['ppt','pptx'].includes(e)) return '📙';
+  if(['zip','rar','7z'].includes(e)) return '🗜️';
+  return '📄';
+}
+function humanSize(b){ if(!b&&b!==0) return ''; if(b<1024) return b+' o'; if(b<1048576) return (b/1024).toFixed(0)+' Ko'; return (b/1048576).toFixed(1)+' Mo'; }
+function renderFiles(){
+  const host=$('#fFiles'); if(!host) return;
+  const t=currentTask(); const files=(t&&t.files)||[];
+  $('#fFileBtn').style.display = modalReadOnly ? 'none' : '';
+  if(!files.length){ host.innerHTML = modalReadOnly ? `<div class="files-empty">Aucun fichier.</div>` : ''; return; }
+  host.innerHTML = files.map((f,i)=>`
+    <div class="file-row">
+      <span class="file-ic">${fileEmoji(f)}</span>
+      <a class="file-nm" href="${f.url}" target="_blank" rel="noopener" title="${esc(f.name)}">${esc(f.name)}</a>
+      <span class="file-sz">${humanSize(f.size)}</span>
+      ${modalReadOnly?'':`<button type="button" class="file-del" onclick="removeFile(${i})" title="Supprimer">×</button>`}
+    </div>`).join('');
+}
+async function addFiles(input){
+  const files=[...input.files]; input.value='';
+  if(modalReadOnly || !files.length) return;
+  if(!sb){ toast('Connexion à la base requise pour les fichiers.'); return; }
+  const t=ensureTask();
+  $('#fFileBtn').disabled=true; const lbl=$('#fFileBtn').innerHTML; $('#fFileBtn').innerHTML='Envoi…';
+  for(const f of files){
+    if(f.size>25*1048576){ toast(`« ${f.name} » dépasse 25 Mo.`); continue; }
+    const path=`${t.id}/${Date.now()}-${f.name.replace(/[^\w.\-]/g,'_')}`;
+    const { error }=await sb.storage.from('attachments').upload(path, f, {upsert:false, contentType:f.type||undefined});
+    if(error){ toast('Échec de l\'envoi : '+error.message); continue; }
+    const { data }=sb.storage.from('attachments').getPublicUrl(path);
+    t.files=t.files||[]; t.files.push({ name:f.name, path, url:data.publicUrl, type:f.type, size:f.size });
+  }
+  $('#fFileBtn').disabled=false; $('#fFileBtn').innerHTML=lbl;
+  await save(); renderFiles(); renderAll();
+}
+async function removeFile(i){
+  if(modalReadOnly) return;
+  const t=currentTask(); if(!t||!t.files||!t.files[i]) return;
+  const f=t.files[i];
+  if(!confirm('Supprimer « '+f.name+' » ?')) return;
+  try{ if(sb) await sb.storage.from('attachments').remove([f.path]); }catch(e){}
+  t.files.splice(i,1); await save(); renderFiles(); renderAll();
+}
+
 function closeModal(commit=true){
   closePick();
   if(commit) commitDraft();
