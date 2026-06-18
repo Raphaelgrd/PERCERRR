@@ -50,22 +50,3 @@ create policy "messages insert own"
 -- ---------- 3) temps réel (synchro live du tableau + du chat) ----------
 alter publication supabase_realtime add table public.workspace;
 alter publication supabase_realtime add table public.messages;
-
--- ---------- 4) stockage des pièces jointes des cartes ----------
--- Bucket public « attachments » : lecture par lien public, écriture/suppression
--- réservées aux utilisateurs connectés. (Réexécute ce bloc si tu mets à jour.)
-insert into storage.buckets (id, name, public)
-values ('attachments', 'attachments', true)
-on conflict (id) do nothing;
-
-drop policy if exists "attachments read"   on storage.objects;
-create policy "attachments read"   on storage.objects for select
-  to public using (bucket_id = 'attachments');
-
-drop policy if exists "attachments insert" on storage.objects;
-create policy "attachments insert" on storage.objects for insert
-  to authenticated with check (bucket_id = 'attachments');
-
-drop policy if exists "attachments delete" on storage.objects;
-create policy "attachments delete" on storage.objects for delete
-  to authenticated using (bucket_id = 'attachments');
