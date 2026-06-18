@@ -13,8 +13,8 @@
    (La clé "anon" est faite pour être publique : elle est protégée par la
     Row Level Security. Ne mets JAMAIS la clé "service_role" ici.)
    ====================================================================== */
-const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTYwOTAyNywiZXhwIjoyMDk3MTg1MDI3fQ.pDSz2xj9JA5qzKh-Lq2tvXmoRbQw1Jz0JmJl_1020TA";
+const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -90,7 +90,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
   box-shadow:var(--shadow);cursor:grab;position:relative;transition:transform .1s,box-shadow .15s}
 .card:hover{box-shadow:0 2px 4px rgba(26,26,34,.07),0 8px 22px rgba(26,26,34,.09)}
 .card.dragging{opacity:.45;transform:rotate(1.5deg)}
-.card .ttl{font-size:13.5px;font-weight:600;line-height:1.32;margin:0}
+.card .ttl{font-size:13.5px;font-weight:600;line-height:1.32;margin:0 0 4px}
 .name-edit{display:flex;align-items:center;gap:5px;font-weight:600;font-size:13px;line-height:1.1;color:var(--ink);padding:0}
 .name-edit svg{width:12px;height:12px;color:var(--faint);opacity:0;transition:.12s}
 .name-edit:hover svg{opacity:1}
@@ -420,7 +420,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 </div>
 
 <div class="topbar">
-  <div class="brand"><img class="brand-logo" src="logo.png" alt="" onerror="this.remove()"><span class="mark">per<b>cer</b></span><span class="sub">Espace d'équipe</span></div>
+  <div class="brand"><img class="brand-logo" src="logo.png" alt="Percer" onerror="this.remove()"><span class="sub">Espace d'équipe</span></div>
   <div class="viewtog">
     <button id="vBoard" class="on" onclick="setView('board')">Tableau</button>
     <button id="vCal" onclick="setView('cal')">Calendrier</button>
@@ -847,9 +847,22 @@ function avStack(ids){
 }
 const URG_COLOR={urgent:'var(--urgent)',prioritaire:'var(--prioritaire)',accessoire:'var(--accessoire)'};
 function cardHTML(t){
-  // carte épurée façon Notion : on n'affiche que le titre. Le détail s'ouvre au clic.
+  const cal=catById(t.cal);
+  // personne (avatars + noms)
+  const names=t.people.map(id=>{const m=memberById(id);return m?`<span class="av sm" style="background:${m.color}">${initials(m.name)}</span><span class="pn">${esc(m.name)}</span>`:''}).join('');
+  const personRow = t.people.length
+    ? `<div class="crow person">${names}</div>`
+    : `<div class="crow person empty">Non assignée</div>`;
+  const calRow = cal ? `<div class="crow"><span class="chip" style="background:${hexRgba(catColor(t.cal),0.16)};color:${catColor(t.cal)}">${esc(cal.name)}</span></div>` : '';
+  const impRow = t.urg ? `<div class="crow"><span class="chip" style="background:${URG_COLOR[t.urg]};color:#fff">${capit(t.urg)}</span></div>` : '';
+  const enRow = t.en==='haute'
+    ? `<div class="crow"><span class="chip energy-haute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4" stroke-linecap="round"/></svg>Haute</span></div>`
+    : t.en==='basse'
+    ? `<div class="crow"><span class="chip energy-basse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" stroke-linejoin="round"/></svg>Basse</span></div>`
+    : '';
   return `<div class="card" draggable="true" data-id="${t.id}" onclick="openModal('${t.id}')">
     <p class="ttl">${esc(t.title)}</p>
+    ${personRow}${calRow}${impRow}${enRow}
   </div>`;
 }
 /* ---------- tri configurable ---------- */
@@ -860,7 +873,7 @@ const ICN={
 };
 const SORTNAME={deadline:'Deadline', importance:'Importance', energie:'Énergie'};
 function compareBy(crit,a,b){
-  if(crit==='importance') return URG_RANK[a.urg]-URG_RANK[b.urg];
+  if(crit==='importance') return (URG_RANK[a.urg]??3)-(URG_RANK[b.urg]??3);   // sans importance = en dernier
   if(crit==='energie') return (a.en==='haute'?0:1)-(b.en==='haute'?0:1);
   if(crit==='deadline'){ const da=a.date||'9999-99-99', db=b.date||'9999-99-99'; return da<db?-1:da>db?1:0; }
   return 0;
@@ -1032,7 +1045,7 @@ function occursOn(t,dateISO){
   return t.date===dateISO;
 }
 function eventsOn(dateISO){ return state.tasks.filter(t=>occursOn(t,dateISO)); }
-function eventsVisibleOn(dateISO){ return eventsOn(dateISO).filter(t=>isVisible(t) && activeCats.has(t.cal)); }
+function eventsVisibleOn(dateISO){ return eventsOn(dateISO).filter(t=>isVisible(t) && (!t.cal || activeCats.has(t.cal))); }
 function effStart(t){ return t.time || (t.en==='haute'?'09:00':'14:00'); } // énergie haute = tôt, basse = aprèm
 function effStartMin(t){ const[h,m]=effStart(t).split(':').map(Number); return h*60+(m||0); }
 function minToHM(min){ min=Math.max(0,Math.min(1439,min)); const h=Math.floor(min/60), m=min%60; return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); }
@@ -1206,7 +1219,7 @@ function placeTimedEvents(){
   document.querySelectorAll('.gc-events').forEach(layer=>{
     const di=layer.dataset.date;
     const evs=eventsVisibleOn(di).map(t=>{ const start=effStartMin(t); return {t,start,end:start+(t.dur||60)}; })
-      .sort((a,b)=>a.start-b.start || URG_RANK[a.t.urg]-URG_RANK[b.t.urg] || (a.t.en==='haute'?0:1)-(b.t.en==='haute'?0:1));
+      .sort((a,b)=>a.start-b.start || (URG_RANK[a.t.urg]??3)-(URG_RANK[b.t.urg]??3) || (a.t.en==='haute'?0:1)-(b.t.en==='haute'?0:1));
     layoutLanes(evs).forEach(o=>{
       const top=o.start/60*HH, height=Math.max((o.end-o.start)/60*HH-2,22), w=100/o.lanes, left=o.lane*w;
       const busy=o.t.cal==='divers';
@@ -1300,7 +1313,8 @@ function monthHTML(){
 }
 
 /* ============ modal ============ */
-function pick(grp,val){ draft[grp]=val; if(grp==='cal'){ renderCalPicker(); updateDiversRows(); } else refreshSeg(); }
+function pick(grp,val){ draft[grp] = (draft[grp]===val ? '' : val);   // re-cliquer désélectionne
+  if(grp==='cal'){ renderCalPicker(); updateDiversRows(); } else refreshSeg(); }
 function updateDiversRows(){
   const busy = draft.cal==='divers';
   ['rowEtat','rowImp','rowEn'].forEach(id=>{ const el=$('#'+id); if(el) el.style.display = busy?'none':''; });
@@ -1338,7 +1352,6 @@ function openModal(id=null, presetCol=null, preset={}){
   editingId = (typeof id==='string') ? id : null;
   editingOccDate = (editingId && preset.occDate) ? preset.occDate : null;
   fillColSelect();
-  const firstCat = state.categories[0] ? state.categories[0].id : 'percer';
   if(editingId){
     const t=state.tasks.find(x=>x.id===editingId);
     const owner=t.people[0];
@@ -1348,7 +1361,7 @@ function openModal(id=null, presetCol=null, preset={}){
     $('#fTitle').value=t.title; $('#fDesc').value=t.desc||'';
     $('#fDate').value=t.date||''; $('#fTime').value=t.time||'';
     $('#fRec').value=t.rec||'none'; $('#fCol').value=t.col; $('#fBlock').value=t.block||'';
-    draft={urg:t.urg,en:t.en,cal:catById(t.cal)?t.cal:firstCat,people:[...t.people],recDays:[...(t.recDays||[])],dur:t.dur||60};
+    draft={urg:t.urg||'',en:t.en||'',cal:catById(t.cal)?t.cal:'',people:[...t.people],recDays:[...(t.recDays||[])],dur:t.dur||60};
     origSnap = snapTask(t);
   }else{
     modalReadOnly = false;
@@ -1356,7 +1369,7 @@ function openModal(id=null, presetCol=null, preset={}){
     $('#fTitle').value='';$('#fDesc').value='';$('#fBlock').value='';
     $('#fDate').value=preset.date||''; $('#fTime').value=preset.time||''; $('#fRec').value='none';
     $('#fCol').value=presetCol||'backlog';
-    draft={urg:'prioritaire',en:'haute',cal:firstCat,people: preset.owner?[preset.owner]:[],recDays:[],dur:preset.dur||60};
+    draft={urg:'',en:'',cal:'',people: preset.owner?[preset.owner]:[],recDays:[],dur:preset.dur||60};   // tout vide : on clique pour choisir
     origSnap = null;
   }
   onColChange(); onRecChange(); renderRecDays(); updateDiversRows();
