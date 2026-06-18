@@ -13,8 +13,10 @@
    (La clé "anon" est faite pour être publique : elle est protégée par la
     Row Level Security. Ne mets JAMAIS la clé "service_role" ici.)
    ====================================================================== */
-const SUPABASE_URL = "https://VOTRE-PROJET.supabase.co";
-const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
+const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
+// ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
+// Supabase → Project Settings → API → Project API keys → « anon public ».
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTYwOTAyNywiZXhwIjoyMDk3MTg1MDI3fQ.pDSz2xj9JA5qzKh-Lq2tvXmoRbQw1Jz0JmJl_1020TA";
 </script>
 <style>
 :root{
@@ -101,6 +103,8 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .card .crow.person .pn{font-size:12px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card .crow.person .av:not(:first-of-type){margin-left:6px}
 .card .crow.person.empty{font-size:11.5px;color:var(--faint);font-style:italic}
+.card-block{display:flex;align-items:flex-start;gap:6px;margin:6px 0 2px;padding:6px 8px;border-radius:8px;background:rgba(194,65,12,.09);color:var(--bloque);font-size:11.5px;font-weight:600;line-height:1.3}
+.card-block svg{width:13px;height:13px;flex:none;margin-top:1px}
 .chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;line-height:1;white-space:nowrap}
 .chip svg{width:12px;height:12px}
 .chip.energy-haute{background:rgba(31,138,91,.12);color:var(--haute)}
@@ -352,11 +356,19 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .auth-msg.err{display:block;background:rgba(194,65,12,.1);color:var(--bloque)}
 .auth-msg.ok{display:block;background:rgba(31,138,91,.12);color:var(--termine)}
 
-/* ---------- bouton "ajouter à Google Agenda" dans la fiche ---------- */
-.gcal-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;
-  border:1px solid var(--border-strong);background:var(--paper);font-size:13px;font-weight:600;color:var(--ink);transition:.12s}
-.gcal-btn:hover{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
-.gcal-btn svg{width:16px;height:16px}
+/* ---------- propriétés style Notion : valeur compacte + popover de sélection ---------- */
+.pv{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:34px;padding:5px 9px;border:1px solid transparent;border-radius:7px;cursor:pointer;transition:.12s}
+.pv:hover{background:var(--paper)}
+.pv .ph{color:var(--faint);font-size:14px}
+.ppl-mini{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border:1px solid var(--border-strong);border-radius:30px;font-size:12.5px;font-weight:500;background:var(--paper)}
+.pickpop{position:fixed;z-index:95;background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  box-shadow:0 14px 40px rgba(26,26,34,.20);padding:7px;min-width:210px;max-width:280px;max-height:60vh;overflow-y:auto;display:none;animation:pop .12s ease}
+.pickpop.open{display:block}
+.pickpop-h{font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;padding:5px 8px 7px}
+.pickopt{display:flex;align-items:center;gap:8px;padding:8px 9px;border-radius:8px;cursor:pointer;font-size:13.5px}
+.pickopt:hover{background:var(--paper)}
+.pickopt .ck{margin-left:auto;color:var(--accent);font-weight:700}
+.pick-empty{font-size:12.5px;color:var(--faint);padding:8px 9px;line-height:1.4}
 
 /* ---------- chat d'équipe (panneau latéral) ---------- */
 .chat-tab{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:55;
@@ -452,7 +464,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
       </div>
       <div class="prop">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h.01M4 12h.01M4 18h.01M9 6h11M9 12h11M9 18h11" stroke-linecap="round"/></svg>Personne</div>
-        <div class="prop-v"><div class="people" id="fPeople"></div></div>
+        <div class="prop-v"><div class="pv" id="fPeople" onclick="openPick('people',this)"></div></div>
       </div>
       <div class="prop">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg>Deadline</div>
@@ -463,23 +475,16 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
         <div class="prop-v"><input type="time" id="fTime"></div>
       </div>
       <div class="prop">
-        <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 11l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>calendar</div>
-        <div class="prop-v"><div class="tags" id="fCal"></div></div>
+        <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 11l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>Catégorie</div>
+        <div class="prop-v"><div class="pv" id="fCal" onclick="openPick('cal',this)"></div></div>
       </div>
       <div class="prop" id="rowImp">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 11l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>Importance</div>
-        <div class="prop-v"><div class="seg urg" id="fUrg">
-          <button data-v="urgent" onclick="pick('urg','urgent')">Urgent</button>
-          <button data-v="prioritaire" onclick="pick('urg','prioritaire')">Prioritaire</button>
-          <button data-v="accessoire" onclick="pick('urg','accessoire')">Accessoire</button>
-        </div></div>
+        <div class="prop-v"><div class="pv" id="fUrg" onclick="openPick('urg',this)"></div></div>
       </div>
       <div class="prop" id="rowEn">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" stroke-linejoin="round"/></svg>Énergie</div>
-        <div class="prop-v"><div class="seg en" id="fEn">
-          <button data-v="haute" onclick="pick('en','haute')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" stroke-linecap="round"/></svg>Haute</button>
-          <button data-v="basse" onclick="pick('en','basse')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" stroke-linejoin="round"/></svg>Basse</button>
-        </div></div>
+        <div class="prop-v"><div class="pv" id="fEn" onclick="openPick('en',this)"></div></div>
       </div>
       <div class="prop">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4M21 6H8a5 5 0 0 0-5 5M7 22l-4-4 4-4M3 18h13a5 5 0 0 0 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Récurrence</div>
@@ -510,12 +515,6 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
       <div class="prop">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg>Détails</div>
         <div class="prop-v"><textarea id="fDesc" placeholder="Notes, lien, contexte…"></textarea></div>
-      </div>
-      <div class="prop">
-        <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M9 14l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>Agenda</div>
-        <div class="prop-v"><button type="button" class="gcal-btn" onclick="addToGoogleCalendar()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4M12 12v4M10 14h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Ajouter à Google Agenda</button></div>
       </div>
       <button class="peek-del" id="mDel" style="display:none" onclick="deleteTask()">Supprimer la tâche</button>
     </div>
@@ -548,18 +547,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 </div>
 
 <div class="toast" id="toast"></div>
-
-<!-- dialogue : portée d'édition d'une tâche récurrente -->
-<div class="recscrim" id="recScrim">
-  <div class="recdlg">
-    <h3>Modifier la tâche récurrente</h3>
-    <p>Cette tâche se répète. À quoi appliquer les changements&nbsp;?</p>
-    <button onclick="applyRecScope('one')">Cet événement uniquement</button>
-    <button onclick="applyRecScope('following')">Cet événement et les suivants</button>
-    <button onclick="applyRecScope('all')">Tous les événements</button>
-    <button class="rec-cancel" onclick="cancelRecScope()">Annuler</button>
-  </div>
-</div>
+<div class="pickpop" id="pickPop"></div>
 
 <script>
 /* ============ Supabase : client, auth, données partagées, chat ============ */
@@ -732,9 +720,9 @@ const DEFAULT_CATS=[
   {id:'acq',name:'Acquisition & growth'},
   {id:'perso',name:'Perso'},
   {id:'admin',name:'Administratif'},
-  {id:'divers',name:'Divers'},
+  {id:'repos',name:'Repos'},
 ];
-const DEFAULT_THEME={percer:'#ED8A22',call:'#DD3E73',strategie:'#C9A21E',design:'#D9682C',dev:'#7D54B0',acq:'#3B74C4',perso:'#2E9E5B',admin:'#6E6E76',divers:'#E0A82B'};
+const DEFAULT_THEME={percer:'#ED8A22',call:'#DD3E73',strategie:'#C9A21E',design:'#D9682C',dev:'#7D54B0',acq:'#3B74C4',perso:'#2E9E5B',admin:'#6E6E76',repos:'#8B8B95'};
 function catById(id){ return (state.categories||[]).find(c=>c.id===id); }
 function catColor(catId, ownerId){ const m=memberById(ownerId||me); const th=(m&&m.themes)||DEFAULT_THEME; return th[catId]||DEFAULT_THEME[catId]||'#8B8B95'; }
 const PALETTE = ['#FF4D2E','#4F73B0','#1F8A5B','#9333EA','#E8920B','#0EA5A4','#DB2777','#475569'];
@@ -746,7 +734,6 @@ let me = null;           // current member id
 let editingId = null;    // task being edited
 let editingOccDate = null;
 let origSnap = null;
-let pendingRec = null;
 let modalReadOnly = false;   // true quand on ouvre une tâche d'un·e autre depuis le calendrier
 let draft = {urg:'prioritaire', en:'haute', cal:'strategie', people:[]};
 let activeUsers = new Set();   // utilisateurs affichés en plus de moi
@@ -779,6 +766,10 @@ function ensureState(){
   if(!state.sortOrder) state.sortOrder=['deadline','importance','energie'];
   if(!state.categories) state.categories=DEFAULT_CATS.map(c=>({...c}));
   state.members.forEach(m=>{ if(!m.themes) m.themes={...DEFAULT_THEME}; });
+  // migration : l'ancienne catégorie « divers » devient « repos »
+  state.categories.forEach(c=>{ if(c.id==='divers'){ c.id='repos'; if(c.name==='Divers') c.name='Repos'; } });
+  state.tasks.forEach(t=>{ if(t.cal==='divers') t.cal='repos'; });
+  state.members.forEach(m=>{ if(m.themes && m.themes.divers!==undefined && m.themes.repos===undefined){ m.themes.repos=m.themes.divers; } });
 }
 async function ensureMember(){
   if(memberById(me)) return;
@@ -860,9 +851,13 @@ function cardHTML(t){
     : t.en==='basse'
     ? `<div class="crow"><span class="chip energy-basse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" stroke-linejoin="round"/></svg>Basse</span></div>`
     : '';
+  // le motif de blocage s'affiche directement sur la carte, uniquement en colonne « Bloquant »
+  const blockRow = (t.col==='bloquant' && t.block)
+    ? `<div class="card-block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" stroke-linejoin="round"/></svg><span>${esc(t.block)}</span></div>`
+    : '';
   return `<div class="card" draggable="true" data-id="${t.id}" onclick="openModal('${t.id}')">
     <p class="ttl">${esc(t.title)}</p>
-    ${personRow}${calRow}${impRow}${enRow}
+    ${blockRow}${personRow}${calRow}${impRow}${enRow}
   </div>`;
 }
 /* ---------- tri configurable ---------- */
@@ -940,9 +935,9 @@ function buildColumns(){
 }
 function tasksForColumn(c){
   if(c.col==='encours'){
-    return sortTasks(state.tasks.filter(t=>t.col==='encours' && t.cal!=='divers' && t.people.includes(c.owner)));
+    return sortTasks(state.tasks.filter(t=>t.col==='encours' && t.cal!=='repos' && t.people.includes(c.owner)));
   }
-  return sortTasks(state.tasks.filter(t=>t.col===c.col && t.cal!=='divers' && isVisible(t)));
+  return sortTasks(state.tasks.filter(t=>t.col===c.col && t.cal!=='repos' && isVisible(t)));
 }
 
 function renderBoard(){
@@ -1222,7 +1217,7 @@ function placeTimedEvents(){
       .sort((a,b)=>a.start-b.start || (URG_RANK[a.t.urg]??3)-(URG_RANK[b.t.urg]??3) || (a.t.en==='haute'?0:1)-(b.t.en==='haute'?0:1));
     layoutLanes(evs).forEach(o=>{
       const top=o.start/60*HH, height=Math.max((o.end-o.start)/60*HH-2,22), w=100/o.lanes, left=o.lane*w;
-      const busy=o.t.cal==='divers';
+      const busy=o.t.cal==='repos';
       const m=(!busy && o.t.people[0])?memberById(o.t.people[0]):null;
       const el=document.createElement('div');
       el.className='gc-ev'+(busy?' busy':''); el.title=o.t.title; el.dataset.id=o.t.id;
@@ -1242,44 +1237,65 @@ function placeTimedEvents(){
   });
 }
 function attachEventDrag(el,t,occDate){
-  let mode=null,startY=0,startX=0,origStart=0,origDur=60,moved=false,ns=null,nd=null,targetDate=occDate;
   const canMoveDay = (t.rec==='none' || !t.rec);   // glisser entre jours : seulement les tâches non récurrentes
+  let mode=null, moved=false, sx=0, sy=0;
+  let origStart=0, origDur=60, startY=0, nd=null;                    // redimensionnement
+  let ghost=null, grabDX=0, grabDY=0, dropDate=occDate, dropMin=null; // déplacement (le fantôme suit la souris)
+
+  const makeGhost=()=>{
+    const r=el.getBoundingClientRect();
+    grabDX=sx-r.left; grabDY=sy-r.top;
+    const bg=el.style.background||'';
+    ghost=el.cloneNode(true);
+    ghost.classList.add('grabbing');
+    ghost.querySelector('.gv-resize')?.remove();
+    ghost.style.cssText=`position:fixed;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;margin:0;z-index:120;pointer-events:none;opacity:.95;${bg?'background:'+bg:''}`;
+    document.body.appendChild(ghost);
+    el.style.opacity='.3';
+  };
+  const cleanup=()=>{
+    window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp);
+    document.querySelectorAll('.gc-col.drag-target').forEach(c=>c.classList.remove('drag-target'));
+    if(ghost){ ghost.remove(); ghost=null; }
+  };
   const onMove=e=>{
-    const dyMin=Math.round((e.clientY-startY)/HH*60/15)*15;
-    if(Math.abs(dyMin)>=15 || Math.abs(e.clientX-startX)>=12) moved=true;
-    if(mode==='move'){
-      ns=Math.max(0,Math.min(1440-origDur,origStart+dyMin)); el.style.top=ns/60*HH+'px';
-      el.querySelector('.gv-time').textContent=`${minToHM(ns)} – ${minToHM(ns+origDur)}`;
-      if(canMoveDay){
-        el.style.pointerEvents='none';                       // pour que elementFromPoint voie la colonne dessous
-        const under=document.elementFromPoint(e.clientX,e.clientY);
-        el.style.pointerEvents='';
-        const col=under&&under.closest('.gc-col');
-        if(col&&col.dataset.date){
-          targetDate=col.dataset.date;
-          document.querySelectorAll('.gc-col.drag-target').forEach(c=>c.classList.remove('drag-target'));
-          if(targetDate!==occDate) col.classList.add('drag-target');
-        }
-      }
-    }else{
-      nd=Math.max(15,Math.min(1440-origStart,origDur+dyMin)); el.style.height=Math.max(nd/60*HH-2,22)+'px';
+    if(!moved && (Math.abs(e.clientX-sx)>=4 || Math.abs(e.clientY-sy)>=4)) moved=true;
+    if(mode==='resize'){
+      const dyMin=Math.round((e.clientY-startY)/HH*60/15)*15;
+      nd=Math.max(15,Math.min(1440-origStart,origDur+dyMin));
+      el.style.height=Math.max(nd/60*HH-2,22)+'px';
       el.querySelector('.gv-time').textContent=`${minToHM(origStart)} – ${minToHM(origStart+nd)}`;
+      return;
+    }
+    if(!moved) return;
+    if(!ghost) makeGhost();
+    ghost.style.left=(e.clientX-grabDX)+'px';
+    ghost.style.top=(e.clientY-grabDY)+'px';
+    const under=document.elementFromPoint(e.clientX,e.clientY);
+    const col=under&&under.closest('.gc-col');
+    document.querySelectorAll('.gc-col.drag-target').forEach(c=>c.classList.remove('drag-target'));
+    if(col&&col.dataset.date){
+      const colRect=col.getBoundingClientRect();
+      dropMin=Math.max(0,Math.min(1440-origDur,Math.round(((e.clientY-grabDY)-colRect.top)/HH*60/15)*15));
+      dropDate=canMoveDay?col.dataset.date:occDate;
+      if(canMoveDay && col.dataset.date!==occDate) col.classList.add('drag-target');
+      ghost.querySelector('.gv-time').textContent=`${minToHM(dropMin)} – ${minToHM(dropMin+origDur)}`;
     }
   };
   const onUp=()=>{
-    window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp);
-    el.classList.remove('grabbing');
-    document.querySelectorAll('.gc-col.drag-target').forEach(c=>c.classList.remove('drag-target'));
-    if(moved){
-      if(mode==='move'&&ns!=null) t.time=minToHM(ns);
-      if(mode==='move'&&canMoveDay&&targetDate&&targetDate!==occDate) t.date=targetDate;   // changement de jour
-      if(mode==='resize'&&nd!=null) t.dur=nd;
-      save(); renderCal();
-    } else { openModal(t.id,null,{occDate}); }
-    mode=null;
+    el.classList.remove('grabbing'); el.style.opacity='';
+    const wasMoved=moved, m=mode;
+    cleanup(); mode=null;
+    if(!wasMoved){ openModal(t.id,null,{occDate}); return; }   // simple clic → ouvrir la fiche
+    if(m==='resize'){ if(nd!=null){ t.dur=nd; save(); renderCal(); } return; }
+    if(dropMin!=null) t.time=minToHM(dropMin);
+    if(canMoveDay && dropDate && dropDate!==occDate) t.date=dropDate;
+    save(); renderCal();
   };
-  const start=(e,m)=>{ e.preventDefault(); e.stopPropagation(); mode=m; startY=e.clientY; startX=e.clientX;
-    origStart=effStartMin(t); origDur=t.dur||60; moved=false; ns=null; nd=null; targetDate=occDate; el.classList.add('grabbing');
+  const start=(e,m)=>{ e.preventDefault(); e.stopPropagation();
+    mode=m; moved=false; sx=e.clientX; sy=e.clientY;
+    origStart=effStartMin(t); origDur=t.dur||60; startY=e.clientY; nd=null; dropDate=occDate; dropMin=null;
+    if(m==='resize') el.classList.add('grabbing');
     window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp); };
   el.addEventListener('pointerdown',e=>{ if(e.target.classList.contains('gv-resize'))return; start(e,'move'); });
   const rz=el.querySelector('.gv-resize'); if(rz) rz.addEventListener('pointerdown',e=>start(e,'resize'));
@@ -1305,7 +1321,7 @@ function monthHTML(){
     const shown=evs.slice(0,3), extra=evs.length-shown.length;
     cells+=`<div class="gm-cell ${other?'other':''}" onclick="calNewAt('${di}','')">
       <span class="gm-d ${di===todayStr?'now':''}">${d.getDate()}</span>
-      ${shown.map(t=>{const busy=t.cal==='divers';return `<span class="gm-ev${busy?' busy':''}" style="${busy?'':'background:'+evColor(t)}" onclick="event.stopPropagation();openModal('${t.id}',null,{occDate:'${di}'})">${busy?'🌙 ':''}${t.time?`<b>${t.time}</b> `:''}${esc(t.title)}</span>`}).join('')}
+      ${shown.map(t=>{const busy=t.cal==='repos';return `<span class="gm-ev${busy?' busy':''}" style="${busy?'':'background:'+evColor(t)}" onclick="event.stopPropagation();openModal('${t.id}',null,{occDate:'${di}'})">${busy?'🌙 ':''}${t.time?`<b>${t.time}</b> `:''}${esc(t.title)}</span>`}).join('')}
       ${extra>0?`<span class="gm-more">+${extra} de plus</span>`:''}
     </div>`;
   }
@@ -1313,33 +1329,63 @@ function monthHTML(){
 }
 
 /* ============ modal ============ */
-function pick(grp,val){ draft[grp] = (draft[grp]===val ? '' : val);   // re-cliquer désélectionne
-  if(grp==='cal'){ renderCalPicker(); updateDiversRows(); } else refreshSeg(); }
 function updateDiversRows(){
-  const busy = draft.cal==='divers';
+  const busy = draft.cal==='repos';                 // « repos » = bloc sans état/importance/énergie
   ['rowEtat','rowImp','rowEn'].forEach(id=>{ const el=$('#'+id); if(el) el.style.display = busy?'none':''; });
 }
-function renderCalPicker(){
-  $('#fCal').innerHTML = state.categories.map(c=>{
-    const on = draft.cal===c.id, col=catColor(c.id,me);
-    const style = on ? `background:${hexRgba(col,0.16)};color:${col};border-color:${col}` : '';
-    return `<button class="tag ${on?'on':''}" style="${style}" onclick="pick('cal','${c.id}')">${esc(c.name)}</button>`;
-  }).join('');
+
+/* ---- propriétés style Notion : on n'affiche que la sélection, on clique pour choisir ---- */
+const URG_LABEL={urgent:'Urgent',prioritaire:'Prioritaire',accessoire:'Accessoire'};
+function chipUrg(v){ return v?`<span class="chip" style="background:${URG_COLOR[v]};color:#fff">${URG_LABEL[v]}</span>`:''; }
+function chipEn(v){ return v==='haute'?`<span class="chip energy-haute">Haute</span>`:v==='basse'?`<span class="chip energy-basse">Basse</span>`:''; }
+function chipCal(id){ const c=catById(id); if(!c)return ''; const col=catColor(id,me); return `<span class="chip" style="background:${hexRgba(col,0.16)};color:${col}">${esc(c.name)}</span>`; }
+function chipPerson(id){ const m=memberById(id); return m?`<span class="ppl-mini"><span class="av sm" style="background:${m.color}">${initials(m.name)}</span>${esc(m.name)}</span>`:''; }
+function placeholder(){ return `<span class="ph">Vide</span>`; }
+function renderProps(){
+  $('#fUrg').innerHTML    = draft.urg ? chipUrg(draft.urg) : placeholder();
+  $('#fEn').innerHTML     = draft.en  ? chipEn(draft.en)   : placeholder();
+  $('#fCal').innerHTML    = draft.cal ? chipCal(draft.cal) : placeholder();
+  $('#fPeople').innerHTML = draft.people.length ? draft.people.map(chipPerson).join('') : placeholder();
 }
-function refreshSeg(){
-  document.querySelectorAll('#fUrg button').forEach(b=>b.classList.toggle('on',b.dataset.v===draft.urg));
-  document.querySelectorAll('#fEn button').forEach(b=>b.classList.toggle('on',b.dataset.v===draft.en));
+
+let pickOpen=false, pickType=null;
+function closePick(){ pickOpen=false; pickType=null; $('#pickPop').classList.remove('open'); }
+function pickSet(type,val){
+  if(type==='people'){
+    draft.people = draft.people.includes(val) ? draft.people.filter(x=>x!==val) : [...draft.people,val];
+    renderProps(); buildPickBody();                 // multi-sélection : on garde le popover ouvert
+    return;
+  }
+  draft[type] = (draft[type]===val ? '' : val);      // re-cliquer désélectionne
+  if(type==='cal') updateDiversRows();
+  renderProps(); closePick();
 }
-function renderPeoplePicker(){
-  $('#fPeople').innerHTML = state.members.map(m=>`
-    <button class="ppl ${draft.people.includes(m.id)?'on':''}" onclick="togglePerson('${m.id}')">
-      <span class="av sm" style="background:${m.color}">${initials(m.name)}</span>${m.name}
-    </button>`).join('') +
-    `<span class="add-member" style="cursor:default;opacity:.7">Les membres apparaissent quand ils créent un compte</span>`;
+function buildPickBody(){
+  const pop=$('#pickPop'); let title='', rows='';
+  const opt=(val,inner,on)=>`<div class="pickopt" onclick="pickSet('${pickType}','${val}')">${inner}${on?'<span class="ck">✓</span>':''}</div>`;
+  if(pickType==='urg'){ title='Importance';
+    rows=['urgent','prioritaire','accessoire'].map(v=>opt(v,chipUrg(v),draft.urg===v)).join(''); }
+  else if(pickType==='en'){ title='Énergie';
+    rows=['haute','basse'].map(v=>opt(v,chipEn(v),draft.en===v)).join(''); }
+  else if(pickType==='cal'){ title='Catégorie';
+    rows=state.categories.map(c=>opt(c.id,chipCal(c.id),draft.cal===c.id)).join(''); }
+  else if(pickType==='people'){ title='Personne';
+    rows = state.members.length
+      ? state.members.map(m=>opt(m.id,chipPerson(m.id),draft.people.includes(m.id))).join('')
+      : `<div class="pick-empty">Les membres apparaissent quand ils créent un compte.</div>`; }
+  pop.innerHTML=`<div class="pickpop-h">${title}</div>${rows}`;
 }
-function togglePerson(id){
-  draft.people = draft.people.includes(id) ? draft.people.filter(x=>x!==id) : [...draft.people,id];
-  renderPeoplePicker();
+function openPick(type,anchor){
+  if(modalReadOnly) return;
+  if(pickOpen && pickType===type){ closePick(); return; }
+  pickType=type; pickOpen=true; buildPickBody();
+  const pop=$('#pickPop'); pop.classList.add('open');
+  const r=anchor.getBoundingClientRect();
+  const w=pop.offsetWidth, h=pop.offsetHeight;
+  let left=r.left, top=r.bottom+6;
+  if(left+w>innerWidth-10) left=innerWidth-10-w;
+  if(top+h>innerHeight-10) top=Math.max(10,r.top-6-h);   // sinon au-dessus
+  pop.style.left=left+'px'; pop.style.top=top+'px';
 }
 function fillColSelect(){ $('#fCol').innerHTML=ALL_COL_IDS.map(id=>`<option value="${id}">${COL_NAME[id]}</option>`).join(''); }
 
@@ -1373,7 +1419,7 @@ function openModal(id=null, presetCol=null, preset={}){
     origSnap = null;
   }
   onColChange(); onRecChange(); renderRecDays(); updateDiversRows();
-  refreshSeg(); renderCalPicker(); renderPeoplePicker();
+  renderProps();
   applyReadOnly();
   $('#scrim').classList.add('open');
   if(!modalReadOnly) setTimeout(()=>$('#fTitle').focus(),50);
@@ -1401,16 +1447,8 @@ function commitDraft(){
   let prevPeople=[], tTitle=title, tid=editingId;
   if(editingId){
     const t=state.tasks.find(x=>x.id===editingId); if(!t)return;
-    const merged={...t, ...fields, title: title||t.title};
-    const changed = origSnap !== snapTask(merged);
-    // tâche récurrente modifiée depuis une occurrence précise → demander la portée
-    if(t.rec!=='none' && editingOccDate && changed){
-      pendingRec={tid:t.id, fields, title: title||t.title, occDate:editingOccDate, prevPeople:[...t.people]};
-      $('#recScrim').classList.add('open');
-      return 'deferred';
-    }
     prevPeople=[...t.people];
-    Object.assign(t, fields, {title: title||t.title});
+    Object.assign(t, fields, {title: title||t.title});   // s'applique toujours à toute la série
     tTitle=t.title;
   }else{
     if(!title) return;                                  // pas de tâche vide
@@ -1425,40 +1463,15 @@ function notifyAssign(prevPeople, people, title, tid){
   if(newly.length){ const first=memberById(newly[0]); toast(`🔔 Notification envoyée à ${newly.map(x=>memberById(x).name).join(', ')}`, first.color, initials(first.name)); }
 }
 function closeModal(commit=true){
-  let deferred=false;
-  if(commit) deferred = (commitDraft()==='deferred');
+  closePick();
+  if(commit) commitDraft();
   $('#scrim').classList.remove('open'); editingId=null;
-  if(!deferred){ renderAll(); renderBell(); }
+  renderAll(); renderBell();
 }
 function deleteTask(){
   if(editingId){ state.tasks=state.tasks.filter(t=>t.id!==editingId); save(); }
   closeModal(false);
 }
-
-/* ---- édition d'une tâche récurrente : portée ---- */
-function applyRecScope(scope){
-  const p=pendingRec; if(!p){ $('#recScrim').classList.remove('open'); return; }
-  const t=state.tasks.find(x=>x.id===p.tid);
-  if(t){
-    if(scope==='all'){
-      Object.assign(t, p.fields, {title:p.title});
-      notifyAssign(p.prevPeople, p.fields.people, p.title, t.id);
-    } else if(scope==='one'){
-      t.exceptions=[...(t.exceptions||[]), p.occDate];
-      const nt={...t, ...p.fields, id:uid(), title:p.title, rec:'none', recDays:[], date:p.occDate, until:'', exceptions:[]};
-      state.tasks.push(nt);
-    } else if(scope==='following'){
-      const prevDay=iso(addDays(new Date(p.occDate+'T00:00'),-1));
-      t.until=prevDay;
-      const nt={...t, ...p.fields, id:uid(), title:p.title, date:p.occDate, until:'', exceptions:[]};
-      state.tasks.push(nt);
-    }
-    save();
-  }
-  pendingRec=null; $('#recScrim').classList.remove('open');
-  renderAll(); renderBell();
-}
-function cancelRecScope(){ pendingRec=null; $('#recScrim').classList.remove('open'); renderAll(); }
 
 /* ============ notifications ============ */
 function pushNotif(to, text, taskId){
@@ -1489,32 +1502,10 @@ function toast(msg,color,ini){
 
 /* ============ utils ============ */
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-/* ---- ajouter une tâche à Google Agenda (manuel, optionnel) ---- */
-const pad=n=>String(n).padStart(2,'0');
-function addToGoogleCalendar(){
-  const title=$('#fTitle').value.trim()||'Tâche';
-  const date=$('#fDate').value, time=$('#fTime').value, desc=$('#fDesc').value.trim();
-  if(!date){ toast('Ajoute d\'abord une deadline à la tâche.'); return; }
-  const dur=(editingId && (state.tasks.find(t=>t.id===editingId)||{}).dur) || 60;
-  let dates;
-  if(time){
-    const start=new Date(date+'T'+time);
-    const end=new Date(start.getTime()+dur*60000);
-    const f=d=>''+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+'00';
-    dates=f(start)+'/'+f(end);
-  }else{
-    const d1=date.replace(/-/g,'');
-    const nx=new Date(date+'T00:00'); nx.setDate(nx.getDate()+1);
-    const d2=''+nx.getFullYear()+pad(nx.getMonth()+1)+pad(nx.getDate());
-    dates=d1+'/'+d2;
-  }
-  const url='https://calendar.google.com/calendar/render?action=TEMPLATE'
-    +'&text='+encodeURIComponent(title)+'&dates='+dates+(desc?'&details='+encodeURIComponent(desc):'');
-  window.open(url,'_blank','noopener');
-}
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if($('#recScrim').classList.contains('open')){cancelRecScope();return;} closeModal(); $('#drawer').classList.remove('open'); if(chatOpen)toggleChat(); if(sortOpen){sortOpen=false;renderSortTool();}} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(pickOpen){closePick();return;} closeModal(); $('#drawer').classList.remove('open'); if(chatOpen)toggleChat(); if(sortOpen){sortOpen=false;renderSortTool();}} });
 document.addEventListener('click',e=>{ if(sortOpen && !e.target.closest('#sortTool')){ sortOpen=false; renderSortTool(); } });
+document.addEventListener('pointerdown',e=>{ if(pickOpen && !e.target.closest('#pickPop') && !e.target.closest('.pv')){ closePick(); } },true);
 
 init();
 </script>
