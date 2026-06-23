@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -1882,6 +1882,20 @@ function duplicateTask(){
   state.tasks.push(copy); save();
   toast('Élément dupliqué ✓');
   finishClose();
+}
+function deleteTask(){
+  if(!editingId) return;
+  const t=state.tasks.find(x=>x.id===editingId);
+  if(t && editingOccDate && isRecurring(t)){
+    if(confirm('Supprimer seulement cette occurrence ?\n\nOK = cette occurrence uniquement\nAnnuler = toute la série')){
+      t.exceptions=[...(t.exceptions||[]), editingOccDate];
+    }else{
+      state.tasks=state.tasks.filter(x=>x.id!==editingId);
+    }
+  }else{
+    state.tasks=state.tasks.filter(x=>x.id!==editingId);
+  }
+  save(); finishClose();
 }
 
 /* ============ popup calendrier (création / édition façon Google Agenda) ============ */
