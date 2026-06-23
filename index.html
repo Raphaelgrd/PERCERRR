@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -184,6 +184,11 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .cat-del{opacity:0;color:var(--faint);font-size:17px;line-height:1;width:18px;flex:none;transition:.1s}
 .cat-del:hover{color:var(--bloque)}
 .cat-add{margin-top:8px;font-size:12.5px;font-weight:600;color:var(--accent);padding:7px 4px}
+.cat-grip{opacity:0;color:var(--faint);width:13px;flex:none;display:grid;place-items:center;cursor:grab;transition:.1s}
+.cat-grip svg{width:13px;height:13px}
+.cat-row:hover .cat-grip{opacity:.7}
+.cat-row.dragging{opacity:.35}
+.cat-row.drop-target{box-shadow:inset 0 0 0 2px var(--accent);background:var(--accent-soft)}
 .gc-sel{position:absolute;left:1px;right:2px;background:var(--accent-soft);border:1.5px solid var(--accent);border-radius:6px;
   z-index:18;pointer-events:none;font-size:10px;font-weight:600;color:var(--accent);padding:2px 5px;overflow:hidden}
 .seg.days button.on{background:var(--ink);color:#fff;border-color:transparent}
@@ -416,6 +421,35 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .chat-form input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:var(--panel)}
 .chat-form button{width:42px;border-radius:11px;background:var(--accent);color:#fff;display:grid;place-items:center}
 .chat-form button svg{width:18px;height:18px}
+
+/* ---------- bouton admin (topbar) ---------- */
+.admin-btn{width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:grid;place-items:center;color:var(--muted)}
+.admin-btn:hover{color:var(--ink);border-color:var(--border-strong)}
+.admin-btn svg{width:18px;height:18px}
+
+/* ---------- panneau « Équipe » (admin) ---------- */
+.teamscrim{position:fixed;inset:0;background:rgba(26,26,34,.42);backdrop-filter:blur(3px);z-index:85;display:none;align-items:center;justify-content:center;padding:20px}
+.teamscrim.open{display:flex}
+.teamdlg{background:var(--panel);border-radius:16px;width:100%;max-width:440px;max-height:86vh;overflow-y:auto;padding:22px;box-shadow:0 24px 60px rgba(26,26,34,.3);animation:pop .16s ease}
+.teamdlg h3{font-family:'Space Grotesk',sans-serif;font-size:18px;margin:0 0 3px;font-weight:600}
+.teamdlg .sub{font-size:13px;color:var(--muted);margin:0 0 16px;line-height:1.4}
+.team-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--border)}
+.team-row:last-of-type{border-bottom:none}
+.team-info{flex:1;min-width:0}
+.team-nm{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.team-em{font-size:11.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--accent);background:var(--accent-soft);padding:2px 7px;border-radius:20px}
+.team-act{display:flex;gap:6px;flex:none}
+.team-act button{font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;border:1px solid var(--border-strong);background:var(--paper);color:var(--muted);transition:.12s}
+.team-act button:hover{border-color:var(--ink);color:var(--ink)}
+.team-act button.danger:hover{border-color:var(--bloque);color:var(--bloque);background:rgba(194,65,12,.06)}
+.team-close{margin-top:16px;width:100%;padding:11px;border-radius:11px;background:var(--ink);color:#fff;font-weight:600;font-size:14px}
+
+/* ---------- bouton dupliquer (fiche) ---------- */
+.peek-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.peek-dup{color:var(--muted);font-weight:600;font-size:13.5px;padding:9px 12px;border-radius:9px;border:1px solid var(--border-strong);display:inline-flex;align-items:center;gap:6px}
+.peek-dup:hover{border-color:var(--ink);color:var(--ink)}
+.peek-dup svg{width:15px;height:15px}
 </style>
 
 <div class="loading" id="loading"><div class="spin"></div></div>
@@ -456,6 +490,9 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
   <button class="bell" onclick="toggleDrawer()" aria-label="Notifications">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 1 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <span class="dot" id="bellDot">0</span>
+  </button>
+  <button class="admin-btn" id="adminBtn" onclick="openTeam()" title="Gestion de l'équipe (admin)" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
   <div class="whoami" id="whoami"></div>
 </div>
@@ -541,7 +578,12 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
           </button>
         </div>
       </div>
-      <button class="peek-del" id="mDel" style="display:none" onclick="deleteTask()">Supprimer la tâche</button>
+      <div class="peek-actions" id="mActions" style="display:none">
+        <button class="peek-dup" id="mDup" onclick="duplicateTask()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke-linecap="round"/></svg>Dupliquer
+        </button>
+        <button class="peek-del" id="mDel" onclick="deleteTask()" style="margin-top:0">Supprimer</button>
+      </div>
     </div>
   </div>
 </div>
@@ -573,6 +615,27 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 
 <div class="toast" id="toast"></div>
 <div class="pickpop" id="pickPop"></div>
+
+<!-- choix de portée pour une tâche récurrente -->
+<div class="recscrim" id="recScrim" onclick="if(event.target===this)resolveRec(null)">
+  <div class="recdlg">
+    <h3>Modifier l'événement récurrent</h3>
+    <p>Cet événement se répète. Tu veux appliquer tes changements à&nbsp;:</p>
+    <button onclick="resolveRec('one')">Cet événement uniquement</button>
+    <button onclick="resolveRec('all')">Toute la série</button>
+    <button class="rec-cancel" onclick="resolveRec(null)">Annuler</button>
+  </div>
+</div>
+
+<!-- panneau Équipe (admin) -->
+<div class="teamscrim" id="teamScrim" onclick="if(event.target===this)closeTeam()">
+  <div class="teamdlg">
+    <h3>Gestion de l'équipe</h3>
+    <p class="sub">En tant qu'administrateur, tu peux promouvoir d'autres membres ou retirer leur accès.</p>
+    <div id="teamBody"></div>
+    <button class="team-close" onclick="closeTeam()">Fermer</button>
+  </div>
+</div>
 
 <script>
 /* ============ Supabase : client, auth, données partagées, chat ============ */
@@ -754,6 +817,22 @@ const PALETTE = ['#FF4D2E','#4F73B0','#1F8A5B','#9333EA','#E8920B','#0EA5A4','#D
 const URG_RANK = {urgent:0, prioritaire:1, accessoire:2};
 const capit = s => s ? s[0].toUpperCase()+s.slice(1) : '';
 
+/* ---- administration ---- */
+const SUPER_ADMIN = 'gerardraphael01@gmail.com';   // admin permanent (par e-mail)
+function isAdmin(id){ const m=memberById(id||me); return !!(m && (m.admin===true || (m.email||'').toLowerCase()===SUPER_ADMIN)); }
+function iAmAdmin(){ return isAdmin(me); }
+
+/* ---- récurrence : détacher une occurrence (un seul jour) sans toucher la série ---- */
+function isRecurring(t){ return !!(t && t.rec && t.rec!=='none'); }
+// ajoute une exception ce jour-là à la série + crée un événement indépendant copié
+function detachOccurrence(t, occDate){
+  t.exceptions = [...(t.exceptions||[]), occDate];
+  const copy = {...t, id:uid(), rec:'none', recDays:[], exceptions:[],
+    date:occDate, people:[...(t.people||[])], files:[...(t.files||[])]};
+  state.tasks.push(copy);
+  return copy;
+}
+
 let state = null;        // {members, tasks, notifs}
 let me = null;           // current member id
 let editingId = null;    // task being edited
@@ -791,6 +870,7 @@ function ensureState(){
   if(!state.notifs) state.notifs=[];
   if(!state.sortOrder) state.sortOrder=['deadline','importance','energie'];
   if(!state.categories) state.categories=DEFAULT_CATS.map(c=>({...c}));
+  if(!state.removed) state.removed=[];     // membres retirés par un admin (ne réapparaissent pas)
   state.members.forEach(m=>{ if(!m.themes) m.themes={...DEFAULT_THEME}; });
   // migration : l'ancienne catégorie « divers » devient « repos »
   state.categories.forEach(c=>{ if(c.id==='divers'){ c.id='repos'; if(c.name==='Divers') c.name='Repos'; } });
@@ -800,10 +880,18 @@ function ensureState(){
   state.tasks.forEach(t=>{ if(!t.kind) t.kind='board'; if(!t.files) t.files=[]; });
 }
 async function ensureMember(){
-  if(memberById(me)) return;
+  const email = (authUser.email||'').toLowerCase();
+  const existing = memberById(me);
+  if(existing){
+    let changed=false;
+    if(!existing.email && email){ existing.email=email; changed=true; }   // on stocke l'e-mail
+    if(email===SUPER_ADMIN && existing.admin!==true){ existing.admin=true; changed=true; }
+    if(changed) await save();
+    return;
+  }
   const name = (authUser.user_metadata && authUser.user_metadata.name) || (authUser.email||'').split('@')[0] || 'Moi';
   const color = PALETTE[state.members.length % PALETTE.length];
-  state.members.push({ id:me, name, color, themes:{...DEFAULT_THEME} });
+  state.members.push({ id:me, name, color, email, admin: email===SUPER_ADMIN, themes:{...DEFAULT_THEME} });
   await save();
 }
 async function boot(){
@@ -812,6 +900,11 @@ async function boot(){
   state = loaded || seedState();
   if(!loaded){ try{ await cloudSave(state); }catch(e){} }
   ensureState();
+  // accès retiré par un admin : on bloque (le super-admin n'est jamais bloqué)
+  if((state.removed||[]).includes(me) && (authUser.email||'').toLowerCase()!==SUPER_ADMIN){
+    alert("Ton accès à Percerr a été retiré par un administrateur.");
+    return logout();
+  }
   await ensureMember();
   activeUsers = new Set([me]);
   activeCats = new Set(state.categories.map(c=>c.id));   // toutes par défaut
@@ -833,7 +926,50 @@ function renderMe(){
     <button onclick="logout()" title="Se déconnecter" style="margin-left:6px;width:30px;height:30px;border-radius:8px;color:var(--muted);display:grid;place-items:center">
       <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>`;
+  $('#adminBtn').style.display = iAmAdmin() ? '' : 'none';
   renderBell();
+}
+
+/* ============ administration : panneau Équipe ============ */
+function openTeam(){ if(!iAmAdmin()) return; renderTeam(); $('#teamScrim').classList.add('open'); }
+function closeTeam(){ $('#teamScrim').classList.remove('open'); }
+function renderTeam(){
+  const rows = state.members.map(m=>{
+    const admin=isAdmin(m.id), sup=(m.email||'').toLowerCase()===SUPER_ADMIN, mine=m.id===me;
+    let actions = sup ? '<span class="team-badge">super-admin</span>'
+      : (admin ? `<button onclick="setMemberAdmin('${m.id}',false)">Retirer admin</button>`
+               : `<button onclick="setMemberAdmin('${m.id}',true)">Rendre admin</button>`);
+    if(!sup && !mine) actions += `<button class="danger" onclick="removeMember('${m.id}')">Retirer</button>`;
+    return `<div class="team-row">
+      <span class="av" style="background:${m.color}">${initials(m.name)}</span>
+      <div class="team-info">
+        <div class="team-nm">${esc(m.name)}${admin?'<span class="team-badge">admin</span>':''}${mine?' <span style="color:var(--faint);font-weight:500;font-size:11px">(moi)</span>':''}</div>
+        <div class="team-em">${esc(m.email||'—')}</div>
+      </div>
+      <div class="team-act">${actions}</div>
+    </div>`;
+  }).join('');
+  $('#teamBody').innerHTML = rows || '<p class="sub">Aucun membre pour le moment.</p>';
+}
+function setMemberAdmin(id, val){
+  if(!iAmAdmin()) return;
+  const m=memberById(id); if(!m) return;
+  if((m.email||'').toLowerCase()===SUPER_ADMIN) return;   // le super-admin reste toujours admin
+  m.admin=val; save(); renderTeam(); renderMe();
+  toast(val?`${m.name} est maintenant administrateur`:`${m.name} n'est plus administrateur`);
+}
+function removeMember(id){
+  if(!iAmAdmin()) return;
+  const m=memberById(id); if(!m) return;
+  if((m.email||'').toLowerCase()===SUPER_ADMIN){ toast('Impossible de retirer le super-admin.'); return; }
+  if(id===me){ toast('Tu ne peux pas te retirer toi-même.'); return; }
+  if(!confirm(`Retirer ${m.name} de l'équipe ?\nSes tâches seront désassignées et il perdra l'accès à l'app.`)) return;
+  state.members = state.members.filter(x=>x.id!==id);
+  state.tasks.forEach(t=>{ if(t.people) t.people=t.people.filter(p=>p!==id); });
+  state.removed = [...(state.removed||[]), id];     // empêche sa réapparition automatique
+  activeUsers.delete(id);
+  save(); renderTeam(); renderMe(); renderAll();
+  toast(`${m.name} a été retiré de l'équipe`);
 }
 function changeName(){
   const m = memberById(me); if(!m) return;
@@ -1128,15 +1264,34 @@ function renderCal(){
       <div class="gc-main">${grid}</div>
     </div>`;
   renderPeopleFilter('#calFilter');
+  wireCatDnD();
   if(calMode!=='month'){ placeTimedEvents(); drawNowLine(); scrollToMorning(); wireSlotCreate(); }
+}
+// réordonner les agendas (catégories) par glisser-déposer
+function wireCatDnD(){
+  let from=null;
+  document.querySelectorAll('.cat-row[data-ci]').forEach(row=>{
+    const grip=row.querySelector('.cat-grip'); if(!grip) return;
+    grip.addEventListener('dragstart',e=>{ from=+row.dataset.ci; row.classList.add('dragging'); });
+    grip.addEventListener('dragend',()=>{ row.classList.remove('dragging'); document.querySelectorAll('.cat-row').forEach(x=>x.classList.remove('drop-target')); });
+    row.addEventListener('dragover',e=>{ e.preventDefault(); if(from!==null && +row.dataset.ci!==from) row.classList.add('drop-target'); });
+    row.addEventListener('dragleave',()=>row.classList.remove('drop-target'));
+    row.addEventListener('drop',e=>{
+      e.preventDefault(); const to=+row.dataset.ci;
+      if(from===null||from===to) return;
+      const arr=state.categories; const [moved]=arr.splice(from,1); arr.splice(to,0,moved);
+      from=null; save(); renderCal();
+    });
+  });
 }
 
 /* ---------- panneau catégories (style Google) ---------- */
 function categorySideHTML(){
   const allOn = state.categories.every(c=>activeCats.has(c.id));
-  const rows = state.categories.map(c=>{
+  const rows = state.categories.map((c,i)=>{
     const col=catColor(c.id,me), on=activeCats.has(c.id);
-    return `<div class="cat-row">
+    return `<div class="cat-row" data-ci="${i}">
+      <span class="cat-grip" draggable="true" title="Glisser pour réordonner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="6" r="1.3"/><circle cx="9" cy="12" r="1.3"/><circle cx="9" cy="18" r="1.3"/><circle cx="15" cy="6" r="1.3"/><circle cx="15" cy="12" r="1.3"/><circle cx="15" cy="18" r="1.3"/></svg></span>
       <button class="cat-cb ${on?'on':''}" style="--cc:${col}" onclick="toggleCat('${c.id}')" title="Afficher/masquer">${on?'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12l5 5 9-10" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</button>
       <span class="cat-nm ${on?'':'off'}" onclick="toggleCat('${c.id}')" title="Afficher/masquer">${esc(c.name)}</span>
       <button class="cat-edit" onclick="renameCat('${c.id}')" title="Renommer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -1267,7 +1422,7 @@ function placeTimedEvents(){
   });
 }
 function attachEventDrag(el,t,occDate){
-  const canMoveDay = (t.rec==='none' || !t.rec);   // glisser entre jours : seulement les tâches non récurrentes
+  const canMoveDay = true;   // on autorise toujours le glisser entre jours (les récurrentes sont détachées)
   let mode=null, moved=false, sx=0, sy=0;
   let origStart=0, origDur=60, startY=0, nd=null;                    // redimensionnement
   let ghost=null, grabDX=0, grabDY=0, dropDate=occDate, dropMin=null; // déplacement (le fantôme suit la souris)
@@ -1317,9 +1472,22 @@ function attachEventDrag(el,t,occDate){
     const wasMoved=moved, m=mode;
     cleanup(); mode=null;
     if(!wasMoved){ openModal(t.id,null,{occDate}); return; }   // simple clic → ouvrir la fiche
-    if(m==='resize'){ if(nd!=null){ t.dur=nd; save(); renderCal(); } return; }
-    if(dropMin!=null) t.time=minToHM(dropMin);
-    if(canMoveDay && dropDate && dropDate!==occDate) t.date=dropDate;
+    const rec = isRecurring(t);
+    if(m==='resize'){
+      // récurrente : on ne redimensionne que ce jour-là, la série garde sa durée
+      if(nd!=null){ const target = rec ? detachOccurrence(t,occDate) : t; target.dur=nd; save(); renderCal(); }
+      return;
+    }
+    const newTime = (dropMin!=null) ? minToHM(dropMin) : (t.time||'');
+    const newDate = (dropDate && dropDate!==occDate) ? dropDate : occDate;
+    if(rec){
+      // ne bouge QUE l'occurrence de ce jour : on la détache, la série reste intacte
+      const c = detachOccurrence(t, occDate);
+      c.time = newTime; c.date = newDate;
+    }else{
+      if(dropMin!=null) t.time = newTime;
+      if(newDate!==occDate) t.date = newDate;
+    }
     save(); renderCal();
   };
   const start=(e,m)=>{ e.preventDefault(); e.stopPropagation();
@@ -1434,28 +1602,27 @@ function openModal(id=null, presetCol=null, preset={}){
   if(editingId){
     const t=state.tasks.find(x=>x.id===editingId);
     const owner=t.people[0];
-    // ouverte depuis le calendrier + appartient à quelqu'un d'autre → lecture seule
-    modalReadOnly = !!(preset.occDate && owner && owner!==me);
-    $('#mDel').style.display='';
+    // ouverte depuis le calendrier + appartient à quelqu'un d'autre → lecture seule (sauf admin)
+    modalReadOnly = !!(preset.occDate && owner && owner!==me) && !iAmAdmin();
+    $('#mActions').style.display='';
     $('#fTitle').value=t.title; $('#fDesc').value=t.desc||'';
     $('#fDate').value=t.date||''; $('#fTime').value=t.time||'';
     $('#fRec').value=t.rec||'none'; $('#fCol').value=t.col; $('#fBlock').value=t.block||'';
     draft={urg:t.urg||'',en:t.en||'',cal:catById(t.cal)?t.cal:'',people:[...t.people],recDays:[...(t.recDays||[])],dur:t.dur||60};
     draftKind = t.kind || 'board';
-    origSnap = snapTask(t);
   }else{
     modalReadOnly = false;
     draftKind = preset.kind || 'board';
-    $('#mDel').style.display='none';
+    $('#mActions').style.display='none';
     $('#fTitle').value='';$('#fDesc').value='';$('#fBlock').value='';
     $('#fDate').value=preset.date||''; $('#fTime').value=preset.time||''; $('#fRec').value='none';
     $('#fCol').value=presetCol||'backlog';
     draft={urg:'',en:'',cal:'',people: preset.owner?[preset.owner]:[],recDays:[],dur:preset.dur||60};   // tout vide : on clique pour choisir
-    origSnap = null;
   }
   onColChange(); onRecChange(); renderRecDays(); updateDiversRows();
   renderProps(); renderFiles();
   applyReadOnly();
+  origSnap = editingId ? currentSnap() : null;   // référence pour détecter les changements (récurrence)
   $('#scrim').classList.add('open');
   if(!modalReadOnly) setTimeout(()=>$('#fTitle').focus(),50);
 }
@@ -1463,33 +1630,50 @@ function applyReadOnly(){
   const peek=document.querySelector('#scrim .peek'); if(!peek) return;
   peek.querySelectorAll('input,select,textarea').forEach(el=>{ el.disabled=modalReadOnly; });
   peek.querySelectorAll('button').forEach(el=>{ if(!el.classList.contains('peek-close')) el.disabled=modalReadOnly; });
-  if(modalReadOnly) $('#mDel').style.display='none';
+  if(modalReadOnly) $('#mActions').style.display='none';
   $('#roNote').style.display = modalReadOnly ? '' : 'none';
 }
 
 function snapTask(t){ return JSON.stringify({title:t.title||'',desc:t.desc||'',col:t.col,urg:t.urg,en:t.en,cal:t.cal,people:[...(t.people||[])].sort(),date:t.date||'',time:t.time||'',rec:t.rec,recDays:[...(t.recDays||[])].sort(),block:t.block||'',dur:t.dur||60}); }
+// instantané construit à partir du formulaire (même structure que snapTask) pour comparer ce qui a changé
+function currentSnap(){
+  const col=$('#fCol').value, rec=$('#fRec').value;
+  return JSON.stringify({title:$('#fTitle').value.trim(),desc:$('#fDesc').value.trim(),col,
+    urg:draft.urg,en:draft.en,cal:draft.cal,people:[...draft.people].sort(),
+    date:$('#fDate').value,time:$('#fTime').value,rec,recDays:[...(draft.recDays||[])].sort(),
+    block: col==='bloquant'?$('#fBlock').value.trim():'',dur:draft.dur||60});
+}
 
-function commitDraft(){
+function commitDraft(scope){
   if(!$('#scrim').classList.contains('open')) return;   // rien d'ouvert
   if(modalReadOnly) return;                              // tâche d'un·e autre : aucune écriture
   const title=$('#fTitle').value.trim();
   const col=$('#fCol').value;
   const block = col==='bloquant' ? $('#fBlock').value.trim() : '';
   const rec=$('#fRec').value;
+  let people=[...draft.people];
   const fields={ desc:$('#fDesc').value.trim(), col, urg:draft.urg, en:draft.en, cal:draft.cal,
-    people:[...draft.people], date:$('#fDate').value, time:$('#fTime').value, rec,
+    people, date:$('#fDate').value, time:$('#fTime').value, rec,
     recDays: rec==='custom'?[...draft.recDays]:[], block };
   let prevPeople=[], tTitle=title, tid=editingId;
   if(editingId){
     const t=state.tasks.find(x=>x.id===editingId); if(!t)return;
     prevPeople=[...t.people];
-    Object.assign(t, fields, {title: title||t.title});   // s'applique toujours à toute la série
-    tTitle=t.title;
+    if(scope==='one' && editingOccDate && isRecurring(t)){
+      // « cet événement uniquement » : on détache ce jour-là, la série reste intacte
+      const c=detachOccurrence(t, editingOccDate);
+      Object.assign(c, fields, {title: title||c.title, rec:'none', recDays:[], date:editingOccDate});
+      tid=c.id; tTitle=c.title;
+    }else{
+      Object.assign(t, fields, {title: title||t.title});   // toute la série (ou tâche non récurrente)
+      tTitle=t.title;
+    }
   }else{
     if(!title) return;                                  // pas de tâche vide
-    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],...fields}; state.tasks.push(t); tid=t.id;
+    if(!people.length) people=[me];                     // assigné par défaut = le créateur
+    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],...fields,people}; state.tasks.push(t); tid=t.id;
   }
-  notifyAssign(prevPeople, fields.people, tTitle, tid);
+  notifyAssign(prevPeople, people, tTitle, tid);
   save();
 }
 function notifyAssign(prevPeople, people, title, tid){
@@ -1503,10 +1687,10 @@ function currentTask(){ return editingId ? state.tasks.find(x=>x.id===editingId)
 function ensureTask(){
   let t=currentTask(); if(t) return t;
   const fields={ desc:$('#fDesc').value.trim(), col:$('#fCol').value, urg:draft.urg, en:draft.en, cal:draft.cal,
-    people:[...draft.people], date:$('#fDate').value, time:$('#fTime').value, rec:$('#fRec').value,
+    people: draft.people.length?[...draft.people]:[me], date:$('#fDate').value, time:$('#fTime').value, rec:$('#fRec').value,
     recDays: $('#fRec').value==='custom'?[...draft.recDays]:[], block: $('#fCol').value==='bloquant'?$('#fBlock').value.trim():'' };
   t={ id:uid(), kind:draftKind, dur:draft.dur||60, title:($('#fTitle').value.trim()||'Sans titre'), files:[], ...fields };
-  state.tasks.push(t); editingId=t.id; $('#mDel').style.display=''; origSnap=snapTask(t);
+  state.tasks.push(t); editingId=t.id; $('#mActions').style.display=''; origSnap=currentSnap();
   return t;
 }
 function fileExt(n){ const m=/\.([a-z0-9]+)$/i.exec(n||''); return m?m[1].toLowerCase():''; }
@@ -1562,13 +1746,37 @@ async function removeFile(i){
 
 function closeModal(commit=true){
   closePick();
-  if(commit) commitDraft();
-  $('#scrim').classList.remove('open'); editingId=null;
+  if(commit && !modalReadOnly){
+    const t = editingId ? state.tasks.find(x=>x.id===editingId) : null;
+    // tâche récurrente ouverte sur un jour précis + des changements → demander la portée
+    if(t && editingOccDate && isRecurring(t) && currentSnap()!==origSnap){
+      $('#recScrim').classList.add('open');
+      return;                                  // on attend le choix dans resolveRec()
+    }
+    commitDraft();
+  }
+  finishClose();
+}
+function finishClose(){
+  $('#recScrim').classList.remove('open');
+  $('#scrim').classList.remove('open'); editingId=null; editingOccDate=null;
   renderAll(); renderBell();
 }
-function deleteTask(){
-  if(editingId){ state.tasks=state.tasks.filter(t=>t.id!==editingId); save(); }
-  closeModal(false);
+function resolveRec(scope){
+  $('#recScrim').classList.remove('open');
+  if(scope===null) return;          // annuler : on reste sur la fiche ouverte
+  commitDraft(scope);
+  finishClose();
+}
+function duplicateTask(){
+  if(modalReadOnly) return;
+  commitDraft();                                 // on applique d'abord les modifs en cours
+  const t=currentTask(); if(!t){ finishClose(); return; }
+  const copy={...t, id:uid(), title:(t.title||'Sans titre')+' (copie)',
+    people:[...(t.people||[])], recDays:[...(t.recDays||[])], exceptions:[...(t.exceptions||[])], files:[]};
+  state.tasks.push(copy); save();
+  toast('Élément dupliqué ✓');
+  finishClose();
 }
 
 /* ============ notifications ============ */
@@ -1601,7 +1809,11 @@ function toast(msg,color,ini){
 /* ============ utils ============ */
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(pickOpen){closePick();return;} closeModal(); $('#drawer').classList.remove('open'); if(chatOpen)toggleChat(); if(sortOpen){sortOpen=false;renderSortTool();}} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){
+  if($('#recScrim').classList.contains('open')){ resolveRec(null); return; }
+  if($('#teamScrim').classList.contains('open')){ closeTeam(); return; }
+  if(pickOpen){closePick();return;}
+  closeModal(); $('#drawer').classList.remove('open'); if(chatOpen)toggleChat(); if(sortOpen){sortOpen=false;renderSortTool();}} });
 document.addEventListener('click',e=>{ if(sortOpen && !e.target.closest('#sortTool')){ sortOpen=false; renderSortTool(); } });
 document.addEventListener('pointerdown',e=>{ if(pickOpen && !e.target.closest('#pickPop') && !e.target.closest('.pv')){ closePick(); } },true);
 
