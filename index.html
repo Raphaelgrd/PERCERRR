@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -450,6 +450,48 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .peek-dup{color:var(--muted);font-weight:600;font-size:13.5px;padding:9px 12px;border-radius:9px;border:1px solid var(--border-strong);display:inline-flex;align-items:center;gap:6px}
 .peek-dup:hover{border-color:var(--ink);color:var(--ink)}
 .peek-dup svg{width:15px;height:15px}
+
+/* ---------- création/édition d'un événement calendrier (style Google Agenda) ---------- */
+.calscrim{position:fixed;inset:0;z-index:75;display:none}
+.calscrim.open{display:block}
+.calpop{position:fixed;z-index:76;width:min(420px,94vw);background:var(--panel);border:1px solid var(--border);
+  border-radius:16px;box-shadow:0 22px 60px rgba(26,26,34,.30);display:none;animation:pop .14s ease;overflow:hidden}
+.calpop.open{display:block}
+.calpop-head{display:flex;align-items:flex-start;gap:8px;padding:16px 14px 6px}
+.calpop-title{flex:1;min-width:0;border:none;outline:none;background:none;font-family:'Space Grotesk',sans-serif;
+  font-size:21px;font-weight:600;color:var(--ink);border-bottom:2px solid var(--border);padding:4px 2px}
+.calpop-title:focus{border-color:var(--accent)}
+.calpop-title::placeholder{color:var(--faint);font-weight:500}
+.calpop-x{width:30px;height:30px;border-radius:8px;color:var(--muted);display:grid;place-items:center;flex:none}
+.calpop-x:hover{background:var(--paper)}
+.calpop-x svg{width:18px;height:18px}
+.cp-ro{font-size:12px;color:var(--muted);background:var(--paper);border-radius:8px;padding:8px 11px;margin:6px 14px 0;display:flex;gap:6px;align-items:center}
+.calpop-body{padding:6px 12px 4px;display:flex;flex-direction:column;gap:1px;max-height:56vh;overflow-y:auto}
+.cp-row{display:flex;align-items:flex-start;gap:12px;padding:7px 4px;border-radius:9px}
+.cp-row:hover{background:var(--paper)}
+.cp-ic{width:20px;flex:none;color:var(--faint);display:grid;place-items:center;padding-top:7px}
+.cp-ic svg{width:18px;height:18px}
+.cp-main{flex:1;min-width:0;padding-top:1px}
+.cp-when{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.cp-times{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13.5px}
+.calpop input[type=date],.calpop input[type=time]{border:1px solid transparent;border-radius:8px;padding:7px 9px;background:var(--paper);font-size:13.5px;color:var(--ink);font-family:inherit}
+.calpop input[type=date]:hover,.calpop input[type=time]:hover{background:var(--border)}
+.calpop input[type=date]:focus,.calpop input[type=time]:focus{outline:none;border-color:var(--accent);background:var(--panel);box-shadow:0 0 0 3px var(--accent-soft)}
+.calpop .pv{min-height:36px;width:100%}
+.cp-main select,.cp-main textarea{width:100%;border:1px solid transparent;border-radius:8px;padding:8px 9px;background:var(--paper);font-size:13.5px;color:var(--ink);font-family:inherit}
+.cp-main select:hover,.cp-main textarea:hover{background:var(--border)}
+.cp-main select:focus,.cp-main textarea:focus{outline:none;border-color:var(--accent);background:var(--panel);box-shadow:0 0 0 3px var(--accent-soft)}
+.cp-main textarea{min-height:40px;resize:vertical;line-height:1.45}
+.cp-main .seg.days{margin-top:2px}
+.calpop-foot{display:flex;align-items:center;gap:8px;padding:10px 14px 14px;border-top:1px solid var(--border);margin-top:4px}
+.calpop-foot .spacer{flex:1}
+.cp-del{color:var(--bloque);font-weight:600;font-size:13px;padding:8px 11px;border-radius:9px}
+.cp-del:hover{background:rgba(194,65,12,.08)}
+.cp-dup{color:var(--muted);font-weight:600;font-size:13px;padding:8px 11px;border-radius:9px;display:inline-flex;align-items:center;gap:5px}
+.cp-dup svg{width:14px;height:14px}
+.cp-dup:hover{background:var(--paper);color:var(--ink)}
+.cp-save{background:var(--accent);color:#fff;font-weight:600;font-size:13.5px;padding:10px 20px;border-radius:10px;box-shadow:var(--shadow)}
+.cp-save:active{transform:scale(.97)}
 </style>
 
 <div class="loading" id="loading"><div class="spin"></div></div>
@@ -615,6 +657,64 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 
 <div class="toast" id="toast"></div>
 <div class="pickpop" id="pickPop"></div>
+
+<!-- création / édition d'un événement calendrier (façon Google Agenda) -->
+<div class="calscrim" id="calScrim" onclick="calScrimClick()"></div>
+<div class="calpop" id="calPop">
+  <div class="calpop-head">
+    <input class="calpop-title" id="cTitle" placeholder="Ajouter un titre">
+    <button class="calpop-x" id="cClose" onclick="closeCalPop()" title="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="cp-ro" id="cRo" style="display:none">👁️ Événement d'un·e autre membre — lecture seule.</div>
+  <div class="calpop-body">
+    <div class="cp-row">
+      <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/></svg></span>
+      <div class="cp-main"><div class="cp-when">
+        <input type="date" id="cDate">
+        <div class="cp-times"><input type="time" id="cStart" onchange="cSyncEnd()"><span>–</span><input type="time" id="cEnd" onchange="cSyncDur()"></div>
+      </div></div>
+    </div>
+    <div class="cp-row">
+      <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4M21 6H8a5 5 0 0 0-5 5M7 22l-4-4 4-4M3 18h13a5 5 0 0 0 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="cp-main">
+        <select id="cRec" onchange="cRecChange()">
+          <option value="none">Ne se répète pas</option>
+          <option value="daily">Tous les jours</option>
+          <option value="weekdays">Du lundi au vendredi</option>
+          <option value="weekly">Toutes les semaines (ce jour)</option>
+          <option value="custom">Personnalisé…</option>
+        </select>
+        <div class="seg days" id="cRecDays" style="display:none;margin-top:6px">
+          <button data-d="0" onclick="cToggleRecDay(0)">Lun</button>
+          <button data-d="1" onclick="cToggleRecDay(1)">Mar</button>
+          <button data-d="2" onclick="cToggleRecDay(2)">Mer</button>
+          <button data-d="3" onclick="cToggleRecDay(3)">Jeu</button>
+          <button data-d="4" onclick="cToggleRecDay(4)">Ven</button>
+          <button data-d="5" onclick="cToggleRecDay(5)">Sam</button>
+          <button data-d="6" onclick="cToggleRecDay(6)">Dim</button>
+        </div>
+      </div>
+    </div>
+    <div class="cp-row">
+      <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="cp-main"><div class="pv" id="cPeople" onclick="openPick('people',this,true)"></div></div>
+    </div>
+    <div class="cp-row">
+      <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 11l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="cp-main"><div class="pv" id="cCal" onclick="openPick('cal',this,true)"></div></div>
+    </div>
+    <div class="cp-row">
+      <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg></span>
+      <div class="cp-main"><textarea id="cDesc" placeholder="Ajouter une description"></textarea></div>
+    </div>
+  </div>
+  <div class="calpop-foot">
+    <button class="cp-del" id="cDel" style="display:none" onclick="calDelete()">Supprimer</button>
+    <button class="cp-dup" id="cDup" style="display:none" onclick="calDuplicate()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke-linecap="round"/></svg>Dupliquer</button>
+    <span class="spacer"></span>
+    <button class="cp-save" id="cSave" onclick="closeCalPop(true)">Enregistrer</button>
+  </div>
+</div>
 
 <!-- choix de portée pour une tâche récurrente -->
 <div class="recscrim" id="recScrim" onclick="if(event.target===this)resolveRec(null)">
@@ -1228,7 +1328,7 @@ function calShift(n){
   renderCal();
 }
 function calToday(){ calCursor=new Date(); renderCal(); }
-function calNewAt(date,time,dur){ openModal(null, colForDate(date), {date,time,dur,kind:'cal'}); }
+function calNewAt(date,time,dur,anchorRect){ openCalPop(null, {date,time,dur,anchorRect}); }
 
 function rangeLabel(){
   if(calMode==='day'){ const d=calCursor; return `${DAYFULL[(d.getDay()+6)%7]} ${d.getDate()} ${MONTHS_FULL[d.getMonth()]} ${d.getFullYear()}`; }
@@ -1352,9 +1452,9 @@ function wireSlotCreate(){
       upd(e.clientY);
       const mv=ev=>upd(ev.clientY);
       const up=()=>{ window.removeEventListener('pointermove',mv); window.removeEventListener('pointerup',up);
-        sel.remove();
+        const selRect=sel.getBoundingClientRect(); sel.remove();
         if(!moved){ a=Math.floor(startMin/60)*60; b=a+60; } else if(b-a<30){ b=a+30; }
-        calNewAt(di, minToHM(a), b-a);
+        calNewAt(di, minToHM(a), b-a, selRect);
       };
       window.addEventListener('pointermove',mv); window.addEventListener('pointerup',up);
     });
@@ -1415,7 +1515,7 @@ function placeTimedEvents(){
       }else{
         el.classList.add('locked');
         el.title=o.t.title+' · '+((m&&m.name)||'')+' — lecture seule';
-        el.addEventListener('click',()=>openModal(o.t.id,null,{occDate:di}));
+        el.addEventListener('click',()=>openCalPop(o.t.id,{occDate:di, anchorRect:el.getBoundingClientRect()}));
       }
       layer.appendChild(el);
     });
@@ -1471,7 +1571,7 @@ function attachEventDrag(el,t,occDate){
     el.classList.remove('grabbing'); el.style.opacity='';
     const wasMoved=moved, m=mode;
     cleanup(); mode=null;
-    if(!wasMoved){ openModal(t.id,null,{occDate}); return; }   // simple clic → ouvrir la fiche
+    if(!wasMoved){ openCalPop(t.id,{occDate, anchorRect:el.getBoundingClientRect()}); return; }   // simple clic → ouvrir l'événement
     const rec = isRecurring(t);
     if(m==='resize'){
       // récurrente : on ne redimensionne que ce jour-là, la série garde sa durée
@@ -1519,7 +1619,7 @@ function monthHTML(){
     const shown=evs.slice(0,3), extra=evs.length-shown.length;
     cells+=`<div class="gm-cell ${other?'other':''}" onclick="calNewAt('${di}','')">
       <span class="gm-d ${di===todayStr?'now':''}">${d.getDate()}</span>
-      ${shown.map(t=>{const busy=t.cal==='repos';return `<span class="gm-ev${busy?' busy':''}" style="${busy?'':'background:'+evColor(t)}" onclick="event.stopPropagation();openModal('${t.id}',null,{occDate:'${di}'})">${busy?'🌙 ':''}${t.time?`<b>${t.time}</b> `:''}${esc(t.title)}</span>`}).join('')}
+      ${shown.map(t=>{const busy=t.cal==='repos';return `<span class="gm-ev${busy?' busy':''}" style="${busy?'':'background:'+evColor(t)}" onclick="event.stopPropagation();openCalEvt(event,'${t.id}','${di}')">${busy?'🌙 ':''}${t.time?`<b>${t.time}</b> `:''}${esc(t.title)}</span>`}).join('')}
       ${extra>0?`<span class="gm-more">+${extra} de plus</span>`:''}
     </div>`;
   }
@@ -1549,37 +1649,40 @@ function renderProps(){
   $('#fPeople').innerHTML = draft.people.length ? draft.people.map(chipPerson).join('') : placeholder();
 }
 
-let pickOpen=false, pickType=null;
+let pickOpen=false, pickType=null, pickIsCal=false;
+function pickObj(){ return pickIsCal ? calDraft : draft; }              // cible : popup calendrier ou fiche Notion
+function pickRerender(){ pickIsCal ? renderCalProps() : renderProps(); }
 function closePick(){ pickOpen=false; pickType=null; $('#pickPop').classList.remove('open'); }
 function pickSet(type,val){
+  const o=pickObj();
   if(type==='people'){
-    draft.people = draft.people.includes(val) ? draft.people.filter(x=>x!==val) : [...draft.people,val];
-    renderProps(); buildPickBody();                 // multi-sélection : on garde le popover ouvert
+    o.people = o.people.includes(val) ? o.people.filter(x=>x!==val) : [...o.people,val];
+    pickRerender(); buildPickBody();                 // multi-sélection : on garde le popover ouvert
     return;
   }
-  draft[type] = (draft[type]===val ? '' : val);      // re-cliquer désélectionne
-  if(type==='cal') updateDiversRows();
-  renderProps(); closePick();
+  o[type] = (o[type]===val ? '' : val);      // re-cliquer désélectionne
+  if(type==='cal' && !pickIsCal) updateDiversRows();
+  pickRerender(); closePick();
 }
 function buildPickBody(){
-  const pop=$('#pickPop'); let title='', rows='';
+  const pop=$('#pickPop'); const o=pickObj(); let title='', rows='';
   const opt=(val,inner,on)=>`<div class="pickopt" onclick="pickSet('${pickType}','${val}')">${inner}${on?'<span class="ck">✓</span>':''}</div>`;
   if(pickType==='urg'){ title='Importance';
-    rows=['urgent','prioritaire','accessoire'].map(v=>opt(v,chipUrg(v),draft.urg===v)).join(''); }
+    rows=['urgent','prioritaire','accessoire'].map(v=>opt(v,chipUrg(v),o.urg===v)).join(''); }
   else if(pickType==='en'){ title='Énergie';
-    rows=['haute','basse'].map(v=>opt(v,chipEn(v),draft.en===v)).join(''); }
+    rows=['haute','basse'].map(v=>opt(v,chipEn(v),o.en===v)).join(''); }
   else if(pickType==='cal'){ title='Catégorie';
-    rows=state.categories.map(c=>opt(c.id,chipCal(c.id),draft.cal===c.id)).join(''); }
-  else if(pickType==='people'){ title='Personne';
+    rows=state.categories.map(c=>opt(c.id,chipCal(c.id),o.cal===c.id)).join(''); }
+  else if(pickType==='people'){ title=pickIsCal?'Invités':'Personne';
     rows = state.members.length
-      ? state.members.map(m=>opt(m.id,chipPerson(m.id),draft.people.includes(m.id))).join('')
+      ? state.members.map(m=>opt(m.id,chipPerson(m.id),o.people.includes(m.id))).join('')
       : `<div class="pick-empty">Les membres apparaissent quand ils créent un compte.</div>`; }
   pop.innerHTML=`<div class="pickpop-h">${title}</div>${rows}`;
 }
-function openPick(type,anchor){
-  if(modalReadOnly) return;
-  if(pickOpen && pickType===type){ closePick(); return; }
-  pickType=type; pickOpen=true; buildPickBody();
+function openPick(type,anchor,isCal=false){
+  if(isCal ? calReadOnly : modalReadOnly) return;
+  if(pickOpen && pickType===type && pickIsCal===isCal){ closePick(); return; }
+  pickIsCal=isCal; pickType=type; pickOpen=true; buildPickBody();
   const pop=$('#pickPop'); pop.classList.add('open');
   const r=anchor.getBoundingClientRect();
   const w=pop.offsetWidth, h=pop.offsetHeight;
@@ -1744,13 +1847,14 @@ async function removeFile(i){
   t.files.splice(i,1); await save(); renderFiles(); renderAll();
 }
 
+let recPending=null;   // 'modal' (fiche Notion) ou 'cal' (popup calendrier) — qui attend le choix de portée
 function closeModal(commit=true){
   closePick();
   if(commit && !modalReadOnly){
     const t = editingId ? state.tasks.find(x=>x.id===editingId) : null;
     // tâche récurrente ouverte sur un jour précis + des changements → demander la portée
     if(t && editingOccDate && isRecurring(t) && currentSnap()!==origSnap){
-      $('#recScrim').classList.add('open');
+      recPending='modal'; $('#recScrim').classList.add('open');
       return;                                  // on attend le choix dans resolveRec()
     }
     commitDraft();
@@ -1764,9 +1868,10 @@ function finishClose(){
 }
 function resolveRec(scope){
   $('#recScrim').classList.remove('open');
-  if(scope===null) return;          // annuler : on reste sur la fiche ouverte
-  commitDraft(scope);
-  finishClose();
+  const which=recPending; recPending=null;
+  if(scope===null) return;          // annuler : on reste sur la fiche/le popup ouvert
+  if(which==='cal'){ commitCal(scope); finishCalPop(); }
+  else { commitDraft(scope); finishClose(); }
 }
 function duplicateTask(){
   if(modalReadOnly) return;
@@ -1777,6 +1882,151 @@ function duplicateTask(){
   state.tasks.push(copy); save();
   toast('Élément dupliqué ✓');
   finishClose();
+}
+
+/* ============ popup calendrier (création / édition façon Google Agenda) ============ */
+let calEditId=null, calOccDate=null, calReadOnly=false, origCalSnap=null, calOpenedAt=0;
+let calDraft={ people:[], cal:'', recDays:[], dur:60 };
+function hmToMin(s){ if(!s) return 0; const p=s.split(':'); return (+p[0]||0)*60+(+p[1]||0); }
+function cRecChange(){ $('#cRecDays').style.display = $('#cRec').value==='custom' ? '' : 'none'; renderCalRecDays(); }
+function cToggleRecDay(i){ calDraft.recDays = calDraft.recDays.includes(i) ? calDraft.recDays.filter(x=>x!==i) : [...calDraft.recDays,i].sort(); renderCalRecDays(); }
+function renderCalRecDays(){ document.querySelectorAll('#cRecDays button').forEach(b=>b.classList.toggle('on', calDraft.recDays.includes(+b.dataset.d))); }
+function cSyncEnd(){ const s=$('#cStart').value; if(s) $('#cEnd').value=minToHM(Math.min(1439,hmToMin(s)+(calDraft.dur||60))); }
+function cSyncDur(){ const s=$('#cStart').value,e=$('#cEnd').value; if(s&&e){ const d=hmToMin(e)-hmToMin(s); if(d>0) calDraft.dur=d; } }
+function renderCalProps(){
+  $('#cPeople').innerHTML = calDraft.people.length ? calDraft.people.map(chipPerson).join('') : `<span class="ph">Ajouter des invités</span>`;
+  $('#cCal').innerHTML    = calDraft.cal ? chipCal(calDraft.cal) : `<span class="ph">Sans catégorie</span>`;
+}
+function openCalEvt(e,id,di){ openCalPop(id,{occDate:di, anchorRect:e.currentTarget.getBoundingClientRect()}); }
+function readCalForm(){
+  const start=$('#cStart').value, end=$('#cEnd').value;
+  let dur = (start&&end) ? (hmToMin(end)-hmToMin(start)) : (calDraft.dur||60);
+  if(!(dur>0)) dur=60;
+  const rec=$('#cRec').value;
+  return { title:$('#cTitle').value.trim(), desc:$('#cDesc').value.trim(),
+    date:$('#cDate').value||iso(new Date()), time:start||'', dur,
+    cal:calDraft.cal, people:[...calDraft.people], rec, recDays: rec==='custom'?[...calDraft.recDays]:[] };
+}
+function calSnap(){ const f=readCalForm(); return JSON.stringify({...f, people:[...f.people].sort(), recDays:[...f.recDays].sort()}); }
+function applyCalReadOnly(){
+  const pop=$('#calPop');
+  pop.querySelectorAll('input,select,textarea').forEach(el=>el.disabled=calReadOnly);
+  pop.querySelectorAll('.pv').forEach(el=>el.style.pointerEvents=calReadOnly?'none':'');
+  $('#cSave').style.display=calReadOnly?'none':'';
+  $('#cDel').disabled=calReadOnly; $('#cDup').disabled=calReadOnly;
+  $('#cRo').style.display=calReadOnly?'':'none';
+}
+function openCalPop(id=null, opts={}){
+  closePick();
+  calEditId = (typeof id==='string') ? id : null;
+  calOccDate = opts.occDate || null;
+  if(calEditId){
+    const t=state.tasks.find(x=>x.id===calEditId); if(!t) return;
+    const owner=t.people && t.people[0];
+    calReadOnly = !!(calOccDate && owner && owner!==me) && !iAmAdmin();   // event d'un·e autre → lecture seule (sauf admin)
+    const start = t.time || effStart(t);
+    $('#cTitle').value=t.title||'';
+    $('#cDate').value = calOccDate || t.date || iso(new Date());
+    $('#cStart').value = start;
+    $('#cEnd').value = minToHM(Math.min(1439,hmToMin(start)+(t.dur||60)));
+    $('#cRec').value = t.rec||'none';
+    $('#cDesc').value = t.desc||'';
+    calDraft = { people:[...(t.people||[])], cal: catById(t.cal)?t.cal:'', recDays:[...(t.recDays||[])], dur:t.dur||60 };
+    $('#cDel').style.display=''; $('#cDup').style.display='';
+  }else{
+    calReadOnly=false;
+    const date = opts.date || iso(new Date());
+    const start = opts.time || '09:00';
+    const dur = opts.dur || 60;
+    $('#cTitle').value=''; $('#cDate').value=date; $('#cStart').value=start;
+    $('#cEnd').value=minToHM(Math.min(1439,hmToMin(start)+dur));
+    $('#cRec').value='none'; $('#cDesc').value='';
+    calDraft = { people:[me], cal:'', recDays:[], dur };
+    $('#cDel').style.display='none'; $('#cDup').style.display='none';
+  }
+  cRecChange(); renderCalProps(); applyCalReadOnly();
+  $('#calScrim').classList.add('open'); $('#calPop').classList.add('open');
+  positionCalPop(opts.anchorRect);
+  origCalSnap = calSnap(); calOpenedAt = Date.now();
+  if(!calReadOnly) setTimeout(()=>$('#cTitle').focus(),40);
+}
+function positionCalPop(rect){
+  const pop=$('#calPop'); const w=pop.offsetWidth, h=pop.offsetHeight, M=10;
+  let left, top;
+  if(rect){
+    left = rect.right + 10;
+    if(left + w > innerWidth-M) left = rect.left - w - 10;     // pas de place à droite → à gauche
+    if(left < M) left = Math.max(M, (innerWidth-w)/2);          // ni l'un ni l'autre → centré
+    top = rect.top;
+  }else{ left=(innerWidth-w)/2; top=(innerHeight-h)/2 - 30; }
+  if(top + h > innerHeight-M) top = innerHeight-M-h;
+  if(top < M) top = M;
+  pop.style.left=left+'px'; pop.style.top=top+'px';
+}
+function calScrimClick(){ if(Date.now()-calOpenedAt<250) return; if(pickOpen){ closePick(); return; } closeCalPop(true); }
+function closeCalPop(commit=true){
+  closePick();
+  if(commit && !calReadOnly){
+    const t = calEditId ? state.tasks.find(x=>x.id===calEditId) : null;
+    if(t && calOccDate && isRecurring(t) && calSnap()!==origCalSnap){
+      recPending='cal'; $('#recScrim').classList.add('open'); return;   // demander : cet event / toute la série
+    }
+    commitCal();
+  }
+  finishCalPop();
+}
+function finishCalPop(){
+  $('#recScrim').classList.remove('open');
+  $('#calPop').classList.remove('open'); $('#calScrim').classList.remove('open');
+  calEditId=null; calOccDate=null;
+  renderAll(); renderBell();
+}
+function commitCal(scope){
+  if(calReadOnly) return;
+  const f=readCalForm();
+  if(!calEditId && !f.title) return;          // nouvel événement sans titre → on ne crée rien
+  if(!f.people.length) f.people=[me];         // assigné par défaut = le créateur
+  let prevPeople=[], tid=calEditId, tTitle=f.title;
+  if(calEditId){
+    const t=state.tasks.find(x=>x.id===calEditId); if(!t) return;
+    prevPeople=[...(t.people||[])];
+    if(scope==='one' && calOccDate && isRecurring(t)){
+      const c=detachOccurrence(t, calOccDate);                       // ne touche que ce jour-là
+      Object.assign(c, f, {title:f.title||c.title, rec:'none', recDays:[], date:calOccDate});
+      tid=c.id; tTitle=c.title;
+    }else{
+      Object.assign(t, f, {title:f.title||t.title});                 // toute la série / événement simple
+      tTitle=t.title;
+    }
+  }else{
+    const t={ id:uid(), kind:'cal', files:[], urg:'', en:'', ...f };  // même forme JSON que les events existants
+    state.tasks.push(t); tid=t.id;
+  }
+  notifyAssign(prevPeople, f.people, tTitle, tid);
+  save();
+}
+function calDelete(){
+  if(calReadOnly || !calEditId){ finishCalPop(); return; }
+  const t=state.tasks.find(x=>x.id===calEditId);
+  if(t && calOccDate && isRecurring(t)){
+    if(confirm('Supprimer seulement cet événement ?\n\nOK = cet événement uniquement\nAnnuler = toute la série')){
+      t.exceptions=[...(t.exceptions||[]), calOccDate];
+    }else{
+      state.tasks=state.tasks.filter(x=>x.id!==calEditId);
+    }
+  }else{
+    state.tasks=state.tasks.filter(x=>x.id!==calEditId);
+  }
+  save(); finishCalPop();
+}
+function calDuplicate(){
+  if(calReadOnly) return;
+  commitCal();
+  const t = calEditId ? state.tasks.find(x=>x.id===calEditId) : null;
+  if(!t){ finishCalPop(); return; }
+  const copy={...t, id:uid(), title:(t.title||'Sans titre')+' (copie)',
+    people:[...(t.people||[])], recDays:[...(t.recDays||[])], exceptions:[...(t.exceptions||[])], files:[]};
+  state.tasks.push(copy); save(); toast('Événement dupliqué ✓'); finishCalPop();
 }
 
 /* ============ notifications ============ */
@@ -1813,6 +2063,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){
   if($('#recScrim').classList.contains('open')){ resolveRec(null); return; }
   if($('#teamScrim').classList.contains('open')){ closeTeam(); return; }
   if(pickOpen){closePick();return;}
+  if($('#calPop').classList.contains('open')){ closeCalPop(); return; }
   closeModal(); $('#drawer').classList.remove('open'); if(chatOpen)toggleChat(); if(sortOpen){sortOpen=false;renderSortTool();}} });
 document.addEventListener('click',e=>{ if(sortOpen && !e.target.closest('#sortTool')){ sortOpen=false; renderSortTool(); } });
 document.addEventListener('pointerdown',e=>{ if(pickOpen && !e.target.closest('#pickPop') && !e.target.closest('.pv')){ closePick(); } },true);
