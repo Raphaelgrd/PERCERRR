@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -492,6 +492,120 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .cp-dup:hover{background:var(--paper);color:var(--ink)}
 .cp-save{background:var(--accent);color:#fff;font-weight:600;font-size:13.5px;padding:10px 20px;border-radius:10px;box-shadow:var(--shadow)}
 .cp-save:active{transform:scale(.97)}
+
+/* ---------- CRM ---------- */
+.crm{padding:14px 20px 40px;height:calc(100vh - 66px);overflow-y:auto;display:flex;flex-direction:column}
+.crm-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.crm-tabs{display:flex;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:3px}
+.crm-tabs button{padding:8px 16px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--muted);transition:.15s}
+.crm-tabs button.on{background:var(--ink);color:#fff}
+.crm-new{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#fff;font-weight:600;font-size:13px;padding:9px 15px;border-radius:10px;box-shadow:var(--shadow)}
+.crm-new:active{transform:scale(.97)}
+.crm-body{flex:1;min-height:0}
+.crm-empty{font-size:13px;color:var(--faint);padding:18px;text-align:center;line-height:1.5}
+.crm-empty.big{padding:60px 20px;font-size:15px;display:flex;flex-direction:column;gap:16px;align-items:center}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow)}
+.kpi.accent{background:var(--ink);color:#fff;border-color:var(--ink)}
+.kpi-v{font-family:'Space Grotesk',sans-serif;font-size:23px;font-weight:700;letter-spacing:-.01em}
+.kpi-l{font-size:12px;color:var(--muted);margin-top:3px}
+.kpi.accent .kpi-l{color:rgba(255,255,255,.72)}
+
+/* grille dashboard */
+.crm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.card-crm{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.card-crm.wide{grid-column:1 / -1}
+.cc-h{display:flex;align-items:center;justify-content:space-between;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;margin-bottom:14px}
+.cc-h .cc-tot{color:var(--accent);font-size:16px}
+.cc-edit{font-size:12px;font-weight:600;color:var(--muted);padding:5px 10px;border:1px solid var(--border-strong);border-radius:8px;white-space:nowrap}
+.cc-edit:hover{border-color:var(--ink);color:var(--ink)}
+
+/* donut */
+.donut-wrap{position:relative;display:grid;place-items:center;margin:4px auto}
+.donut-wrap .donut{display:block}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;pointer-events:none}
+.dc-pct{font-family:'Space Grotesk',sans-serif;font-size:32px;font-weight:700;line-height:1}
+.dc-sub{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
+.rtb{align-items:center}
+.rtb-foot{font-size:13px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.4}
+.rtb-foot b{color:var(--ink)}
+
+/* légende */
+.legend{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.lg{display:flex;align-items:center;gap:9px;font-size:13px}
+.lg-dot{width:11px;height:11px;border-radius:3px;flex:none}
+.lg-n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-v{font-weight:600;font-family:'Space Grotesk',sans-serif}
+
+/* tables CRM */
+.crm-tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.crm-tbl th{text-align:left;font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;border-bottom:1px solid var(--border)}
+.crm-tbl td{padding:11px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.crm-tbl tbody tr{cursor:pointer;transition:.1s}
+.crm-tbl tbody tr:hover{background:var(--paper)}
+.crm-tbl .r{text-align:right}
+.crm-tbl.big{background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.crm-tbl.big th{padding:13px 14px;background:var(--paper)}
+.crm-tbl.big td{padding:13px 14px}
+.cl-nm{display:flex;align-items:center;gap:10px}
+.cl-co{font-size:11.5px;color:var(--faint)}
+.pc-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700;font-family:'Space Grotesk',sans-serif;flex:none}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
+.mini-btn{font-size:12px;font-weight:600;color:var(--termine);border:1px solid var(--border-strong);border-radius:8px;padding:5px 10px;white-space:nowrap}
+.mini-btn:hover{border-color:var(--termine);background:rgba(31,138,91,.08)}
+
+/* pipeline */
+.pipeline{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px;align-items:flex-start}
+.pcol{flex:0 0 248px;background:rgba(255,255,255,.55);border:1px solid var(--border);border-radius:14px;display:flex;flex-direction:column}
+.pcol-h{display:flex;align-items:center;gap:7px;padding:12px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.pcol-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.pcol-t{font-weight:600;font-size:13px;font-family:'Space Grotesk',sans-serif}
+.pcol-c{font-size:12px;font-weight:700;color:var(--muted)}
+.pcol-sum{margin-left:auto;font-size:12px;font-weight:700;color:var(--accent);font-family:'Space Grotesk',sans-serif}
+.pcol-body{padding:10px;display:flex;flex-direction:column;gap:9px;min-height:56px}
+.pcol-body.drag-over{background:var(--accent-soft);border-radius:0 0 13px 13px;outline:2px dashed var(--accent);outline-offset:-4px}
+.pcard{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:11px 12px;box-shadow:var(--shadow);cursor:grab;transition:box-shadow .15s}
+.pcard:hover{box-shadow:0 2px 4px rgba(26,26,34,.07),0 8px 22px rgba(26,26,34,.09)}
+.pcard.dragging{opacity:.45}
+.pc-t{font-size:13.5px;font-weight:600;line-height:1.3;margin-bottom:6px}
+.pc-cl{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-bottom:6px}
+.pc-cl .pc-av{width:20px;height:20px;font-size:9px}
+.pc-amt{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--ink)}
+.pc-na{font-size:11px;color:var(--prioritaire);margin-top:7px;background:rgba(232,146,11,.1);padding:4px 7px;border-radius:6px}
+.pcol .col-empty{font-size:12px;color:var(--faint);text-align:center;padding:12px 8px}
+
+/* axes graphiques */
+.chart{width:100%;height:auto;display:block}
+.chart .ax{font-size:10px;fill:var(--faint);font-family:Inter,sans-serif}
+
+/* dialogues CRM */
+.crmscrim{position:fixed;inset:0;background:rgba(26,26,34,.42);backdrop-filter:blur(3px);z-index:85;display:none;align-items:center;justify-content:center;padding:20px}
+.crmscrim.open{display:flex}
+.crmdlg{background:var(--panel);border-radius:18px;width:100%;max-width:520px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(26,26,34,.3);animation:pop .16s ease}
+.crmdlg-h{display:flex;align-items:center;padding:20px 22px 12px}
+.crmdlg-h h3{font-family:'Space Grotesk',sans-serif;font-size:19px;margin:0;font-weight:600}
+.crmdlg-h .x{margin-left:auto;width:30px;height:30px;border-radius:8px;color:var(--muted);font-size:22px;line-height:1;display:grid;place-items:center}
+.crmdlg-h .x:hover{background:var(--paper)}
+.crmdlg-b{padding:4px 22px 8px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld>span{font-size:11.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+.fld input,.fld select,.fld textarea{border:1px solid var(--border-strong);border-radius:10px;padding:10px 12px;font-size:14px;background:var(--paper);font-family:inherit;width:100%;color:var(--ink)}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);background:var(--panel)}
+.fld textarea{min-height:62px;resize:vertical;line-height:1.5}
+.fld-row{display:flex;gap:12px}
+.fld-row .fld{flex:1;min-width:0}
+.crmdlg-f{display:flex;align-items:center;gap:8px;padding:14px 22px 18px;border-top:1px solid var(--border);margin-top:6px}
+.crmdlg-f .spacer{flex:1}
+.cl-deals{margin-top:2px}
+.cl-deals-h{font-size:11.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.cl-deal{display:flex;align-items:center;gap:9px;padding:9px 11px;border:1px solid var(--border);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:13.5px}
+.cl-deal:hover{border-color:var(--border-strong);background:var(--paper)}
+.cl-deal-t{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-deal-a{font-weight:700;font-family:'Space Grotesk',sans-serif}
+.lnk{font-size:13px;font-weight:600;color:var(--accent);padding:6px 2px}
+@media (max-width:760px){ .crm-grid{grid-template-columns:1fr} .fld-row{flex-direction:column;gap:12px} }
 </style>
 
 <div class="loading" id="loading"><div class="spin"></div></div>
@@ -527,6 +641,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
   <div class="viewtog">
     <button id="vBoard" class="on" onclick="setView('board')">Tableau</button>
     <button id="vCal" onclick="setView('cal')">Calendrier</button>
+    <button id="vCrm" onclick="setView('crm')">CRM</button>
   </div>
   <div class="spacer"></div>
   <button class="bell" onclick="toggleDrawer()" aria-label="Notifications">
@@ -542,6 +657,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 <div id="sortBar" class="sortbar"></div>
 <div id="boardView"></div>
 <div id="calView" style="display:none"></div>
+<div id="crmView" style="display:none"></div>
 
 <!-- modal -->
 <div class="scrim" id="scrim" onclick="if(event.target===this)closeModal()">
@@ -737,6 +853,62 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
   </div>
 </div>
 
+<!-- CRM : édition d'une opportunité -->
+<div class="crmscrim" id="dealScrim" onclick="if(event.target===this)closeDeal()">
+  <div class="crmdlg">
+    <div class="crmdlg-h"><h3 id="dealTitle">Nouvelle opportunité</h3>
+      <button class="x" onclick="closeDeal()">×</button></div>
+    <div class="crmdlg-b">
+      <label class="fld"><span>Titre</span><input id="dTitle" type="text" placeholder="Nom du projet / deal"></label>
+      <label class="fld"><span>Client</span><select id="dClient"></select></label>
+      <div class="fld-row">
+        <label class="fld"><span>Montant (€)</span><input id="dAmount" type="number" min="0" step="100" placeholder="0"></label>
+        <label class="fld"><span>Étape</span><select id="dStage"></select></label>
+      </div>
+      <div class="fld-row">
+        <label class="fld"><span>Date de signature</span><input id="dSigned" type="date"></label>
+        <label class="fld"><span>Date d'encaissement</span><input id="dPaid" type="date"></label>
+      </div>
+      <div class="fld-row">
+        <label class="fld"><span>Prochaine action</span><input id="dNext" type="text" placeholder="Relancer, envoyer le devis…"></label>
+        <label class="fld"><span>Échéance</span><input id="dNextDate" type="date"></label>
+      </div>
+      <label class="fld"><span>Notes</span><textarea id="dNotes" placeholder="Contexte, historique, conditions…"></textarea></label>
+    </div>
+    <div class="crmdlg-f">
+      <button class="cp-del" id="dDel" onclick="deleteDeal()" style="display:none">Supprimer</button>
+      <span class="spacer"></span>
+      <button class="crm-new" onclick="saveDeal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- CRM : fiche client -->
+<div class="crmscrim" id="clientScrim" onclick="if(event.target===this)closeClient()">
+  <div class="crmdlg">
+    <div class="crmdlg-h"><h3 id="clientTitle">Nouveau client</h3>
+      <button class="x" onclick="closeClient()">×</button></div>
+    <div class="crmdlg-b">
+      <label class="fld"><span>Nom</span><input id="clName" type="text" placeholder="Nom du contact ou de l'entreprise"></label>
+      <div class="fld-row">
+        <label class="fld"><span>Entreprise</span><input id="clCompany" type="text" placeholder="Société"></label>
+        <label class="fld"><span>Statut</span><select id="clStatus"></select></label>
+      </div>
+      <div class="fld-row">
+        <label class="fld"><span>E-mail</span><input id="clEmail" type="email" placeholder="contact@exemple.com"></label>
+        <label class="fld"><span>Téléphone</span><input id="clPhone" type="tel" placeholder="+33…"></label>
+      </div>
+      <label class="fld"><span>Notes</span><textarea id="clNotes" placeholder="Besoins, historique, infos utiles…"></textarea></label>
+      <div id="clDeals" class="cl-deals"></div>
+    </div>
+    <div class="crmdlg-f">
+      <button class="cp-del" id="cliDel" onclick="deleteClient()" style="display:none">Supprimer</button>
+      <span class="spacer"></span>
+      <button class="crm-new" onclick="saveClient()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============ Supabase : client, auth, données partagées, chat ============ */
 const WS_ID = 'singleton';
@@ -746,6 +918,15 @@ function supaReady(){
   return SUPABASE_URL && SUPABASE_ANON_KEY
     && !SUPABASE_URL.includes('VOTRE-PROJET') && !SUPABASE_ANON_KEY.includes('VOTRE_CLE');
 }
+/* ---- mode local : si Supabase n'est pas configuré, on fonctionne hors-ligne (localStorage) ---- */
+const LOCAL_MODE = !supaReady();
+const LS_KEY = 'percerr_state_v1';
+function localIdentity(){
+  let id = localStorage.getItem('percerr_uid');
+  if(!id){ id = 'local-'+Math.random().toString(36).slice(2,9); localStorage.setItem('percerr_uid', id); }
+  return id;
+}
+function fileToDataURL(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); }); }
 
 /* ---- écran de connexion ---- */
 let authMode = 'login';
@@ -788,15 +969,17 @@ function traduitAuth(m){
   if(/confirm/i.test(m)) return 'Confirme ton e-mail avant de te connecter.';
   return m || 'Erreur de connexion.';
 }
-async function logout(){ try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
+async function logout(){ if(sb) try{ await sb.auth.signOut(); }catch(e){} location.reload(); }
 
 /* ---- données partagées (table workspace) ---- */
 async function cloudLoad(){
+  if(LOCAL_MODE){ try{ return JSON.parse(localStorage.getItem(LS_KEY)); }catch(e){ return null; } }
   const { data, error } = await sb.from('workspace').select('data').eq('id', WS_ID).maybeSingle();
   if(error) throw error;
   return data ? data.data : null;
 }
 async function cloudSave(obj){
+  if(LOCAL_MODE){ try{ localStorage.setItem(LS_KEY, JSON.stringify(obj)); }catch(e){ toast('Stockage local plein — supprime des fichiers volumineux.'); } return; }
   savingUntil = Date.now()+1500;
   const { error } = await sb.from('workspace').upsert({ id:WS_ID, data:obj, updated_at:new Date().toISOString() });
   if(error) console.error('save', error);
@@ -862,10 +1045,11 @@ async function sendMessage(e){
 
 /* ---- démarrage ---- */
 async function init(){
-  if(!supaReady()){
-    showAuth();
-    authMsg('Configuration manquante : renseigne SUPABASE_URL et SUPABASE_ANON_KEY en haut du fichier index.html.', 'err');
-    $('#aSubmit').disabled=true; return;
+  if(LOCAL_MODE){
+    // mode local : pas d'authentification, données stockées dans le navigateur
+    authUser = { id: localIdentity(), email:'gerardraphael01@gmail.com', user_metadata:{ name:'Moi' } };
+    startApp();
+    return;
   }
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   setAuthMode('login');
@@ -882,6 +1066,7 @@ async function startApp(){
   $('#auth').classList.remove('open');
   me = authUser.id;
   await boot();
+  if(LOCAL_MODE){ $('#chatTab').style.display='none'; return; }   // hors-ligne : pas de chat ni de temps réel
   subscribeWorkspace(); subscribeChat(); loadChat();
 }
 </script>
@@ -916,6 +1101,26 @@ function catColor(catId, ownerId){ const m=memberById(ownerId||me); const th=(m&
 const PALETTE = ['#FF4D2E','#4F73B0','#1F8A5B','#9333EA','#E8920B','#0EA5A4','#DB2777','#475569'];
 const URG_RANK = {urgent:0, prioritaire:1, accessoire:2};
 const capit = s => s ? s[0].toUpperCase()+s.slice(1) : '';
+
+/* ---- CRM : étapes du pipeline & statuts clients ---- */
+const DEAL_STAGES = [
+  {id:'lead',     name:'Lead',           color:'#8B8B95'},
+  {id:'contact',  name:'Contact établi', color:'#4F73B0'},
+  {id:'propo',    name:'Proposition',    color:'#E8920B'},
+  {id:'nego',     name:'Négociation',    color:'#9333EA'},
+  {id:'signe',    name:'Signé',          color:'#1F8A5B'},
+  {id:'encaisse', name:'Encaissé',       color:'#0EA5A4'},
+  {id:'perdu',    name:'Perdu',          color:'#C2410C'},
+];
+const STAGE_ACTIVE = ['lead','contact','propo','nego'];   // pipeline en cours
+const STAGE_WON    = ['signe','encaisse'];                 // gagné
+const CLIENT_STATUS = {
+  lead:     {name:'Lead',     color:'#8B8B95'},
+  prospect: {name:'Prospect', color:'#E8920B'},
+  client:   {name:'Client',   color:'#1F8A5B'},
+  inactif:  {name:'Inactif',  color:'#C2410C'},
+};
+function fmtMoney(n){ return Math.round(n||0).toLocaleString('fr-FR') + ' €'; }
 
 /* ---- administration ---- */
 const SUPER_ADMIN = 'gerardraphael01@gmail.com';   // admin permanent (par e-mail)
@@ -962,6 +1167,21 @@ function seedState(){
     ],
     notifs:[],
     sortOrder:['deadline','importance','energie'],
+    clients:[
+      {id:'cl1',name:'Studio Maen',company:'Maen SAS',status:'client',email:'hello@maen.fr',phone:'06 12 34 56 78',notes:'',color:PALETTE[0],createdAt:todayISO()},
+      {id:'cl2',name:'Café Lomi',company:'Lomi',status:'prospect',email:'contact@lomi.fr',phone:'',notes:'',color:PALETTE[1],createdAt:todayISO()},
+      {id:'cl3',name:'Atelier Niels',company:'',status:'lead',email:'',phone:'',notes:'',color:PALETTE[2],createdAt:todayISO()},
+    ],
+    deals:[
+      {id:'d1',title:'Branding complet',clientId:'cl1',amount:3500,stage:'encaisse',signedAt:monthsAgoISO(4),paidAt:monthsAgoISO(4),createdAt:monthsAgoISO(5),notes:''},
+      {id:'d2',title:'Site e-commerce',clientId:'cl1',amount:6200,stage:'encaisse',signedAt:monthsAgoISO(2),paidAt:monthsAgoISO(2),createdAt:monthsAgoISO(3),notes:''},
+      {id:'d3',title:'Identité visuelle',clientId:'cl2',amount:2800,stage:'encaisse',signedAt:monthsAgoISO(1),paidAt:monthsAgoISO(1),createdAt:monthsAgoISO(2),notes:''},
+      {id:'d4',title:'Campagne acquisition',clientId:'cl2',amount:4000,stage:'signe',signedAt:monthsAgoISO(0),paidAt:'',createdAt:monthsAgoISO(1),notes:''},
+      {id:'d5',title:'Refonte logo',clientId:'cl3',amount:1500,stage:'propo',createdAt:monthsAgoISO(0),notes:'',nextAction:'Envoyer le devis',nextDate:todayISO()},
+      {id:'d6',title:'Pack réseaux sociaux',clientId:'cl3',amount:2200,stage:'nego',createdAt:monthsAgoISO(0),notes:''},
+      {id:'d7',title:'Audit SEO',clientId:'cl2',amount:1200,stage:'lead',createdAt:monthsAgoISO(0),notes:''},
+    ],
+    crm:{ goal:50000 },
   };
 }
 function ensureState(){
@@ -971,6 +1191,9 @@ function ensureState(){
   if(!state.sortOrder) state.sortOrder=['deadline','importance','energie'];
   if(!state.categories) state.categories=DEFAULT_CATS.map(c=>({...c}));
   if(!state.removed) state.removed=[];     // membres retirés par un admin (ne réapparaissent pas)
+  if(!state.clients) state.clients=[];     // CRM : fiches clients
+  if(!state.deals) state.deals=[];         // CRM : opportunités / pipeline
+  if(!state.crm) state.crm={goal:50000};   // CRM : configuration (objectif de CA)
   state.members.forEach(m=>{ if(!m.themes) m.themes={...DEFAULT_THEME}; });
   // migration : l'ancienne catégorie « divers » devient « repos »
   state.categories.forEach(c=>{ if(c.id==='divers'){ c.id='repos'; if(c.name==='Divers') c.name='Repos'; } });
@@ -1013,6 +1236,7 @@ async function boot(){
 }
 
 function todayISO(){ const d=new Date(); return d.toISOString().slice(0,10); }
+function monthsAgoISO(n){ const d=new Date(); d.setDate(15); d.setMonth(d.getMonth()-n); return d.toISOString().slice(0,10); }
 
 /* ============ rendu top ============ */
 function renderMe(){
@@ -1088,12 +1312,14 @@ function setView(v){
   view=v;
   $('#vBoard').classList.toggle('on',v==='board');
   $('#vCal').classList.toggle('on',v==='cal');
+  $('#vCrm').classList.toggle('on',v==='crm');
   $('#boardView').style.display = v==='board'?'':'none';
   $('#calView').style.display = v==='cal'?'':'none';
+  $('#crmView').style.display = v==='crm'?'':'none';
   $('#sortBar').style.display = v==='board'?'':'none';
   renderAll();
 }
-function renderAll(){ view==='board'?renderBoard():renderCal(); }
+function renderAll(){ if(view==='board')renderBoard(); else if(view==='cal')renderCal(); else renderCrm(); }
 
 /* ---------- board ---------- */
 function avStack(ids){
@@ -1824,8 +2050,18 @@ function renderFiles(){
 async function addFiles(input){
   const files=[...input.files]; input.value='';
   if(modalReadOnly || !files.length) return;
-  if(!sb){ toast('Connexion à la base requise pour les fichiers.'); return; }
   const t=ensureTask();
+  if(LOCAL_MODE || !sb){
+    // hors-ligne : on stocke le fichier en data-URL dans l'état (limité en taille)
+    $('#fFileBtn').disabled=true; const lbl0=$('#fFileBtn').innerHTML; $('#fFileBtn').innerHTML='Ajout…';
+    for(const f of files){
+      if(f.size>3*1048576){ toast(`« ${f.name} » dépasse 3 Mo (limite en mode local).`); continue; }
+      try{ const url=await fileToDataURL(f); t.files=t.files||[]; t.files.push({ name:f.name, url, type:f.type, size:f.size, local:true }); }
+      catch(e){ toast('Échec de l\'ajout de « '+f.name+' »'); }
+    }
+    $('#fFileBtn').disabled=false; $('#fFileBtn').innerHTML=lbl0;
+    await save(); renderFiles(); renderAll(); return;
+  }
   $('#fFileBtn').disabled=true; const lbl=$('#fFileBtn').innerHTML; $('#fFileBtn').innerHTML='Envoi…';
   for(const f of files){
     if(f.size>25*1048576){ toast(`« ${f.name} » dépasse 25 Mo.`); continue; }
@@ -2073,8 +2309,283 @@ function toast(msg,color,ini){
 /* ============ utils ============ */
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
+/* ============ CRM : clients, pipeline, tableau de bord ============ */
+let crmTab='dashboard';                 // 'dashboard' | 'pipeline' | 'clients'
+function setCrmTab(t){ crmTab=t; renderCrm(); }
+function dealsAll(){ return state.deals||[]; }
+function clientsAll(){ return state.clients||[]; }
+function dealById(id){ return dealsAll().find(d=>d.id===id); }
+function clientById(id){ return clientsAll().find(c=>c.id===id); }
+function clientName(id){ const c=clientById(id); return c?c.name:'Sans client'; }
+function dealAmount(d){ return +d.amount||0; }
+function stageById(id){ return DEAL_STAGES.find(s=>s.id===id)||{name:'—',color:'#ccc'}; }
+function sumStage(id){ return dealsAll().filter(d=>d.stage===id).reduce((s,d)=>s+dealAmount(d),0); }
+function caEncaisse(){ return sumStage('encaisse'); }
+function caSigne(){ return sumStage('signe'); }
+function caPipeline(){ return dealsAll().filter(d=>STAGE_ACTIVE.includes(d.stage)).reduce((s,d)=>s+dealAmount(d),0); }
+function caGoal(){ return (state.crm&&+state.crm.goal)||0; }
+function fmtDateFR(s){ if(!s) return '—'; const p=s.split('-'); return `${+p[2]} ${MONTHS[+p[1]-1]} ${p[0]}`; }
+function fmtShort(n){ n=Math.round(n); const a=Math.abs(n); if(a>=1000000)return (Math.round(n/100000)/10)+'M'; if(a>=1000)return Math.round(n/1000)+'k'; return ''+n; }
+function niceCeil(v){ if(v<=0)return 1; const p=Math.pow(10,Math.floor(Math.log10(v))); const n=v/p; const m=n<=1?1:n<=2?2:n<=5?5:10; return m*p; }
+
+function renderCrm(){
+  const host=$('#crmView'); host.className='crm';
+  const tabs=[['dashboard','Tableau de bord'],['pipeline','Pipeline'],['clients','Clients']]
+    .map(([k,n])=>`<button class="${crmTab===k?'on':''}" onclick="setCrmTab('${k}')">${n}</button>`).join('');
+  let body, action='';
+  if(crmTab==='dashboard'){ body=crmDashboardHTML(); }
+  else if(crmTab==='pipeline'){ body=crmPipelineHTML(); action=`<button class="crm-new" onclick="openDeal()">+ Nouvelle opportunité</button>`; }
+  else { body=crmClientsHTML(); action=`<button class="crm-new" onclick="openClient()">+ Nouveau client</button>`; }
+  host.innerHTML=`<div class="crm-head"><div class="crm-tabs">${tabs}</div><div class="spacer"></div>${action}</div><div class="crm-body">${body}</div>`;
+  if(crmTab==='pipeline') wirePipelineDnD();
+}
+
+/* ---------- graphiques SVG ---------- */
+function donutChart(segments, opts={}){
+  const size=opts.size||190, sw=opts.stroke||22, r=(size-sw)/2, c=2*Math.PI*r, cx=size/2;
+  const total=segments.reduce((s,x)=>s+(x.value>0?x.value:0),0)||1;
+  let off=0;
+  const arcs=segments.filter(s=>s.value>0).map(s=>{
+    const len=s.value/total*c, dash=`${len.toFixed(2)} ${(c-len).toFixed(2)}`;
+    const el=`<circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${s.color}" stroke-width="${sw}" stroke-dasharray="${dash}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 ${cx} ${cx})"/>`;
+    off+=len; return el;
+  }).join('');
+  const track=`<circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${sw}"/>`;
+  return `<svg class="donut" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">${track}${arcs}</svg>`;
+}
+function areaChart(points){
+  const W=640,H=140,pad={l:46,r:14,t:10,b:26};
+  const cw=W-pad.l-pad.r, ch=H-pad.t-pad.b;
+  const max=Math.max(1,...points.map(p=>p.value)), nice=niceCeil(max), n=points.length;
+  const X=i=> pad.l + (n<=1?cw/2:(i/(n-1))*cw);
+  const Y=v=> pad.t + ch - (v/nice)*ch;
+  const line=points.map((p,i)=>`${i?'L':'M'}${X(i).toFixed(1)} ${Y(p.value).toFixed(1)}`).join(' ');
+  const area=`${line} L${X(n-1).toFixed(1)} ${(pad.t+ch).toFixed(1)} L${X(0).toFixed(1)} ${(pad.t+ch).toFixed(1)} Z`;
+  const grid=[0,.25,.5,.75,1].map(f=>{ const gy=pad.t+ch-f*ch;
+    return `<line x1="${pad.l}" y1="${gy.toFixed(1)}" x2="${W-pad.r}" y2="${gy.toFixed(1)}" stroke="var(--border)" stroke-width="1"/><text x="${pad.l-7}" y="${(gy+3).toFixed(1)}" text-anchor="end" class="ax">${fmtShort(f*nice)}</text>`; }).join('');
+  const xl=points.map((p,i)=>(n>9 && i%2)?'':`<text x="${X(i).toFixed(1)}" y="${H-9}" text-anchor="middle" class="ax">${p.label}</text>`).join('');
+  const dots=points.map((p,i)=>p.value>0?`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.value).toFixed(1)}" r="3.2" fill="var(--accent)"/>`:'').join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}">
+    <defs><linearGradient id="caGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".24"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+    ${grid}<path d="${area}" fill="url(#caGrad)"/><path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>${dots}${xl}</svg>`;
+}
+
+/* ---------- données dérivées ---------- */
+function caByClient(){
+  const map={};
+  dealsAll().filter(d=>d.stage==='encaisse').forEach(d=>{ const k=d.clientId||'__none'; map[k]=(map[k]||0)+dealAmount(d); });
+  let arr=Object.entries(map).map(([id,value])=>({id,name:id==='__none'?'Sans client':clientName(id),value}));
+  arr.sort((a,b)=>b.value-a.value);
+  arr=arr.map((x,i)=>({...x,color:PALETTE[i%PALETTE.length]}));
+  if(arr.length>6){ const rest=arr.slice(6).reduce((s,x)=>s+x.value,0); arr=arr.slice(0,6); arr.push({name:'Autres',value:rest,color:'#B8B8C0'}); }
+  return arr;
+}
+function caMonthly(){
+  const now=new Date(), pts=[], idx={};
+  for(let i=11;i>=0;i--){ const d=new Date(now.getFullYear(),now.getMonth()-i,1); const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; idx[key]=pts.length; pts.push({label:MONTHS[d.getMonth()],key,value:0}); }
+  dealsAll().filter(d=>d.stage==='encaisse').forEach(d=>{ const dt=d.paidAt||d.signedAt||d.createdAt; if(!dt)return; const key=dt.slice(0,7); if(key in idx) pts[idx[key]].value+=dealAmount(d); });
+  return pts;
+}
+
+/* ---------- tableau de bord ---------- */
+function crmDashboardHTML(){
+  const enc=caEncaisse(), sig=caSigne(), pipe=caPipeline(), goal=caGoal();
+  const won=dealsAll().filter(d=>STAGE_WON.includes(d.stage)), lost=dealsAll().filter(d=>d.stage==='perdu');
+  const conv=(won.length+lost.length)?Math.round(won.length/(won.length+lost.length)*100):0;
+  const avg=won.length?won.reduce((s,d)=>s+dealAmount(d),0)/won.length:0;
+  const pct=goal>0?Math.min(enc/goal,1):0;
+  const kpis=[
+    {l:'CA encaissé',v:fmtMoney(enc),a:true},
+    {l:'Signé · en attente',v:fmtMoney(sig)},
+    {l:'Pipeline actif',v:fmtMoney(pipe)},
+    {l:'Clients',v:clientsAll().length},
+    {l:'Taux de conversion',v:conv+' %'},
+    {l:'Panier moyen',v:fmtMoney(avg)},
+  ].map(k=>`<div class="kpi ${k.a?'accent':''}"><div class="kpi-v">${k.v}</div><div class="kpi-l">${k.l}</div></div>`).join('');
+
+  const rtb=`<div class="card-crm rtb">
+    <div class="cc-h"><span>🇧🇷 Road to Brazil</span><button class="cc-edit" onclick="editGoal()">Objectif ✎</button></div>
+    <div class="donut-wrap">${donutChart([{value:pct,color:'var(--accent)'},{value:1-pct,color:'var(--border)'}],{size:200,stroke:24})}
+      <div class="donut-center"><div class="dc-pct">${Math.round(pct*100)}%</div><div class="dc-sub">${fmtMoney(enc)}<br>/ ${fmtMoney(goal)}</div></div></div>
+    <div class="rtb-foot">${goal>enc?`Plus que <b>${fmtMoney(goal-enc)}</b> pour atteindre l'objectif ✈️`:`Objectif atteint ! 🎉`}</div></div>`;
+
+  const byCl=caByClient();
+  const repart=`<div class="card-crm"><div class="cc-h"><span>Répartition du CA par client</span></div>
+    ${byCl.length?`<div class="donut-wrap">${donutChart(byCl.map(b=>({value:b.value,color:b.color})),{size:180,stroke:22})}
+        <div class="donut-center"><div class="dc-pct" style="font-size:19px">${fmtMoney(enc)}</div><div class="dc-sub">encaissé</div></div></div>
+      <div class="legend">${byCl.map(b=>`<div class="lg"><span class="lg-dot" style="background:${b.color}"></span><span class="lg-n">${esc(b.name)}</span><span class="lg-v">${fmtMoney(b.value)}</span></div>`).join('')}</div>`
+      :`<div class="crm-empty">Aucun CA encaissé pour l'instant.</div>`}</div>`;
+
+  const evo=`<div class="card-crm wide"><div class="cc-h"><span>Évolution du CA encaissé · 12 mois</span></div>${areaChart(caMonthly())}</div>`;
+
+  const enCours=`<div class="card-crm wide"><div class="cc-h"><span>Projets signés · en attente d'encaissement</span><span class="cc-tot">${fmtMoney(sig)}</span></div>${signedListHTML()}</div>`;
+
+  return `<div class="kpis">${kpis}</div><div class="crm-grid">${rtb}${repart}${evo}${enCours}</div>`;
+}
+function signedListHTML(){
+  const sg=dealsAll().filter(d=>d.stage==='signe').sort((a,b)=>(b.signedAt||'').localeCompare(a.signedAt||''));
+  if(!sg.length) return `<div class="crm-empty">Aucun projet signé en attente. Quand tu passes une opportunité en « Signé », elle apparaît ici.</div>`;
+  return `<table class="crm-tbl"><thead><tr><th>Projet</th><th>Client</th><th>Signé le</th><th class="r">Montant</th><th></th></tr></thead><tbody>${
+    sg.map(d=>`<tr onclick="openDeal('${d.id}')"><td><b>${esc(d.title||'—')}</b></td><td>${esc(clientName(d.clientId))}</td><td>${fmtDateFR(d.signedAt)}</td><td class="r">${fmtMoney(dealAmount(d))}</td><td class="r"><button class="mini-btn" onclick="event.stopPropagation();markPaid('${d.id}')">Encaisser ✓</button></td></tr>`).join('')
+  }</tbody></table>`;
+}
+function markPaid(id){ const d=dealById(id); if(!d)return; d.stage='encaisse'; d.paidAt=todayISO(); if(!d.signedAt)d.signedAt=todayISO(); save(); renderCrm(); toast('Encaissé 🎉'); }
+function editGoal(){
+  const v=prompt('Objectif de CA — Road to Brazil (en €) :', caGoal()||50000);
+  if(v===null)return; const n=parseInt(String(v).replace(/[^0-9]/g,''),10);
+  if(!isNaN(n)){ state.crm=state.crm||{}; state.crm.goal=n; save(); renderCrm(); }
+}
+
+/* ---------- pipeline (kanban des opportunités) ---------- */
+function crmPipelineHTML(){
+  const cols=DEAL_STAGES.map(s=>{
+    const items=dealsAll().filter(d=>d.stage===s.id);
+    const tot=items.reduce((sum,d)=>sum+dealAmount(d),0);
+    const cards=items.length?items.map(dealCardHTML).join(''):`<div class="col-empty">—</div>`;
+    return `<div class="pcol"><div class="pcol-h"><span class="pcol-dot" style="background:${s.color}"></span><span class="pcol-t">${s.name}</span><span class="pcol-c">${items.length}</span><span class="pcol-sum">${fmtMoney(tot)}</span></div>
+      <div class="pcol-body" data-stage="${s.id}">${cards}</div></div>`;
+  }).join('');
+  return `<div class="pipeline">${cols}</div>`;
+}
+function dealCardHTML(d){
+  const c=clientById(d.clientId);
+  return `<div class="pcard" draggable="true" data-id="${d.id}" onclick="openDeal('${d.id}')">
+    <div class="pc-t">${esc(d.title||'Sans titre')}</div>
+    ${c?`<div class="pc-cl"><span class="pc-av" style="background:${c.color||'var(--accent)'}">${initials(c.name)}</span>${esc(c.name)}</div>`:''}
+    <div class="pc-amt">${fmtMoney(dealAmount(d))}</div>
+    ${d.nextAction?`<div class="pc-na">⏰ ${esc(d.nextAction)}${d.nextDate?` · ${fmtDateFR(d.nextDate)}`:''}</div>`:''}</div>`;
+}
+function setDealStage(d,ns){
+  d.stage=ns;
+  if(ns==='signe' && !d.signedAt) d.signedAt=todayISO();
+  if(ns==='encaisse'){ if(!d.signedAt)d.signedAt=todayISO(); if(!d.paidAt)d.paidAt=todayISO(); }
+}
+function wirePipelineDnD(){
+  let dragId=null;
+  document.querySelectorAll('.pcard').forEach(card=>{
+    card.addEventListener('dragstart',e=>{ dragId=card.dataset.id; card.classList.add('dragging'); e.stopPropagation(); });
+    card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+  });
+  document.querySelectorAll('.pcol-body').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{ e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+    zone.addEventListener('drop',e=>{ e.preventDefault(); zone.classList.remove('drag-over');
+      const d=dealById(dragId); if(!d)return; const ns=zone.dataset.stage;
+      if(d.stage!==ns){ setDealStage(d,ns); save(); renderCrm(); } });
+  });
+}
+
+/* ---------- clients ---------- */
+function crmClientsHTML(){
+  const cls=clientsAll().slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  if(!cls.length) return `<div class="crm-empty big">Aucun client pour l'instant.<button class="crm-new" onclick="openClient()">+ Ajouter ton premier client</button></div>`;
+  const rows=cls.map(c=>{
+    const ca=dealsAll().filter(d=>d.clientId===c.id && d.stage==='encaisse').reduce((s,d)=>s+dealAmount(d),0);
+    const nd=dealsAll().filter(d=>d.clientId===c.id).length;
+    const st=CLIENT_STATUS[c.status]||CLIENT_STATUS.lead;
+    return `<tr onclick="openClient('${c.id}')">
+      <td><div class="cl-nm"><span class="pc-av" style="background:${c.color||'var(--accent)'}">${initials(c.name)}</span><div><b>${esc(c.name)}</b>${c.company?`<div class="cl-co">${esc(c.company)}</div>`:''}</div></div></td>
+      <td><span class="badge" style="background:${hexRgba(st.color,.14)};color:${st.color}">${st.name}</span></td>
+      <td>${esc(c.email||'—')}</td><td>${esc(c.phone||'—')}</td>
+      <td class="r">${nd}</td><td class="r"><b>${fmtMoney(ca)}</b></td></tr>`;
+  }).join('');
+  return `<table class="crm-tbl big"><thead><tr><th>Client</th><th>Statut</th><th>E-mail</th><th>Téléphone</th><th class="r">Opp.</th><th class="r">CA encaissé</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/* ---------- édition opportunité ---------- */
+let editingDeal=null;
+function fillDealSelects(){
+  $('#dClient').innerHTML=`<option value="">— Aucun client —</option>`+clientsAll().map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  $('#dStage').innerHTML=DEAL_STAGES.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+}
+function openDeal(id=null, presetStage=null, presetClient=null){
+  editingDeal=(typeof id==='string')?id:null;
+  fillDealSelects();
+  if(editingDeal){
+    const d=dealById(editingDeal); if(!d)return;
+    $('#dealTitle').textContent="Modifier l'opportunité";
+    $('#dTitle').value=d.title||''; $('#dClient').value=d.clientId||''; $('#dAmount').value=d.amount||'';
+    $('#dStage').value=d.stage||'lead'; $('#dSigned').value=d.signedAt||''; $('#dPaid').value=d.paidAt||'';
+    $('#dNext').value=d.nextAction||''; $('#dNextDate').value=d.nextDate||''; $('#dNotes').value=d.notes||'';
+    $('#dDel').style.display='';
+  }else{
+    $('#dealTitle').textContent='Nouvelle opportunité';
+    $('#dTitle').value=''; $('#dClient').value=presetClient||''; $('#dAmount').value='';
+    $('#dStage').value=presetStage||'lead'; $('#dSigned').value=''; $('#dPaid').value='';
+    $('#dNext').value=''; $('#dNextDate').value=''; $('#dNotes').value='';
+    $('#dDel').style.display='none';
+  }
+  $('#dealScrim').classList.add('open'); setTimeout(()=>$('#dTitle').focus(),40);
+}
+function closeDeal(){ $('#dealScrim').classList.remove('open'); editingDeal=null; }
+function saveDeal(){
+  const title=$('#dTitle').value.trim();
+  if(!title){ toast("Donne un titre à l'opportunité."); return; }
+  const data={ title, clientId:$('#dClient').value||'', amount:parseFloat($('#dAmount').value)||0,
+    stage:$('#dStage').value, signedAt:$('#dSigned').value||'', paidAt:$('#dPaid').value||'',
+    nextAction:$('#dNext').value.trim(), nextDate:$('#dNextDate').value||'', notes:$('#dNotes').value.trim() };
+  if(data.stage==='signe' && !data.signedAt) data.signedAt=todayISO();
+  if(data.stage==='encaisse'){ if(!data.signedAt)data.signedAt=todayISO(); if(!data.paidAt)data.paidAt=todayISO(); }
+  if(editingDeal){ Object.assign(dealById(editingDeal), data); }
+  else { state.deals.push({ id:uid(), createdAt:todayISO(), ...data }); }
+  save(); closeDeal(); renderCrm();
+}
+function deleteDeal(){
+  if(!editingDeal)return;
+  if(!confirm('Supprimer cette opportunité ?'))return;
+  state.deals=state.deals.filter(x=>x.id!==editingDeal);
+  save(); closeDeal(); renderCrm();
+}
+
+/* ---------- édition client ---------- */
+let editingClient=null;
+function openClient(id=null){
+  editingClient=(typeof id==='string')?id:null;
+  $('#clStatus').innerHTML=Object.entries(CLIENT_STATUS).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');
+  if(editingClient){
+    const c=clientById(editingClient); if(!c)return;
+    $('#clientTitle').textContent='Fiche client';
+    $('#clName').value=c.name||''; $('#clCompany').value=c.company||''; $('#clStatus').value=c.status||'lead';
+    $('#clEmail').value=c.email||''; $('#clPhone').value=c.phone||''; $('#clNotes').value=c.notes||'';
+    $('#cliDel').style.display=''; renderClientDeals(c.id);
+  }else{
+    $('#clientTitle').textContent='Nouveau client';
+    $('#clName').value=''; $('#clCompany').value=''; $('#clStatus').value='lead';
+    $('#clEmail').value=''; $('#clPhone').value=''; $('#clNotes').value='';
+    $('#cliDel').style.display='none'; $('#clDeals').innerHTML='';
+  }
+  $('#clientScrim').classList.add('open'); setTimeout(()=>$('#clName').focus(),40);
+}
+function closeClient(){ $('#clientScrim').classList.remove('open'); editingClient=null; }
+function saveClient(){
+  const name=$('#clName').value.trim();
+  if(!name){ toast('Indique le nom du client.'); return; }
+  const data={ name, company:$('#clCompany').value.trim(), status:$('#clStatus').value,
+    email:$('#clEmail').value.trim(), phone:$('#clPhone').value.trim(), notes:$('#clNotes').value.trim() };
+  if(editingClient){ Object.assign(clientById(editingClient), data); }
+  else { const color=PALETTE[clientsAll().length%PALETTE.length]; state.clients.push({ id:uid(), createdAt:todayISO(), color, ...data }); }
+  save(); closeClient(); renderCrm();
+}
+function deleteClient(){
+  if(!editingClient)return;
+  const hasDeals=dealsAll().some(d=>d.clientId===editingClient);
+  if(!confirm(hasDeals?'Supprimer ce client ? Ses opportunités seront détachées (mais conservées).':'Supprimer ce client ?'))return;
+  state.deals.forEach(d=>{ if(d.clientId===editingClient) d.clientId=''; });
+  state.clients=state.clients.filter(x=>x.id!==editingClient);
+  save(); closeClient(); renderCrm();
+}
+function renderClientDeals(cid){
+  const ds=dealsAll().filter(d=>d.clientId===cid);
+  let html=`<div class="cl-deals-h">Opportunités${ds.length?` (${ds.length})`:''}</div>`;
+  if(!ds.length){ html+=`<div class="crm-empty" style="padding:6px 0">Aucune opportunité. <button class="lnk" onclick="openDeal(null,null,'${cid}')">+ en créer une</button></div>`; }
+  else { html+=ds.map(d=>{ const s=stageById(d.stage); return `<div class="cl-deal" onclick="openDeal('${d.id}')"><span class="lg-dot" style="background:${s.color}"></span><span class="cl-deal-t">${esc(d.title)}</span><span class="cl-deal-a">${fmtMoney(dealAmount(d))}</span></div>`; }).join(''); html+=`<button class="lnk" onclick="openDeal(null,null,'${cid}')">+ Nouvelle opportunité</button>`; }
+  $('#clDeals').innerHTML=html;
+}
+
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){
   if($('#recScrim').classList.contains('open')){ resolveRec(null); return; }
+  if($('#dealScrim').classList.contains('open')){ closeDeal(); return; }
+  if($('#clientScrim').classList.contains('open')){ closeClient(); return; }
   if($('#teamScrim').classList.contains('open')){ closeTeam(); return; }
   if(pickOpen){closePick();return;}
   if($('#calPop').classList.contains('open')){ closeCalPop(); return; }
