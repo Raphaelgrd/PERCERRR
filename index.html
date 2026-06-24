@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -308,7 +308,8 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .favatar.tous{padding:6px 14px}
 .favatar.tous.on{background:var(--ink);color:#fff;border-color:var(--ink);opacity:1}
 .favatar .fn{white-space:nowrap}
-#sortTool{position:relative;margin-left:auto}
+.sb-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+#sortTool{position:relative}
 .sort-btn{display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:9px;font-size:13px;font-weight:600;color:var(--muted);transition:.12s}
 .sort-btn:hover,.sort-btn.on{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
 .sort-btn svg{width:16px;height:16px}
@@ -329,6 +330,39 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .sort-row .crit-ic svg{width:15px;height:15px}
 .sort-row .nm{flex:1}
 .sort-pop-f{font-size:11px;color:var(--faint);padding:9px 8px 4px;text-align:center}
+
+/* ---------- projets ---------- */
+.proj-nav{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.proj-sel-wrap{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.proj-sel{-webkit-appearance:none;appearance:none;padding:6px 30px 6px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6b78' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 8px center/16px no-repeat;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;min-width:155px}
+.proj-sel:focus{border-color:var(--border-strong);outline:none}
+.proj-cnt{font-size:12px;color:var(--muted);font-weight:600;background:var(--paper);border:1px solid var(--border);border-radius:20px;padding:3px 9px}
+.proj-new{padding:5px 11px;border-radius:9px;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);transition:.12s}
+.proj-new:hover{background:var(--accent);color:#fff}
+.proj-edit{padding:5px 9px;border-radius:9px;font-size:12px;font-weight:600;color:var(--muted);background:var(--paper);border:1px solid var(--border);transition:.12s}
+.proj-edit:hover{background:var(--panel);color:var(--ink)}
+.board-subview-tog{display:flex;background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:3px;gap:2px}
+.board-subview-tog button{padding:5px 13px;border-radius:7px;font-size:12px;font-weight:600;color:var(--muted);transition:.12s}
+.board-subview-tog button.on{background:var(--ink);color:#fff}
+/* vue liste */
+.board-list{padding:14px 20px}
+.proj-list-wrap{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.proj-list{width:100%;border-collapse:collapse;font-size:13.5px}
+.proj-list th{text-align:left;font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--paper)}
+.proj-list td{padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;vertical-align:middle}
+.proj-list tr:last-child td{border-bottom:none}
+.proj-list tr:hover td{background:var(--paper)}
+.lt-title{font-weight:600;color:var(--ink);max-width:300px}
+.dl-chip{font-size:12px;color:var(--muted);font-weight:600}
+.empty-list{color:var(--faint);font-size:14px;text-align:center;padding:48px;background:var(--panel);border:1px solid var(--border);border-radius:14px}
+/* modal projet */
+.pj-cols{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;max-height:240px;overflow-y:auto}
+.pj-col-row{display:flex;align-items:center;gap:8px}
+.pj-col-row input[type=color]{width:32px;height:32px;padding:2px;border:1px solid var(--border);border-radius:7px;cursor:pointer;flex-shrink:0}
+.pj-col-row input[type=text]{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;background:var(--paper);color:var(--ink)}
+.pj-col-row .rm-col{color:var(--muted);font-size:16px;padding:2px 7px;border-radius:6px;transition:.1s;flex-shrink:0}
+.pj-col-row .rm-col:hover{background:var(--paper);color:var(--ink)}
+.btn-add-col{color:var(--accent);font-size:12.5px;font-weight:700;padding:6px 2px;margin-bottom:10px;display:block}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (max-width:640px){
@@ -658,6 +692,25 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 <div id="boardView"></div>
 <div id="calView" style="display:none"></div>
 <div id="crmView" style="display:none"></div>
+
+<!-- modal projet -->
+<div class="crmscrim" id="projScrim" onclick="if(event.target===this)closeProjModal()">
+  <div class="crmdlg" style="max-width:400px">
+    <div class="crmdlg-h">
+      <h3 id="projDlgTitle">Nouveau projet</h3>
+      <button class="x" onclick="closeProjModal()">×</button>
+    </div>
+    <div class="crmdlg-b">
+      <label class="fld"><span>Nom du projet</span><input id="pjName" type="text" placeholder="Ex : Refonte site"></label>
+    </div>
+    <div class="crmdlg-f">
+      <button class="cp-del" id="pjDel" onclick="deleteProjModal()" style="display:none">Supprimer</button>
+      <span class="spacer"></span>
+      <button onclick="closeProjModal()" style="font-size:13px;font-weight:600;color:var(--muted);padding:8px 12px;border-radius:9px">Annuler</button>
+      <button class="crm-new" onclick="saveProjModal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
 
 <!-- modal -->
 <div class="scrim" id="scrim" onclick="if(event.target===this)closeModal()">
@@ -1148,6 +1201,9 @@ let draft = {urg:'prioritaire', en:'haute', cal:'strategie', people:[]};
 let draftKind = 'board';        // 'board' (Notion) ou 'cal' (Calendrier) — deux entités séparées
 let activeUsers = new Set();   // utilisateurs affichés en plus de moi
 let activeCats = new Set();     // catégories affichées dans le calendrier
+let activeProject = null;      // null = tous les projets, sinon id du projet filtré
+let boardPrioView = false;      // false = kanban normal, true = vue par priorités
+let editingProject = null;      // id du projet en cours d'édition dans le modal
 
 const $ = s => document.querySelector(s);
 const initials = n => n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
@@ -1194,6 +1250,7 @@ function ensureState(){
   if(!state.clients) state.clients=[];     // CRM : fiches clients
   if(!state.deals) state.deals=[];         // CRM : opportunités / pipeline
   if(!state.crm) state.crm={goal:50000};   // CRM : configuration (objectif de CA)
+  if(!state.projects) state.projects=[];   // Projets : kanban par projet
   state.members.forEach(m=>{ if(!m.themes) m.themes={...DEFAULT_THEME}; });
   // migration : l'ancienne catégorie « divers » devient « repos »
   state.categories.forEach(c=>{ if(c.id==='divers'){ c.id='repos'; if(c.name==='Divers') c.name='Repos'; } });
@@ -1426,14 +1483,15 @@ function buildColumns(){
   return cols;
 }
 function tasksForColumn(c){
-  if(c.col==='encours'){
-    return sortTasks(state.tasks.filter(t=>t.kind==='board' && t.col==='encours' && t.cal!=='repos' && t.people.includes(c.owner)));
-  }
-  return sortTasks(state.tasks.filter(t=>t.kind==='board' && t.col===c.col && t.cal!=='repos' && isVisible(t)));
+  const base = state.tasks.filter(t=>t.kind==='board' && t.col===c.col && t.cal!=='repos');
+  if(activeProject) return sortTasks(base.filter(t=>(t.projectId||null)===activeProject));
+  if(c.col==='encours') return sortTasks(base.filter(t=>isVisible(t) && t.people.includes(c.owner)));
+  return sortTasks(base.filter(t=>isVisible(t)));
 }
 
 function renderBoard(){
   renderBoardBar();
+  if(boardPrioView){ renderBoardPrio(); return; }
   const cols=buildColumns();
   const wrap=$('#boardView'); wrap.className='board';
   wrap.innerHTML = cols.map(c=>{
@@ -1452,16 +1510,120 @@ function renderBoard(){
   }).join('');
   wireDnD();
 }
+const PRIO_COLS=[
+  {id:'accessoire',  name:'Accessoire',  color:'var(--accessoire)'},
+  {id:'prioritaire', name:'Prioritaire', color:'var(--prioritaire)'},
+  {id:'urgent',      name:'Urgent',      color:'var(--urgent)'},
+];
+function renderBoardPrio(){
+  const base = state.tasks.filter(t=>{
+    if(t.kind!=='board'||t.cal==='repos'||!isVisible(t)) return false;
+    if(activeProject) return (t.projectId||null)===activeProject;
+    return true;
+  });
+  const wrap=$('#boardView'); wrap.className='board';
+  wrap.innerHTML = PRIO_COLS.map(pc=>{
+    const items = sortTasks(base.filter(t=>pc.id==='accessoire' ? (!t.urg||t.urg==='accessoire') : t.urg===pc.id));
+    const addBtn=`<button class="col-newcard" onclick="openModalPrio('${pc.id}')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Nouvelle tâche</button>`;
+    return `<div class="col" style="background:${hexRgba('#888',0.06)}">
+      <div class="col-head" style="color:${pc.color}">
+        <span class="col-dot" style="background:${pc.color}"></span>
+        <span class="col-title">${pc.name}</span>
+        <span class="col-count" style="color:${pc.color}">${items.length}</span>
+        <button class="col-add" onclick="openModalPrio('${pc.id}')" title="Ajouter"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="col-body" data-prio="${pc.id}" style="">${items.map(cardHTML).join('')}${addBtn}</div>
+    </div>`;
+  }).join('');
+  wirePrioDnD();
+}
+function openModalPrio(urgId){
+  openModal(null, 'backlog', {});
+  setTimeout(()=>{ draft.urg=urgId; renderProps(); }, 0);
+}
+function wirePrioDnD(){
+  let dragId=null;
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('dragstart',e=>{dragId=card.dataset.id;card.classList.add('dragging');e.stopPropagation();});
+    card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+  });
+  document.querySelectorAll('[data-prio]').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();zone.classList.remove('drag-over');
+      const t=state.tasks.find(x=>x.id===dragId); if(!t) return;
+      const newUrg=zone.dataset.prio;
+      if(t.urg!==newUrg){ t.urg=newUrg; save(); renderBoard(); }
+    });
+  });
+}
 
-/* ---------- barre tableau : filtre (gauche) + tri (droite) ---------- */
+/* ---------- barre tableau : filtre (gauche) + contrôles projets (droite) ---------- */
 function renderBoardBar(){
+  const projCount = activeProject
+    ? state.tasks.filter(t=>t.kind==='board'&&(t.projectId||null)===activeProject).length
+    : state.tasks.filter(t=>t.kind==='board').length;
+  const opts = `<option value="">Tous les projets</option>`
+    +(state.projects||[]).map(p=>`<option value="${p.id}"${activeProject===p.id?' selected':''}>${esc(p.name)}</option>`).join('');
   $('#sortBar').innerHTML = `
     <span class="filter-lbl">Voir</span>
     <div class="filterbar" id="filterBar"></div>
-    <div class="sorttool" id="sortTool"></div>`;
+    <div class="sb-right">
+      <div class="board-subview-tog">
+        <button class="${!boardPrioView?'on':''}" onclick="setBoardView('kanban')">Kanban</button>
+        <button class="${boardPrioView?'on':''}" onclick="setBoardView('prio')">Priorités</button>
+      </div>
+      <select class="proj-sel" id="projSelectBar" onchange="setProject(this.value)">${opts}</select>
+      <span class="proj-cnt">(${projCount})</span>
+      <button class="proj-new" onclick="openProjModal(null)">+ Projet</button>
+      ${activeProject?`<button class="proj-edit" onclick="openProjModal('${activeProject}')">✎</button>`:''}
+      <div class="sorttool" id="sortTool"></div>
+    </div>`;
   renderPeopleFilter('#filterBar');
   renderSortTool();
 }
+function setProject(id){
+  activeProject = id || null;
+  boardPrioView = false;
+  renderBoard();
+}
+function setBoardView(v){
+  boardPrioView = v==='prio';
+  renderBoard();
+}
+
+/* ---------- gestion des projets ---------- */
+function openProjModal(id){
+  editingProject = id || null;
+  const proj = editingProject ? state.projects.find(p=>p.id===editingProject) : null;
+  $('#projDlgTitle').textContent = proj ? 'Modifier le projet' : 'Nouveau projet';
+  $('#pjName').value = proj ? proj.name : '';
+  $('#pjDel').style.display = proj ? '' : 'none';
+  $('#projScrim').classList.add('open');
+  setTimeout(()=>$('#pjName').focus(), 50);
+}
+function closeProjModal(){ $('#projScrim').classList.remove('open'); }
+function saveProjModal(){
+  const name=$('#pjName').value.trim();
+  if(!name) return alert('Donne un nom au projet.');
+  if(editingProject){
+    const proj = state.projects.find(p=>p.id===editingProject);
+    if(proj) proj.name=name;
+  }else{
+    state.projects.push({id:uid(), name});
+  }
+  save(); closeProjModal(); renderBoard();
+}
+function deleteProjModal(){
+  if(!editingProject) return;
+  if(!confirm('Supprimer ce projet ? Les tâches liées seront déliées (non supprimées).')) return;
+  state.tasks.forEach(t=>{ if(t.projectId===editingProject) delete t.projectId; });
+  state.projects = state.projects.filter(p=>p.id!==editingProject);
+  if(activeProject===editingProject){ activeProject=null; boardPrioView=false; }
+  save(); closeProjModal(); renderBoard();
+}
+
 function renderPeopleFilter(sel){
   const host=$(sel); if(!host)return;
   const all = state.members.every(m=>activeUsers.has(m.id));
@@ -2000,7 +2162,8 @@ function commitDraft(scope){
   }else{
     if(!title) return;                                  // pas de tâche vide
     if(!people.length) people=[me];                     // assigné par défaut = le créateur
-    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],...fields,people}; state.tasks.push(t); tid=t.id;
+    const projFields = activeProject ? {projectId:activeProject} : {};
+    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],...projFields,...fields,people}; state.tasks.push(t); tid=t.id;
   }
   notifyAssign(prevPeople, people, tTitle, tid);
   save();
@@ -2018,7 +2181,8 @@ function ensureTask(){
   const fields={ desc:$('#fDesc').value.trim(), col:$('#fCol').value, urg:draft.urg, en:draft.en, cal:draft.cal,
     people: draft.people.length?[...draft.people]:[me], date:$('#fDate').value, time:$('#fTime').value, rec:$('#fRec').value,
     recDays: $('#fRec').value==='custom'?[...draft.recDays]:[], block: $('#fCol').value==='bloquant'?$('#fBlock').value.trim():'' };
-  t={ id:uid(), kind:draftKind, dur:draft.dur||60, title:($('#fTitle').value.trim()||'Sans titre'), files:[], ...fields };
+  const _pf = activeProject ? {projectId:activeProject} : {};
+  t={ id:uid(), kind:draftKind, dur:draft.dur||60, title:($('#fTitle').value.trim()||'Sans titre'), files:[], ..._pf, ...fields };
   state.tasks.push(t); editingId=t.id; $('#mActions').style.display=''; origSnap=currentSnap();
   return t;
 }
