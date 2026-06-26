@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -583,6 +583,10 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .crm-tbl.big{background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
 .crm-tbl.big th{padding:13px 14px;background:var(--paper)}
 .crm-tbl.big td{padding:13px 14px}
+.crm-tbl tr.ft td{border-top:2px solid var(--border-strong);border-bottom:none;font-weight:600;background:var(--paper)}
+.crm-tbl tr.ft{cursor:default}
+.conv-badge{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px}
+.funnel-note{font-size:11.5px;color:var(--faint);line-height:1.5;margin-top:10px}
 .cl-nm{display:flex;align-items:center;gap:10px}
 .cl-co{font-size:11.5px;color:var(--faint)}
 .pc-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700;font-family:'Space Grotesk',sans-serif;flex:none}
@@ -1709,10 +1713,10 @@ function colForDate(dateISO){
   return 'backlog';
 }
 
-function setCalMode(m){ calMode=m; renderCal(); }
+function setCalMode(m){ calMode=m; if(m==='next4') calCursor=new Date(); renderCal(); }
 function calShift(n){
   if(calMode==='month') calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+n,1);
-  else calCursor=addDays(calCursor,n*(calMode==='week'?7:1));
+  else calCursor=addDays(calCursor,n*(calMode==='week'?7:calMode==='next4'?4:1));
   renderCal();
 }
 function calToday(){ calCursor=new Date(); renderCal(); }
@@ -1721,7 +1725,8 @@ function calNewAt(date,time,dur,anchorRect){ openCalPop(null, {date,time,dur,anc
 function rangeLabel(){
   if(calMode==='day'){ const d=calCursor; return `${DAYFULL[(d.getDay()+6)%7]} ${d.getDate()} ${MONTHS_FULL[d.getMonth()]} ${d.getFullYear()}`; }
   if(calMode==='month'){ return `${MONTHS_FULL[calCursor.getMonth()]} ${calCursor.getFullYear()}`; }
-  const s=startOfWeek(calCursor),e=addDays(s,6);
+  const s = calMode==='next4' ? new Date(calCursor.getFullYear(),calCursor.getMonth(),calCursor.getDate()) : startOfWeek(calCursor);
+  const e = addDays(s, calMode==='next4' ? 3 : 6);
   if(s.getMonth()===e.getMonth()) return `${s.getDate()} – ${e.getDate()} ${MONTHS_FULL[e.getMonth()]} ${e.getFullYear()}`;
   return `${s.getDate()} ${MONTHS[s.getMonth()]} – ${e.getDate()} ${MONTHS[e.getMonth()]} ${e.getFullYear()}`;
 }
@@ -1733,8 +1738,8 @@ function evColor(t){
 
 function renderCal(){
   $('#calView').className='gc';
-  const labels={day:'Jour',week:'Semaine',month:'Mois'};
-  const viewBtns=['day','week','month'].map(m=>`<button class="${calMode===m?'on':''}" onclick="setCalMode('${m}')">${labels[m]}</button>`).join('');
+  const labels={day:'Jour',next4:'4 jours',week:'Semaine'};
+  const viewBtns=['day','next4','week'].map(m=>`<button class="${calMode===m?'on':''}" onclick="setCalMode('${m}')">${labels[m]}</button>`).join('');
   const chev=d=>`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="${d}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const head=`<div class="gc-head">
     <button class="gc-today" onclick="calToday()">Aujourd'hui</button>
@@ -1746,7 +1751,7 @@ function renderCal(){
     <div class="gc-views">${viewBtns}</div>
   </div>
   <div class="gc-cals"><span class="filter-lbl">Calendriers</span><div class="filterbar" id="calFilter"></div></div>`;
-  const grid = calMode==='month' ? monthHTML() : timeGridHTML(calMode==='week'?7:1);
+  const grid = calMode==='month' ? monthHTML() : timeGridHTML(calMode==='week'?7:calMode==='next4'?4:1);
   $('#calView').innerHTML = head + `<div class="gc-body">
       <aside class="gc-side">${categorySideHTML()}</aside>
       <div class="gc-main">${grid}</div>
@@ -2550,6 +2555,47 @@ function caMonthly(){
   dealsAll().filter(d=>d.stage==='encaisse').forEach(d=>{ const dt=d.paidAt||d.signedAt||d.createdAt; if(!dt)return; const key=dt.slice(0,7); if(key in idx) pts[idx[key]].value+=dealAmount(d); });
   return pts;
 }
+/* conversion mensuelle (cohorte) : pour les leads créés un mois donné,
+   combien sont aujourd'hui gagnés et pour quel CA → taux de conversion en valeur */
+function monthlyFunnel(nMonths){
+  nMonths=nMonths||6;
+  const now=new Date(), rows=[], idx={};
+  for(let i=nMonths-1;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    idx[key]=rows.length;
+    rows.push({label:`${MONTHS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, key, leads:0, pipe:0, won:0, gen:0});
+  }
+  dealsAll().forEach(d=>{
+    const c=(d.createdAt||'').slice(0,7);
+    if(!(c in idx)) return;
+    const r=rows[idx[c]];
+    r.leads++; r.pipe+=dealAmount(d);
+    if(STAGE_WON.includes(d.stage)){ r.won++; r.gen+=dealAmount(d); }
+  });
+  return rows;
+}
+function convColor(p){ return p>=60?'var(--encaisse,#0EA5A4)':p>=30?'var(--prioritaire)':p>0?'var(--accent)':'var(--faint)'; }
+function funnelHTML(){
+  if(!dealsAll().length) return `<div class="crm-empty">Aucune opportunité pour l'instant. Crée des deals dans le Pipeline pour suivre la conversion mensuelle.</div>`;
+  const rows=monthlyFunnel(6);
+  const tot=rows.reduce((a,r)=>({leads:a.leads+r.leads,pipe:a.pipe+r.pipe,won:a.won+r.won,gen:a.gen+r.gen}),{leads:0,pipe:0,won:0,gen:0});
+  const body=rows.map(r=>{
+    const rate=r.pipe>0?Math.round(r.gen/r.pipe*100):0;
+    return `<tr>
+      <td><b>${r.label}</b></td>
+      <td class="r">${r.leads}</td>
+      <td class="r">${fmtMoney(r.pipe)}</td>
+      <td class="r">${r.won}/${r.leads}</td>
+      <td class="r">${fmtMoney(r.gen)}</td>
+      <td class="r"><span class="conv-badge" style="color:${convColor(rate)};background:${hexRgba('#888',.0)}">${rate}%</span></td>
+    </tr>`;
+  }).join('');
+  const totRate=tot.pipe>0?Math.round(tot.gen/tot.pipe*100):0;
+  const foot=`<tr class="ft"><td><b>Total</b></td><td class="r">${tot.leads}</td><td class="r">${fmtMoney(tot.pipe)}</td><td class="r">${tot.won}/${tot.leads}</td><td class="r">${fmtMoney(tot.gen)}</td><td class="r"><b style="color:${convColor(totRate)}">${totRate}%</b></td></tr>`;
+  return `<table class="crm-tbl"><thead><tr><th>Mois</th><th class="r">Leads</th><th class="r">CA en pipe</th><th class="r">Gagnés</th><th class="r">CA généré</th><th class="r">Conv.</th></tr></thead><tbody>${body}${foot}</tbody></table>
+    <div class="funnel-note">« Leads » = opportunités créées ce mois-là · « CA en pipe » = leur montant total · « CA généré » = montant désormais signé/encaissé · « Conv. » = CA généré ÷ CA en pipe.</div>`;
+}
 
 /* ---------- tableau de bord ---------- */
 function crmDashboardHTML(){
@@ -2580,11 +2626,11 @@ function crmDashboardHTML(){
       <div class="legend">${byCl.map(b=>`<div class="lg"><span class="lg-dot" style="background:${b.color}"></span><span class="lg-n">${esc(b.name)}</span><span class="lg-v">${fmtMoney(b.value)}</span></div>`).join('')}</div>`
       :`<div class="crm-empty">Aucun CA encaissé pour l'instant.</div>`}</div>`;
 
-  const evo=`<div class="card-crm wide"><div class="cc-h"><span>Évolution du CA encaissé · 12 mois</span></div>${areaChart(caMonthly())}</div>`;
+  const funnel=`<div class="card-crm wide"><div class="cc-h"><span>Conversion mensuelle · leads → CA</span></div>${funnelHTML()}</div>`;
 
   const enCours=`<div class="card-crm wide"><div class="cc-h"><span>Projets signés · en attente d'encaissement</span><span class="cc-tot">${fmtMoney(sig)}</span></div>${signedListHTML()}</div>`;
 
-  return `<div class="kpis">${kpis}</div><div class="crm-grid">${rtb}${repart}${evo}${enCours}</div>`;
+  return `<div class="kpis">${kpis}</div><div class="crm-grid">${rtb}${repart}${funnel}${enCours}</div>`;
 }
 function signedListHTML(){
   const sg=dealsAll().filter(d=>d.stage==='signe').sort((a,b)=>(b.signedAt||'').localeCompare(a.signedAt||''));
