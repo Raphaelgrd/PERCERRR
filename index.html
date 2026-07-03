@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -478,6 +478,22 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .team-act button:hover{border-color:var(--ink);color:var(--ink)}
 .team-act button.danger:hover{border-color:var(--bloque);color:var(--bloque);background:rgba(194,65,12,.06)}
 .team-close{margin-top:16px;width:100%;padding:11px;border-radius:11px;background:var(--ink);color:#fff;font-weight:600;font-size:14px}
+.role-sel{padding:6px 9px;border:1.5px solid var(--border-strong);border-radius:9px;font-size:12.5px;font-weight:600;background:var(--panel);color:var(--ink);cursor:pointer}
+.role-sel:focus{outline:none;border-color:var(--accent)}
+/* liste « qui voit ce projet » */
+.pj-members{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto}
+.pm-row{display:flex;align-items:center;gap:10px;padding:8px 11px;border:1.5px solid var(--border);border-radius:11px;background:var(--paper);cursor:pointer;transition:.12s;width:100%;text-align:left}
+.pm-row:hover{border-color:var(--border-strong)}
+.pm-row.on{border-color:var(--accent);background:var(--accent-soft)}
+.pm-nm{flex:1;font-size:13.5px;font-weight:600;color:var(--ink);display:flex;flex-direction:column;gap:1px}
+.pm-role{font-size:11px;font-weight:500;color:var(--faint)}
+.pm-check{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-weight:700;color:var(--accent);font-size:14px}
+.pm-empty{font-size:12.5px;color:var(--faint);padding:12px;text-align:center;line-height:1.5}
+/* écran « compte en attente » */
+.gate-card{max-width:440px;margin:60px auto;background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:40px 32px;text-align:center;box-shadow:var(--shadow)}
+.gate-emoji{font-size:44px;margin-bottom:14px}
+.gate-card h2{font-family:'Space Grotesk',sans-serif;font-size:22px;margin:0 0 10px}
+.gate-card p{color:var(--muted);line-height:1.6;font-size:14.5px;margin:0}
 
 /* ---------- bouton dupliquer (fiche) ---------- */
 .peek-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
@@ -696,6 +712,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 <div id="boardView"></div>
 <div id="calView" style="display:none"></div>
 <div id="crmView" style="display:none"></div>
+<div id="gateView" style="display:none"></div>
 
 <!-- modal projet -->
 <div class="crmscrim" id="projScrim" onclick="if(event.target===this)closeProjModal()">
@@ -706,6 +723,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
     </div>
     <div class="crmdlg-b">
       <label class="fld"><span>Nom du projet</span><input id="pjName" type="text" placeholder="Ex : Refonte site"></label>
+      <div class="fld"><span>Qui voit ce projet</span><div id="pjMembers" class="pj-members"></div></div>
     </div>
     <div class="crmdlg-f">
       <button class="cp-del" id="pjDel" onclick="deleteProjModal()" style="display:none">Supprimer</button>
@@ -904,7 +922,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 <div class="teamscrim" id="teamScrim" onclick="if(event.target===this)closeTeam()">
   <div class="teamdlg">
     <h3>Gestion de l'équipe</h3>
-    <p class="sub">En tant qu'administrateur, tu peux promouvoir d'autres membres ou retirer leur accès.</p>
+    <p class="sub">Attribue un rôle à chaque membre. <b>Aucun accès</b> : rien. <b>Client</b> : uniquement les projets liés. <b>Team PRC</b> : calendrier + projets liés. <b>Admin</b> : tout + création de projets.</p>
     <div id="teamBody"></div>
     <button class="team-close" onclick="closeTeam()">Fermer</button>
   </div>
@@ -1049,7 +1067,7 @@ function subscribeWorkspace(){
       if($('#scrim').classList.contains('open')) return; // ne pas écraser une fiche en cours d'édition
       try{
         const fresh = await cloudLoad();
-        if(fresh && JSON.stringify(fresh)!==JSON.stringify(state)){ state=fresh; ensureState(); renderAll(); renderBell(); }
+        if(fresh && JSON.stringify(fresh)!==JSON.stringify(state)){ state=fresh; ensureState(); renderMe(); if(view!=='none'&&!canView(view)){ setView(defaultView()); } else { renderAll(); } }
       }catch(e){}
     })
     .subscribe();
@@ -1181,8 +1199,34 @@ function fmtMoney(n){ return Math.round(n||0).toLocaleString('fr-FR') + ' €'; 
 
 /* ---- administration ---- */
 const SUPER_ADMIN = 'gerardraphael01@gmail.com';   // admin permanent (par e-mail)
-function isAdmin(id){ const m=memberById(id||me); return !!(m && (m.admin===true || (m.email||'').toLowerCase()===SUPER_ADMIN)); }
+/* rôles : none = aucun accès (nouveau compte) · client = seulement ses projets liés
+   · team = calendrier + ses projets · admin = tout + création de projets */
+const ROLES = { none:'Aucun accès', client:'Client', team:'Team PRC', admin:'Admin' };
+function memberRole(id){
+  const m=memberById(id||me); if(!m) return 'none';
+  if((m.email||'').toLowerCase()===SUPER_ADMIN) return 'admin';
+  if(m.admin===true) return 'admin';               // rétrocompat de l'ancien flag admin
+  return m.role || 'none';
+}
+function roleLabel(r){ return ROLES[r]||'Aucun accès'; }
+function isAdmin(id){ return memberRole(id)==='admin'; }
 function iAmAdmin(){ return isAdmin(me); }
+function myRole(){ return memberRole(me); }
+function canSeeProject(p){ return !!p && (iAmAdmin() || (p.members||[]).includes(me)); }
+function myProjects(){ return (state.projects||[]).filter(canSeeProject); }
+function canView(v){
+  const r=myRole();
+  if(r==='admin') return true;
+  if(r==='team')  return v==='cal' || v==='board';
+  if(r==='client')return v==='board';
+  return false;                                     // none : rien
+}
+function defaultView(){
+  const r=myRole();
+  if(r==='team') return 'cal';
+  if(r==='client'||r==='admin') return 'board';
+  return 'none';
+}
 
 /* ---- récurrence : détacher une occurrence (un seul jour) sans toucher la série ---- */
 function isRecurring(t){ return !!(t && t.rec && t.rec!=='none'); }
@@ -1208,6 +1252,7 @@ let activeCats = new Set();     // catégories affichées dans le calendrier
 let activeProject = null;      // null = tous les projets, sinon id du projet filtré
 let boardPrioView = false;      // false = kanban normal, true = vue par priorités
 let editingProject = null;      // id du projet en cours d'édition dans le modal
+let projMembersDraft = [];      // membres partagés en cours d'édition dans le modal projet
 
 const $ = s => document.querySelector(s);
 const initials = n => n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
@@ -1255,7 +1300,10 @@ function ensureState(){
   if(!state.deals) state.deals=[];         // CRM : opportunités / pipeline
   if(!state.crm) state.crm={goal:50000};   // CRM : configuration (objectif de CA)
   if(!state.projects) state.projects=[];   // Projets : kanban par projet
+  state.projects.forEach(p=>{ if(!Array.isArray(p.members)) p.members=[]; });   // partage de projet
   state.members.forEach(m=>{ if(!m.themes) m.themes={...DEFAULT_THEME}; });
+  // migration des rôles : les membres existants gardent l'accès (team), les admins restent admins
+  state.members.forEach(m=>{ if(!m.role) m.role = (m.admin===true || (m.email||'').toLowerCase()===SUPER_ADMIN) ? 'admin' : 'team'; });
   // migration : l'ancienne catégorie « divers » devient « repos »
   state.categories.forEach(c=>{ if(c.id==='divers'){ c.id='repos'; if(c.name==='Divers') c.name='Repos'; } });
   state.tasks.forEach(t=>{ if(t.cal==='divers') t.cal='repos'; });
@@ -1275,7 +1323,9 @@ async function ensureMember(){
   }
   const name = (authUser.user_metadata && authUser.user_metadata.name) || (authUser.email||'').split('@')[0] || 'Moi';
   const color = PALETTE[state.members.length % PALETTE.length];
-  state.members.push({ id:me, name, color, email, admin: email===SUPER_ADMIN, themes:{...DEFAULT_THEME} });
+  const isSup = email===SUPER_ADMIN;
+  // nouveau compte : aucun accès par défaut (sauf le super-admin) — un admin devra attribuer un rôle
+  state.members.push({ id:me, name, color, email, admin:isSup, role:isSup?'admin':'none', themes:{...DEFAULT_THEME} });
   await save();
 }
 async function boot(){
@@ -1293,7 +1343,7 @@ async function boot(){
   activeUsers = new Set([me]);
   activeCats = new Set(state.categories.map(c=>c.id));   // toutes par défaut
   if($('#loading')) $('#loading').remove();
-  renderMe(); renderAll();
+  renderMe(); setView(defaultView());
 }
 
 function todayISO(){ const d=new Date(); return d.toISOString().slice(0,10); }
@@ -1311,8 +1361,19 @@ function renderMe(){
     <button onclick="logout()" title="Se déconnecter" style="margin-left:6px;width:30px;height:30px;border-radius:8px;color:var(--muted);display:grid;place-items:center">
       <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>`;
-  $('#adminBtn').style.display = iAmAdmin() ? '' : 'none';
+  applyAccess();
   renderBell();
+}
+/* affiche/masque les onglets selon le rôle, et l'écran « compte en attente » pour les comptes sans accès */
+function applyAccess(){
+  $('#vBoard').style.display = canView('board') ? '' : 'none';
+  $('#vCal').style.display   = canView('cal')   ? '' : 'none';
+  $('#vCrm').style.display   = canView('crm')   ? '' : 'none';
+  $('#adminBtn').style.display = iAmAdmin() ? '' : 'none';
+  const gate=$('#gateView');
+  if(gate && myRole()==='none'){
+    gate.innerHTML=`<div class="gate-card"><div class="gate-emoji">🔒</div><h2>Compte en attente d'accès</h2><p>Ton compte a bien été créé.<br>Un administrateur doit t'attribuer un accès (<b>Client</b> ou <b>Team PRC</b>) pour que tu puisses voir les projets.</p></div>`;
+  }
 }
 
 /* ============ administration : panneau Équipe ============ */
@@ -1320,28 +1381,31 @@ function openTeam(){ if(!iAmAdmin()) return; renderTeam(); $('#teamScrim').class
 function closeTeam(){ $('#teamScrim').classList.remove('open'); }
 function renderTeam(){
   const rows = state.members.map(m=>{
-    const admin=isAdmin(m.id), sup=(m.email||'').toLowerCase()===SUPER_ADMIN, mine=m.id===me;
-    let actions = sup ? '<span class="team-badge">super-admin</span>'
-      : (admin ? `<button onclick="setMemberAdmin('${m.id}',false)">Retirer admin</button>`
-               : `<button onclick="setMemberAdmin('${m.id}',true)">Rendre admin</button>`);
-    if(!sup && !mine) actions += `<button class="danger" onclick="removeMember('${m.id}')">Retirer</button>`;
+    const sup=(m.email||'').toLowerCase()===SUPER_ADMIN, mine=m.id===me, role=memberRole(m.id);
+    const ctrl = sup
+      ? '<span class="team-badge">super-admin</span>'
+      : `<select class="role-sel" onchange="setMemberRole('${m.id}',this.value)">
+           ${['none','client','team','admin'].map(r=>`<option value="${r}"${role===r?' selected':''}>${ROLES[r]}</option>`).join('')}
+         </select>`;
+    const rm = (!sup && !mine) ? `<button class="danger" onclick="removeMember('${m.id}')">Retirer</button>` : '';
     return `<div class="team-row">
       <span class="av" style="background:${m.color}">${initials(m.name)}</span>
       <div class="team-info">
-        <div class="team-nm">${esc(m.name)}${admin?'<span class="team-badge">admin</span>':''}${mine?' <span style="color:var(--faint);font-weight:500;font-size:11px">(moi)</span>':''}</div>
+        <div class="team-nm">${esc(m.name)}${mine?' <span style="color:var(--faint);font-weight:500;font-size:11px">(moi)</span>':''}</div>
         <div class="team-em">${esc(m.email||'—')}</div>
       </div>
-      <div class="team-act">${actions}</div>
+      <div class="team-act">${ctrl}${rm}</div>
     </div>`;
   }).join('');
   $('#teamBody').innerHTML = rows || '<p class="sub">Aucun membre pour le moment.</p>';
 }
-function setMemberAdmin(id, val){
+function setMemberRole(id, role){
   if(!iAmAdmin()) return;
   const m=memberById(id); if(!m) return;
   if((m.email||'').toLowerCase()===SUPER_ADMIN) return;   // le super-admin reste toujours admin
-  m.admin=val; save(); renderTeam(); renderMe();
-  toast(val?`${m.name} est maintenant administrateur`:`${m.name} n'est plus administrateur`);
+  m.role=role; m.admin=(role==='admin');                  // on garde le flag admin synchronisé
+  save(); renderTeam(); renderMe();
+  toast(`${m.name} · ${ROLES[role]}`);
 }
 function removeMember(id){
   if(!iAmAdmin()) return;
@@ -1370,17 +1434,21 @@ function renderBell(){
 /* ============ vues ============ */
 let view='board';
 function setView(v){
+  if(v!=='none' && !canView(v)) v=defaultView();     // sécurité : pas d'accès → vue autorisée
   view=v;
-  $('#vBoard').classList.toggle('on',v==='board');
-  $('#vCal').classList.toggle('on',v==='cal');
-  $('#vCrm').classList.toggle('on',v==='crm');
-  $('#boardView').style.display = v==='board'?'':'none';
-  $('#calView').style.display = v==='cal'?'':'none';
-  $('#crmView').style.display = v==='crm'?'':'none';
-  $('#sortBar').style.display = v==='board'?'':'none';
+  const isB=v==='board', isC=v==='cal', isX=v==='crm', isNone=v==='none';
+  $('#vBoard').classList.toggle('on',isB);
+  $('#vCal').classList.toggle('on',isC);
+  $('#vCrm').classList.toggle('on',isX);
+  $('#boardView').style.display = isB?'':'none';
+  $('#calView').style.display = isC?'':'none';
+  $('#crmView').style.display = isX?'':'none';
+  $('#sortBar').style.display = isB?'':'none';
+  const gate=$('#gateView'); if(gate) gate.style.display = isNone?'':'none';
+  if(isNone){ applyAccess(); return; }
   renderAll();
 }
-function renderAll(){ if(view==='board')renderBoard(); else if(view==='cal')renderCal(); else renderCrm(); }
+function renderAll(){ if(view==='board')renderBoard(); else if(view==='cal')renderCal(); else if(view==='crm')renderCrm(); }
 
 /* ---------- board ---------- */
 function avStack(ids){
@@ -1408,7 +1476,7 @@ function cardHTML(t){
     : '';
   const nf=(t.files||[]).length;
   const filesRow = nf ? `<div class="crow"><span class="chip" style="background:var(--paper);color:var(--muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21.4 11.05 12.25 20.2a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 0 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.48-8.49" stroke-linecap="round" stroke-linejoin="round"/></svg>${nf}</span></div>` : '';
-  return `<div class="card" draggable="true" data-id="${t.id}" onclick="openModal('${t.id}')">
+  return `<div class="card" draggable="true" data-id="${t.id}" onclick="openModal('${t.id}')" oncontextmenu="return onCardContext(event,'${t.id}')">
     <p class="ttl">${esc(t.title)}</p>
     ${blockRow}${personRow}${calRow}${impRow}${enRow}${filesRow}
   </div>`;
@@ -1494,6 +1562,17 @@ function tasksForColumn(c){
 }
 
 function renderBoard(){
+  // non-admin : pas de vue globale — on force un projet accessible
+  if(!iAmAdmin()){
+    const mine=myProjects();
+    if(!mine.length){
+      renderBoardBar();
+      const w=$('#boardView'); w.className='';
+      w.innerHTML=`<div class="gate-card"><div class="gate-emoji">📁</div><h2>Aucun projet partagé</h2><p>Tu n'as pas encore été ajouté·e à un projet.<br>Un administrateur peut t'ajouter depuis les réglages d'un projet.</p></div>`;
+      return;
+    }
+    if(!activeProject || !mine.some(p=>p.id===activeProject)) activeProject=mine[0].id;
+  }
   renderBoardBar();
   if(boardPrioView){ renderBoardPrio(); return; }
   const cols=buildColumns();
@@ -1521,9 +1600,9 @@ const PRIO_COLS=[
 ];
 function renderBoardPrio(){
   const base = state.tasks.filter(t=>{
-    if(t.kind!=='board'||t.cal==='repos'||!isVisible(t)) return false;
-    if(activeProject) return (t.projectId||null)===activeProject;
-    return true;
+    if(t.kind!=='board'||t.cal==='repos') return false;
+    if(activeProject) return (t.projectId||null)===activeProject;   // projet : toutes ses tâches
+    return isVisible(t);                                             // vue globale : filtre « Voir »
   });
   const wrap=$('#boardView'); wrap.className='board';
   wrap.innerHTML = PRIO_COLS.map(pc=>{
@@ -1565,11 +1644,14 @@ function wirePrioDnD(){
 
 /* ---------- barre tableau : filtre (gauche) + contrôles projets (droite) ---------- */
 function renderBoardBar(){
+  const admin=iAmAdmin();
+  const projs = admin ? (state.projects||[]) : myProjects();
   const projCount = activeProject
     ? state.tasks.filter(t=>t.kind==='board'&&(t.projectId||null)===activeProject).length
     : state.tasks.filter(t=>t.kind==='board').length;
-  const opts = `<option value="">Tous les projets</option>`
-    +(state.projects||[]).map(p=>`<option value="${p.id}"${activeProject===p.id?' selected':''}>${esc(p.name)}</option>`).join('');
+  // les non-admins n'ont pas de vue globale « Tous les projets »
+  const opts = (admin?`<option value="">Tous les projets</option>`:'')
+    + projs.map(p=>`<option value="${p.id}"${activeProject===p.id?' selected':''}>${esc(p.name)}</option>`).join('');
   $('#sortBar').innerHTML = `
     <span class="filter-lbl">Voir</span>
     <div class="filterbar" id="filterBar"></div>
@@ -1580,8 +1662,8 @@ function renderBoardBar(){
       </div>
       <select class="proj-sel" id="projSelectBar" onchange="setProject(this.value)">${opts}</select>
       <span class="proj-cnt">(${projCount})</span>
-      <button class="proj-new" onclick="openProjModal(null)">+ Projet</button>
-      ${activeProject?`<button class="proj-edit" onclick="openProjModal('${activeProject}')">✎</button>`:''}
+      ${admin?`<button class="proj-new" onclick="openProjModal(null)">+ Projet</button>`:''}
+      ${admin&&activeProject?`<button class="proj-edit" onclick="openProjModal('${activeProject}')">✎</button>`:''}
       <div class="sorttool" id="sortTool"></div>
     </div>`;
   renderPeopleFilter('#filterBar');
@@ -1597,29 +1679,51 @@ function setBoardView(v){
   renderBoard();
 }
 
-/* ---------- gestion des projets ---------- */
+/* ---------- gestion des projets (admins seulement) ---------- */
 function openProjModal(id){
+  if(!iAmAdmin()) return;
   editingProject = id || null;
   const proj = editingProject ? state.projects.find(p=>p.id===editingProject) : null;
   $('#projDlgTitle').textContent = proj ? 'Modifier le projet' : 'Nouveau projet';
   $('#pjName').value = proj ? proj.name : '';
+  projMembersDraft = proj ? [...(proj.members||[])] : [];
+  renderProjMembers();
   $('#pjDel').style.display = proj ? '' : 'none';
   $('#projScrim').classList.add('open');
   setTimeout(()=>$('#pjName').focus(), 50);
 }
+function renderProjMembers(){
+  const host=$('#pjMembers'); if(!host) return;
+  const cands = state.members.filter(m=>memberRole(m.id)!=='admin');   // les admins voient déjà tout
+  if(!cands.length){ host.innerHTML='<div class="pm-empty">Personne à ajouter pour l\'instant. Les membres apparaissent ici après leur 1ʳᵉ connexion.</div>'; return; }
+  host.innerHTML = cands.map(m=>{
+    const on=projMembersDraft.includes(m.id);
+    return `<button type="button" class="pm-row ${on?'on':''}" onclick="toggleProjMember('${m.id}')">
+      <span class="av sm" style="background:${m.color}">${initials(m.name)}</span>
+      <span class="pm-nm">${esc(m.name)}<span class="pm-role">${roleLabel(memberRole(m.id))}</span></span>
+      <span class="pm-check">${on?'✓':'+'}</span>
+    </button>`;
+  }).join('');
+}
+function toggleProjMember(id){
+  projMembersDraft = projMembersDraft.includes(id) ? projMembersDraft.filter(x=>x!==id) : [...projMembersDraft,id];
+  renderProjMembers();
+}
 function closeProjModal(){ $('#projScrim').classList.remove('open'); }
 function saveProjModal(){
+  if(!iAmAdmin()) return;
   const name=$('#pjName').value.trim();
   if(!name) return alert('Donne un nom au projet.');
   if(editingProject){
     const proj = state.projects.find(p=>p.id===editingProject);
-    if(proj) proj.name=name;
+    if(proj){ proj.name=name; proj.members=[...projMembersDraft]; }
   }else{
-    state.projects.push({id:uid(), name});
+    state.projects.push({id:uid(), name, members:[...projMembersDraft]});
   }
   save(); closeProjModal(); renderBoard();
 }
 function deleteProjModal(){
+  if(!iAmAdmin()) return;
   if(!editingProject) return;
   if(!confirm('Supprimer ce projet ? Les tâches liées seront déliées (non supprimées).')) return;
   state.tasks.forEach(t=>{ if(t.projectId===editingProject) delete t.projectId; });
@@ -2288,6 +2392,25 @@ function duplicateTask(){
   toast('Élément dupliqué ✓');
   finishClose();
 }
+/* Alt + clic droit sur une carte du tableau → duplication rapide */
+function onCardContext(e,id){
+  if(!e.altKey) return true;                      // sans Alt : menu contextuel normal du navigateur
+  e.preventDefault();
+  const t=state.tasks.find(x=>x.id===id); if(!t) return false;
+  const copy={...t, id:uid(), title:(t.title||'Sans titre')+' (copie)',
+    people:[...(t.people||[])], recDays:[...(t.recDays||[])], exceptions:[...(t.exceptions||[])], files:[]};
+  state.tasks.push(copy); save(); renderBoard(); toast('Tâche dupliquée ✓');
+  return false;
+}
+/* Alt + clic droit sur une opportunité du pipeline → duplication rapide */
+function onDealContext(e,id){
+  if(!e.altKey) return true;
+  e.preventDefault();
+  const d=dealById(id); if(!d) return false;
+  const copy={...d, id:uid(), title:(d.title||'Sans titre')+' (copie)', createdAt:todayISO()};
+  state.deals.push(copy); save(); renderCrm(); toast('Opportunité dupliquée ✓');
+  return false;
+}
 function deleteTask(){
   if(!editingId) return;
   const t=state.tasks.find(x=>x.id===editingId);
@@ -2498,6 +2621,7 @@ function fmtShort(n){ n=Math.round(n); const a=Math.abs(n); if(a>=1000000)return
 function niceCeil(v){ if(v<=0)return 1; const p=Math.pow(10,Math.floor(Math.log10(v))); const n=v/p; const m=n<=1?1:n<=2?2:n<=5?5:10; return m*p; }
 
 function renderCrm(){
+  if(!iAmAdmin()){ setView(defaultView()); return; }   // CRM réservé aux admins
   const host=$('#crmView'); host.className='crm';
   const tabs=[['dashboard','Tableau de bord'],['pipeline','Pipeline'],['clients','Clients']]
     .map(([k,n])=>`<button class="${crmTab===k?'on':''}" onclick="setCrmTab('${k}')">${n}</button>`).join('');
@@ -2659,7 +2783,7 @@ function crmPipelineHTML(){
 }
 function dealCardHTML(d){
   const c=clientById(d.clientId);
-  return `<div class="pcard" draggable="true" data-id="${d.id}" onclick="openDeal('${d.id}')">
+  return `<div class="pcard" draggable="true" data-id="${d.id}" onclick="openDeal('${d.id}')" oncontextmenu="return onDealContext(event,'${d.id}')">
     <div class="pc-t">${esc(d.title||'Sans titre')}</div>
     ${c?`<div class="pc-cl"><span class="pc-av" style="background:${c.color||'var(--accent)'}">${initials(c.name)}</span>${esc(c.name)}</div>`:''}
     <div class="pc-amt">${fmtMoney(dealAmount(d))}</div>
