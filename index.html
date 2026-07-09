@@ -16,7 +16,7 @@
 const SUPABASE_URL = "https://akbniphsczapaveldkmf.supabase.co";
 // ⚠️ Colle ici la clé « anon public » (PAS la clé service_role !).
 // Supabase → Project Settings → API → Project API keys → « anon public ».
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrYm5pcGhzY3phcGF2ZWxka21mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MDkwMjcsImV4cCI6MjA5NzE4NTAyN30.e-HYiOkmHS5WkI3soctxs4zEqJ2qX5TLfgzdBjlYG_Y";
+const SUPABASE_ANON_KEY = "VOTRE_CLE_ANON";
 </script>
 <style>
 :root{
@@ -337,6 +337,9 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .proj-sel{-webkit-appearance:none;appearance:none;padding:6px 30px 6px 12px;border:1.5px solid var(--border);border-radius:20px;background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6b78' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 8px center/16px no-repeat;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;min-width:155px}
 .proj-sel:focus{border-color:var(--border-strong);outline:none}
 .proj-cnt{font-size:12px;color:var(--muted);font-weight:600;background:var(--paper);border:1px solid var(--border);border-radius:20px;padding:3px 9px}
+.client-sel{min-width:140px}
+.chip-client{display:inline-flex;align-items:center;gap:5px}
+.chip-client .cdot{width:7px;height:7px;border-radius:50%;flex:none}
 .proj-new{padding:5px 11px;border-radius:9px;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);transition:.12s}
 .proj-new:hover{background:var(--accent);color:#fff}
 .proj-edit{padding:5px 9px;border-radius:9px;font-size:12px;font-weight:600;color:var(--muted);background:var(--paper);border:1px solid var(--border);transition:.12s}
@@ -659,7 +662,24 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .cl-deal-t{flex:1;min-width:0;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cl-deal-a{font-weight:700;font-family:'Space Grotesk',sans-serif}
 .lnk{font-size:13px;font-weight:600;color:var(--accent);padding:6px 2px}
-@media (max-width:760px){ .crm-grid{grid-template-columns:1fr} .fld-row{flex-direction:column;gap:12px} }
+/* fiche client 360 */
+.c3-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 4px}
+.c3-kpi{background:var(--paper);border:1px solid var(--border);border-radius:11px;padding:10px 8px;text-align:center}
+.c3-v{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;line-height:1.1}
+.c3-l{font-size:10.5px;color:var(--muted);margin-top:2px}
+.c3-last{font-size:12.5px;color:var(--muted);margin:2px 0 4px}
+.c3-sec{font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;margin:14px 0 7px;padding-top:10px;border-top:1px solid var(--border)}
+.c3-chips{display:flex;flex-wrap:wrap;gap:6px}
+.c3-chip{font-size:12.5px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--border-strong);border-radius:9px;padding:6px 10px;transition:.12s}
+.c3-chip:hover{border-color:var(--accent);color:var(--accent)}
+.c3-task{display:flex;align-items:center;gap:9px;padding:7px 2px;font-size:13.5px;cursor:pointer;border-bottom:1px solid var(--border)}
+.c3-task:last-child{border-bottom:none}
+.c3-task:hover .c3-tt{color:var(--accent)}
+.c3-dot{width:8px;height:8px;border-radius:50%;flex:none}
+.c3-tt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.c3-st{font-size:11.5px;color:var(--faint);white-space:nowrap}
+.c3-empty{font-size:12.5px;color:var(--faint);padding:6px 0}
+@media (max-width:760px){ .crm-grid{grid-template-columns:1fr} .fld-row{flex-direction:column;gap:12px} .c3-kpis{grid-template-columns:repeat(2,1fr)} }
 </style>
 
 <div class="loading" id="loading"><div class="spin"></div></div>
@@ -723,6 +743,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
     </div>
     <div class="crmdlg-b">
       <label class="fld"><span>Nom du projet</span><input id="pjName" type="text" placeholder="Ex : Refonte site"></label>
+      <label class="fld"><span>Client lié (optionnel)</span><select id="pjClient"></select></label>
       <div class="fld"><span>Qui voit ce projet</span><div id="pjMembers" class="pj-members"></div></div>
     </div>
     <div class="crmdlg-f">
@@ -750,6 +771,10 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
       <div class="prop">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h.01M4 12h.01M4 18h.01M9 6h11M9 12h11M9 18h11" stroke-linecap="round"/></svg>Personne</div>
         <div class="prop-v"><div class="pv" id="fPeople" onclick="openPick('people',this)"></div></div>
+      </div>
+      <div class="prop" id="rowClient">
+        <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round"/><circle cx="12" cy="7" r="4"/></svg>Client</div>
+        <div class="prop-v"><div class="pv" id="fClient" onclick="openPick('client',this)"></div></div>
       </div>
       <div class="prop">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg>Deadline</div>
@@ -894,6 +919,10 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
       <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 11l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       <div class="cp-main"><div class="pv" id="cCal" onclick="openPick('cal',this,true)"></div></div>
     </div>
+    <div class="cp-row" id="cRowClient">
+      <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round"/><circle cx="12" cy="7" r="4"/></svg></span>
+      <div class="cp-main"><div class="pv" id="cClient" onclick="openPick('client',this,true)"></div></div>
+    </div>
     <div class="cp-row">
       <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg></span>
       <div class="cp-main"><textarea id="cDesc" placeholder="Ajouter une description"></textarea></div>
@@ -953,6 +982,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
     <div class="crmdlg-f">
       <button class="cp-del" id="dDel" onclick="deleteDeal()" style="display:none">Supprimer</button>
       <span class="spacer"></span>
+      <button class="mini-btn" id="dProjBtn" onclick="dealToProject()" style="display:none">🗂️ Créer le projet</button>
       <button class="crm-new" onclick="saveDeal()">Enregistrer</button>
     </div>
   </div>
@@ -1249,7 +1279,9 @@ let draft = {urg:'prioritaire', en:'haute', cal:'strategie', people:[]};
 let draftKind = 'board';        // 'board' (Notion) ou 'cal' (Calendrier) — deux entités séparées
 let activeUsers = new Set();   // utilisateurs affichés en plus de moi
 let activeCats = new Set();     // catégories affichées dans le calendrier
+let calClientFilter = '';       // '' = tous les clients, sinon id du client filtré (calendrier)
 let activeProject = null;      // null = tous les projets, sinon id du projet filtré
+let boardClientFilter = '';    // '' = tous les clients, sinon id du client filtré (board)
 let boardPrioView = false;      // false = kanban normal, true = vue par priorités
 let editingProject = null;      // id du projet en cours d'édition dans le modal
 let projMembersDraft = [];      // membres partagés en cours d'édition dans le modal projet
@@ -1476,9 +1508,11 @@ function cardHTML(t){
     : '';
   const nf=(t.files||[]).length;
   const filesRow = nf ? `<div class="crow"><span class="chip" style="background:var(--paper);color:var(--muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21.4 11.05 12.25 20.2a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 0 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.48-8.49" stroke-linecap="round" stroke-linejoin="round"/></svg>${nf}</span></div>` : '';
+  const cli=clientById(t.clientId);
+  const clientRow = cli ? `<div class="crow"><span class="chip chip-client" style="background:${hexRgba(cli.color||'#888',0.16)};color:${cli.color||'var(--muted)'}"><span class="cdot" style="background:${cli.color||'var(--accent)'}"></span>${esc(cli.name)}</span></div>` : '';
   return `<div class="card" draggable="true" data-id="${t.id}" onclick="openModal('${t.id}')" oncontextmenu="return onCardContext(event,'${t.id}')">
     <p class="ttl">${esc(t.title)}</p>
-    ${blockRow}${personRow}${calRow}${impRow}${enRow}${filesRow}
+    ${blockRow}${clientRow}${personRow}${calRow}${impRow}${enRow}${filesRow}
   </div>`;
 }
 /* ---------- tri configurable ---------- */
@@ -1555,7 +1589,8 @@ function buildColumns(){
   return cols;
 }
 function tasksForColumn(c){
-  const base = state.tasks.filter(t=>t.kind==='board' && t.col===c.col && t.cal!=='repos');
+  let base = state.tasks.filter(t=>t.kind==='board' && t.col===c.col && t.cal!=='repos');
+  if(boardClientFilter) base = base.filter(t=>(t.clientId||'')===boardClientFilter);   // filtre par client
   if(activeProject) return sortTasks(base.filter(t=>(t.projectId||null)===activeProject));
   if(c.col==='encours') return sortTasks(base.filter(t=>isVisible(t) && t.people.includes(c.owner)));
   return sortTasks(base.filter(t=>isVisible(t)));
@@ -1601,6 +1636,7 @@ const PRIO_COLS=[
 function renderBoardPrio(){
   const base = state.tasks.filter(t=>{
     if(t.kind!=='board'||t.cal==='repos') return false;
+    if(boardClientFilter && (t.clientId||'')!==boardClientFilter) return false;   // filtre par client
     if(activeProject) return (t.projectId||null)===activeProject;   // projet : toutes ses tâches
     return isVisible(t);                                             // vue globale : filtre « Voir »
   });
@@ -1664,11 +1700,13 @@ function renderBoardBar(){
       <span class="proj-cnt">(${projCount})</span>
       ${admin?`<button class="proj-new" onclick="openProjModal(null)">+ Projet</button>`:''}
       ${admin&&activeProject?`<button class="proj-edit" onclick="openProjModal('${activeProject}')">✎</button>`:''}
+      ${(memberRole(me)!=='client' && clientsAll().length)?`<select class="proj-sel client-sel" onchange="setBoardClient(this.value)"><option value="">Tous les clients</option>${clientsAll().map(c=>`<option value="${c.id}"${boardClientFilter===c.id?' selected':''}>${esc(c.name)}</option>`).join('')}</select>`:''}
       <div class="sorttool" id="sortTool"></div>
     </div>`;
   renderPeopleFilter('#filterBar');
   renderSortTool();
 }
+function setBoardClient(id){ boardClientFilter=id||''; renderBoard(); }
 function setProject(id){
   activeProject = id || null;
   boardPrioView = false;
@@ -1686,6 +1724,8 @@ function openProjModal(id){
   const proj = editingProject ? state.projects.find(p=>p.id===editingProject) : null;
   $('#projDlgTitle').textContent = proj ? 'Modifier le projet' : 'Nouveau projet';
   $('#pjName').value = proj ? proj.name : '';
+  $('#pjClient').innerHTML = `<option value="">— Aucun —</option>`+clientsAll().map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  $('#pjClient').value = proj ? (proj.clientId||'') : '';
   projMembersDraft = proj ? [...(proj.members||[])] : [];
   renderProjMembers();
   $('#pjDel').style.display = proj ? '' : 'none';
@@ -1714,11 +1754,12 @@ function saveProjModal(){
   if(!iAmAdmin()) return;
   const name=$('#pjName').value.trim();
   if(!name) return alert('Donne un nom au projet.');
+  const clientId=$('#pjClient').value||'';
   if(editingProject){
     const proj = state.projects.find(p=>p.id===editingProject);
-    if(proj){ proj.name=name; proj.members=[...projMembersDraft]; }
+    if(proj){ proj.name=name; proj.members=[...projMembersDraft]; proj.clientId=clientId; }
   }else{
-    state.projects.push({id:uid(), name, members:[...projMembersDraft]});
+    state.projects.push({id:uid(), name, members:[...projMembersDraft], clientId});
   }
   save(); closeProjModal(); renderBoard();
 }
@@ -1802,7 +1843,7 @@ function occursOn(t,dateISO){
   return t.date===dateISO;
 }
 function eventsOn(dateISO){ return state.tasks.filter(t=>t.kind==='cal' && occursOn(t,dateISO)); }
-function eventsVisibleOn(dateISO){ return eventsOn(dateISO).filter(t=>isVisible(t) && (!t.cal || activeCats.has(t.cal))); }
+function eventsVisibleOn(dateISO){ return eventsOn(dateISO).filter(t=>isVisible(t) && (!t.cal || activeCats.has(t.cal)) && (!calClientFilter || (t.clientId||'')===calClientFilter)); }
 function effStart(t){ return t.time || (t.en==='haute'?'09:00':'14:00'); } // énergie haute = tôt, basse = aprèm
 function effStartMin(t){ const[h,m]=effStart(t).split(':').map(Number); return h*60+(m||0); }
 function minToHM(min){ min=Math.max(0,Math.min(1439,min)); const h=Math.floor(min/60), m=min%60; return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); }
@@ -1818,6 +1859,7 @@ function colForDate(dateISO){
 }
 
 function setCalMode(m){ calMode=m; if(m==='next4') calCursor=new Date(); renderCal(); }
+function setCalClient(id){ calClientFilter=id||''; renderCal(); }
 function calShift(n){
   if(calMode==='month') calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+n,1);
   else calCursor=addDays(calCursor,n*(calMode==='week'?7:calMode==='next4'?4:1));
@@ -1854,7 +1896,9 @@ function renderCal(){
     <h2 class="gc-title">${rangeLabel()}</h2>
     <div class="gc-views">${viewBtns}</div>
   </div>
-  <div class="gc-cals"><span class="filter-lbl">Calendriers</span><div class="filterbar" id="calFilter"></div></div>`;
+  <div class="gc-cals"><span class="filter-lbl">Calendriers</span><div class="filterbar" id="calFilter"></div>
+    ${clientsAll().length?`<select class="proj-sel client-sel" style="margin-left:auto" onchange="setCalClient(this.value)"><option value="">Tous les clients</option>${clientsAll().map(c=>`<option value="${c.id}"${calClientFilter===c.id?' selected':''}>${esc(c.name)}</option>`).join('')}</select>`:''}
+  </div>`;
   const grid = calMode==='month' ? monthHTML() : timeGridHTML(calMode==='week'?7:calMode==='next4'?4:1);
   $('#calView').innerHTML = head + `<div class="gc-body">
       <aside class="gc-side">${categorySideHTML()}</aside>
@@ -2138,12 +2182,15 @@ function chipUrg(v){ return v?`<span class="chip" style="background:${URG_COLOR[
 function chipEn(v){ return v==='haute'?`<span class="chip energy-haute">Haute</span>`:v==='basse'?`<span class="chip energy-basse">Basse</span>`:''; }
 function chipCal(id){ const c=catById(id); if(!c)return ''; const col=catColor(id,me); return `<span class="chip" style="background:${hexRgba(col,0.16)};color:${col}">${esc(c.name)}</span>`; }
 function chipPerson(id){ const m=memberById(id); return m?`<span class="ppl-mini"><span class="av sm" style="background:${m.color}">${initials(m.name)}</span>${esc(m.name)}</span>`:''; }
+function chipClient(id){ const c=clientById(id); return c?`<span class="ppl-mini"><span class="av sm" style="background:${c.color||'var(--accent)'}">${initials(c.name)}</span>${esc(c.name)}</span>`:''; }
 function placeholder(){ return `<span class="ph">Vide</span>`; }
 function renderProps(){
   $('#fUrg').innerHTML    = draft.urg ? chipUrg(draft.urg) : placeholder();
   $('#fEn').innerHTML     = draft.en  ? chipEn(draft.en)   : placeholder();
   $('#fCal').innerHTML    = draft.cal ? chipCal(draft.cal) : placeholder();
   $('#fPeople').innerHTML = draft.people.length ? draft.people.map(chipPerson).join('') : placeholder();
+  const rc=$('#rowClient'); if(rc) rc.style.display = clientsAll().length ? '' : 'none';   // masqué s'il n'y a pas de clients
+  const fc=$('#fClient'); if(fc) fc.innerHTML = draft.client ? chipClient(draft.client) : placeholder();
 }
 
 let pickOpen=false, pickType=null, pickIsCal=false;
@@ -2170,6 +2217,10 @@ function buildPickBody(){
     rows=['haute','basse'].map(v=>opt(v,chipEn(v),o.en===v)).join(''); }
   else if(pickType==='cal'){ title='Catégorie';
     rows=state.categories.map(c=>opt(c.id,chipCal(c.id),o.cal===c.id)).join(''); }
+  else if(pickType==='client'){ title='Client';
+    rows = clientsAll().length
+      ? clientsAll().map(c=>opt(c.id,chipClient(c.id),o.client===c.id)).join('')
+      : `<div class="pick-empty">Aucun client. Ajoute-les dans le CRM.</div>`; }
   else if(pickType==='people'){ title=pickIsCal?'Invités':'Personne';
     rows = state.members.length
       ? state.members.map(m=>opt(m.id,chipPerson(m.id),o.people.includes(m.id))).join('')
@@ -2208,7 +2259,7 @@ function openModal(id=null, presetCol=null, preset={}){
     $('#fTitle').value=t.title; $('#fDesc').value=t.desc||'';
     $('#fDate').value=t.date||''; $('#fTime').value=t.time||'';
     $('#fRec').value=t.rec||'none'; $('#fCol').value=t.col; $('#fBlock').value=t.block||'';
-    draft={urg:t.urg||'',en:t.en||'',cal:catById(t.cal)?t.cal:'',people:[...t.people],recDays:[...(t.recDays||[])],dur:t.dur||60};
+    draft={urg:t.urg||'',en:t.en||'',cal:catById(t.cal)?t.cal:'',people:[...t.people],recDays:[...(t.recDays||[])],dur:t.dur||60,client:t.clientId||''};
     draftKind = t.kind || 'board';
   }else{
     modalReadOnly = false;
@@ -2217,7 +2268,8 @@ function openModal(id=null, presetCol=null, preset={}){
     $('#fTitle').value='';$('#fDesc').value='';$('#fBlock').value='';
     $('#fDate').value=preset.date||''; $('#fTime').value=preset.time||''; $('#fRec').value='none';
     $('#fCol').value=presetCol||'backlog';
-    draft={urg:'',en:'',cal:'',people: preset.owner?[preset.owner]:[],recDays:[],dur:preset.dur||60};   // tout vide : on clique pour choisir
+    const projClient = activeProject ? ((state.projects.find(p=>p.id===activeProject)||{}).clientId||'') : '';
+    draft={urg:'',en:'',cal:'',people: preset.owner?[preset.owner]:[],recDays:[],dur:preset.dur||60,client:preset.client||projClient||''};   // hérite du client du projet si lié
   }
   onColChange(); onRecChange(); renderRecDays(); updateDiversRows();
   renderProps(); renderFiles();
@@ -2234,14 +2286,14 @@ function applyReadOnly(){
   $('#roNote').style.display = modalReadOnly ? '' : 'none';
 }
 
-function snapTask(t){ return JSON.stringify({title:t.title||'',desc:t.desc||'',col:t.col,urg:t.urg,en:t.en,cal:t.cal,people:[...(t.people||[])].sort(),date:t.date||'',time:t.time||'',rec:t.rec,recDays:[...(t.recDays||[])].sort(),block:t.block||'',dur:t.dur||60}); }
+function snapTask(t){ return JSON.stringify({title:t.title||'',desc:t.desc||'',col:t.col,urg:t.urg,en:t.en,cal:t.cal,people:[...(t.people||[])].sort(),date:t.date||'',time:t.time||'',rec:t.rec,recDays:[...(t.recDays||[])].sort(),block:t.block||'',dur:t.dur||60,clientId:t.clientId||''}); }
 // instantané construit à partir du formulaire (même structure que snapTask) pour comparer ce qui a changé
 function currentSnap(){
   const col=$('#fCol').value, rec=$('#fRec').value;
   return JSON.stringify({title:$('#fTitle').value.trim(),desc:$('#fDesc').value.trim(),col,
     urg:draft.urg,en:draft.en,cal:draft.cal,people:[...draft.people].sort(),
     date:$('#fDate').value,time:$('#fTime').value,rec,recDays:[...(draft.recDays||[])].sort(),
-    block: col==='bloquant'?$('#fBlock').value.trim():'',dur:draft.dur||60});
+    block: col==='bloquant'?$('#fBlock').value.trim():'',dur:draft.dur||60,clientId:draft.client||''});
 }
 
 function commitDraft(scope){
@@ -2254,7 +2306,7 @@ function commitDraft(scope){
   let people=[...draft.people];
   const fields={ desc:$('#fDesc').value.trim(), col, urg:draft.urg, en:draft.en, cal:draft.cal,
     people, date:$('#fDate').value, time:$('#fTime').value, rec,
-    recDays: rec==='custom'?[...draft.recDays]:[], block };
+    recDays: rec==='custom'?[...draft.recDays]:[], block, clientId:draft.client||'' };
   let prevPeople=[], tTitle=title, tid=editingId;
   if(editingId){
     const t=state.tasks.find(x=>x.id===editingId); if(!t)return;
@@ -2289,7 +2341,7 @@ function ensureTask(){
   let t=currentTask(); if(t) return t;
   const fields={ desc:$('#fDesc').value.trim(), col:$('#fCol').value, urg:draft.urg, en:draft.en, cal:draft.cal,
     people: draft.people.length?[...draft.people]:[me], date:$('#fDate').value, time:$('#fTime').value, rec:$('#fRec').value,
-    recDays: $('#fRec').value==='custom'?[...draft.recDays]:[], block: $('#fCol').value==='bloquant'?$('#fBlock').value.trim():'' };
+    recDays: $('#fRec').value==='custom'?[...draft.recDays]:[], block: $('#fCol').value==='bloquant'?$('#fBlock').value.trim():'', clientId:draft.client||'' };
   const _pf = activeProject ? {projectId:activeProject} : {};
   t={ id:uid(), kind:draftKind, dur:draft.dur||60, title:($('#fTitle').value.trim()||'Sans titre'), files:[], ..._pf, ...fields };
   state.tasks.push(t); editingId=t.id; $('#mActions').style.display=''; origSnap=currentSnap();
@@ -2428,7 +2480,7 @@ function deleteTask(){
 
 /* ============ popup calendrier (création / édition façon Google Agenda) ============ */
 let calEditId=null, calOccDate=null, calReadOnly=false, origCalSnap=null, calOpenedAt=0;
-let calDraft={ people:[], cal:'', recDays:[], dur:60 };
+let calDraft={ people:[], cal:'', recDays:[], dur:60, client:'' };
 function hmToMin(s){ if(!s) return 0; const p=s.split(':'); return (+p[0]||0)*60+(+p[1]||0); }
 function cRecChange(){ $('#cRecDays').style.display = $('#cRec').value==='custom' ? '' : 'none'; renderCalRecDays(); }
 function cToggleRecDay(i){ calDraft.recDays = calDraft.recDays.includes(i) ? calDraft.recDays.filter(x=>x!==i) : [...calDraft.recDays,i].sort(); renderCalRecDays(); }
@@ -2438,6 +2490,8 @@ function cSyncDur(){ const s=$('#cStart').value,e=$('#cEnd').value; if(s&&e){ co
 function renderCalProps(){
   $('#cPeople').innerHTML = calDraft.people.length ? calDraft.people.map(chipPerson).join('') : `<span class="ph">Ajouter des invités</span>`;
   $('#cCal').innerHTML    = calDraft.cal ? chipCal(calDraft.cal) : `<span class="ph">Sans catégorie</span>`;
+  const rc=$('#cRowClient'); if(rc) rc.style.display = clientsAll().length ? '' : 'none';
+  const cc=$('#cClient'); if(cc) cc.innerHTML = calDraft.client ? chipClient(calDraft.client) : `<span class="ph">Sans client</span>`;
 }
 function openCalEvt(e,id,di){ openCalPop(id,{occDate:di, anchorRect:e.currentTarget.getBoundingClientRect()}); }
 function readCalForm(){
@@ -2447,7 +2501,7 @@ function readCalForm(){
   const rec=$('#cRec').value;
   return { title:$('#cTitle').value.trim(), desc:$('#cDesc').value.trim(),
     date:$('#cDate').value||iso(new Date()), time:start||'', dur,
-    cal:calDraft.cal, people:[...calDraft.people], rec, recDays: rec==='custom'?[...calDraft.recDays]:[] };
+    cal:calDraft.cal, people:[...calDraft.people], rec, recDays: rec==='custom'?[...calDraft.recDays]:[], clientId:calDraft.client||'' };
 }
 function calSnap(){ const f=readCalForm(); return JSON.stringify({...f, people:[...f.people].sort(), recDays:[...f.recDays].sort()}); }
 function applyCalReadOnly(){
@@ -2473,7 +2527,7 @@ function openCalPop(id=null, opts={}){
     $('#cEnd').value = minToHM(Math.min(1439,hmToMin(start)+(t.dur||60)));
     $('#cRec').value = t.rec||'none';
     $('#cDesc').value = t.desc||'';
-    calDraft = { people:[...(t.people||[])], cal: catById(t.cal)?t.cal:'', recDays:[...(t.recDays||[])], dur:t.dur||60 };
+    calDraft = { people:[...(t.people||[])], cal: catById(t.cal)?t.cal:'', recDays:[...(t.recDays||[])], dur:t.dur||60, client:t.clientId||'' };
     $('#cDel').style.display=''; $('#cDup').style.display='';
   }else{
     calReadOnly=false;
@@ -2483,7 +2537,7 @@ function openCalPop(id=null, opts={}){
     $('#cTitle').value=''; $('#cDate').value=date; $('#cStart').value=start;
     $('#cEnd').value=minToHM(Math.min(1439,hmToMin(start)+dur));
     $('#cRec').value='none'; $('#cDesc').value='';
-    calDraft = { people:[me], cal:'', recDays:[], dur };
+    calDraft = { people:[me], cal:'', recDays:[], dur, client: opts.client||'' };
     $('#cDel').style.display='none'; $('#cDup').style.display='none';
   }
   cRecChange(); renderCalProps(); applyCalReadOnly();
@@ -2842,12 +2896,14 @@ function openDeal(id=null, presetStage=null, presetClient=null){
     $('#dStage').value=d.stage||'lead'; $('#dSigned').value=d.signedAt||''; $('#dPaid').value=d.paidAt||'';
     $('#dNext').value=d.nextAction||''; $('#dNextDate').value=d.nextDate||''; $('#dNotes').value=d.notes||'';
     $('#dDel').style.display='';
+    const hasProj = d.projectId && state.projects.some(p=>p.id===d.projectId);
+    const pb=$('#dProjBtn'); pb.style.display=''; pb.textContent = hasProj ? '🗂️ Ouvrir le projet' : '🗂️ Créer le projet';
   }else{
     $('#dealTitle').textContent='Nouvelle opportunité';
     $('#dTitle').value=''; $('#dClient').value=presetClient||''; $('#dAmount').value='';
     $('#dStage').value=presetStage||'lead'; $('#dSigned').value=''; $('#dPaid').value='';
     $('#dNext').value=''; $('#dNextDate').value=''; $('#dNotes').value='';
-    $('#dDel').style.display='none';
+    $('#dDel').style.display='none'; $('#dProjBtn').style.display='none';
   }
   $('#dealScrim').classList.add('open'); setTimeout(()=>$('#dTitle').focus(),40);
 }
@@ -2870,6 +2926,31 @@ function deleteDeal(){
   state.deals=state.deals.filter(x=>x.id!==editingDeal);
   save(); closeDeal(); renderCrm();
 }
+/* ---- Deal → projet : crée un kanban pré-rempli, lié au client ---- */
+const PROJECT_TEMPLATE=[
+  {col:'backlog',       title:'Brief & cadrage',            cal:'strategie', urg:'prioritaire'},
+  {col:'backlog',       title:'Rassembler accès & assets',  cal:'admin',     urg:'prioritaire'},
+  {col:'prochainement', title:'Kickoff client',             cal:'call',      urg:'prioritaire'},
+  {col:'prochainement', title:'Rétroplanning & jalons',     cal:'strategie', urg:'accessoire'},
+];
+function dealToProject(){
+  if(!editingDeal) return;
+  const d=dealById(editingDeal); if(!d) return;
+  // déjà un projet lié → on l'ouvre
+  if(d.projectId && state.projects.some(p=>p.id===d.projectId)){
+    closeDeal(); activeProject=d.projectId; boardClientFilter=''; boardPrioView=false; setView('board'); return;
+  }
+  const pid=uid();
+  state.projects.push({ id:pid, name:d.title||'Projet', members:[], clientId:d.clientId||'' });
+  PROJECT_TEMPLATE.forEach(tpl=>{
+    state.tasks.push({ id:uid(), kind:'board', title:tpl.title, desc:'', col:tpl.col, urg:tpl.urg, en:'haute',
+      cal:tpl.cal, people:[], date:'', time:'', dur:60, rec:'none', files:[], projectId:pid, clientId:d.clientId||'' });
+  });
+  d.projectId=pid;
+  save(); closeDeal();
+  activeProject=pid; boardClientFilter=''; boardPrioView=false; setView('board');
+  toast('Projet créé depuis l\'opportunité ✓');
+}
 
 /* ---------- édition client ---------- */
 let editingClient=null;
@@ -2881,7 +2962,7 @@ function openClient(id=null){
     $('#clientTitle').textContent='Fiche client';
     $('#clName').value=c.name||''; $('#clCompany').value=c.company||''; $('#clStatus').value=c.status||'lead';
     $('#clEmail').value=c.email||''; $('#clPhone').value=c.phone||''; $('#clNotes').value=c.notes||'';
-    $('#cliDel').style.display=''; renderClientDeals(c.id);
+    $('#cliDel').style.display=''; renderClient360(c.id);
   }else{
     $('#clientTitle').textContent='Nouveau client';
     $('#clName').value=''; $('#clCompany').value=''; $('#clStatus').value='lead';
@@ -2908,13 +2989,47 @@ function deleteClient(){
   state.clients=state.clients.filter(x=>x.id!==editingClient);
   save(); closeClient(); renderCrm();
 }
-function renderClientDeals(cid){
-  const ds=dealsAll().filter(d=>d.clientId===cid);
-  let html=`<div class="cl-deals-h">Opportunités${ds.length?` (${ds.length})`:''}</div>`;
-  if(!ds.length){ html+=`<div class="crm-empty" style="padding:6px 0">Aucune opportunité. <button class="lnk" onclick="openDeal(null,null,'${cid}')">+ en créer une</button></div>`; }
-  else { html+=ds.map(d=>{ const s=stageById(d.stage); return `<div class="cl-deal" onclick="openDeal('${d.id}')"><span class="lg-dot" style="background:${s.color}"></span><span class="cl-deal-t">${esc(d.title)}</span><span class="cl-deal-a">${fmtMoney(dealAmount(d))}</span></div>`; }).join(''); html+=`<button class="lnk" onclick="openDeal(null,null,'${cid}')">+ Nouvelle opportunité</button>`; }
+const COL_DOT={backlog:'#8B8B95',prochainement:'#8B8B95',encours:'#E8920B',bloquant:'#7C3AED',check:'#CA8A04',termine:'#1F8A5B'};
+function taskClientId(t){ if(t.clientId) return t.clientId; const p=t.projectId&&state.projects.find(x=>x.id===t.projectId); return p?(p.clientId||''):''; }
+function renderClient360(cid){
+  const deals=dealsAll().filter(d=>d.clientId===cid);
+  const enc=deals.filter(d=>d.stage==='encaisse').reduce((s,d)=>s+dealAmount(d),0);
+  const pipe=deals.filter(d=>STAGE_ACTIVE.includes(d.stage)).reduce((s,d)=>s+dealAmount(d),0);
+  const projs=state.projects.filter(p=>p.clientId===cid);
+  const tasks=state.tasks.filter(t=>t.kind==='board' && taskClientId(t)===cid);
+  const activeTasks=tasks.filter(t=>t.col!=='termine');
+  const today=todayISO();
+  const events=state.tasks.filter(t=>t.kind==='cal' && t.clientId===cid);
+  const upcoming=events.filter(t=>(t.date||'')>=today).sort((a,b)=>(a.date||'').localeCompare(b.date||'')).slice(0,4);
+  const dates=[]; events.forEach(e=>{ if(e.date) dates.push(e.date); });
+  deals.forEach(d=>{ [d.signedAt,d.paidAt,d.nextDate,d.createdAt].forEach(x=>{ if(x) dates.push(x); }); });
+  const last = dates.filter(x=>x<=today).sort().slice(-1)[0];
+
+  const kpi=(v,l)=>`<div class="c3-kpi"><div class="c3-v">${v}</div><div class="c3-l">${l}</div></div>`;
+  let html=`<div class="c3-kpis">${kpi(fmtMoney(enc),'CA encaissé')}${kpi(fmtMoney(pipe),'Pipeline')}${kpi(projs.length,'Projets')}${kpi(activeTasks.length,'Tâches actives')}</div>`;
+  html+=`<div class="c3-last">Dernier contact : <b>${last?fmtDateFR(last):'—'}</b></div>`;
+
+  html+=`<div class="c3-sec">Projets${projs.length?` · ${projs.length}`:''}</div>`;
+  html+= projs.length ? `<div class="c3-chips">${projs.map(p=>`<button class="c3-chip" onclick="openClientProject('${p.id}')">🗂️ ${esc(p.name)}</button>`).join('')}</div>`
+    : `<div class="c3-empty">Aucun projet lié.</div>`;
+
+  html+=`<div class="c3-sec">Opportunités${deals.length?` · ${deals.length}`:''}</div>`;
+  html+= deals.length ? deals.map(d=>{ const s=stageById(d.stage); return `<div class="cl-deal" onclick="openDeal('${d.id}')"><span class="lg-dot" style="background:${s.color}"></span><span class="cl-deal-t">${esc(d.title)}</span><span class="cl-deal-a">${fmtMoney(dealAmount(d))}</span></div>`; }).join('')
+    : `<div class="c3-empty">Aucune opportunité.</div>`;
+  html+=`<button class="lnk" onclick="openDeal(null,null,'${cid}')">+ Nouvelle opportunité</button>`;
+
+  html+=`<div class="c3-sec">Tâches liées${activeTasks.length?` · ${activeTasks.length} actives`:''}</div>`;
+  html+= tasks.length ? tasks.slice(0,8).map(t=>`<div class="c3-task" onclick="openClientTask('${t.id}')"><span class="c3-dot" style="background:${COL_DOT[t.col]||'#888'}"></span><span class="c3-tt">${esc(t.title)}</span><span class="c3-st">${COL_NAME[t.col]||t.col}</span></div>`).join('')
+    : `<div class="c3-empty">Aucune tâche liée. Assigne un client à une tâche depuis le Tableau.</div>`;
+
+  html+=`<div class="c3-sec">Prochains rendez-vous</div>`;
+  html+= upcoming.length ? upcoming.map(e=>`<div class="c3-task"><span class="c3-dot" style="background:${e.cal?catColor(e.cal,me):'#888'}"></span><span class="c3-tt">${esc(e.title)}</span><span class="c3-st">${fmtDateFR(e.date)}${e.time?' · '+e.time:''}</span></div>`).join('')
+    : `<div class="c3-empty">Aucun rendez-vous à venir.</div>`;
+
   $('#clDeals').innerHTML=html;
 }
+function openClientProject(pid){ closeClient(); activeProject=pid; boardClientFilter=''; boardPrioView=false; setView('board'); }
+function openClientTask(tid){ closeClient(); openModal(tid); }
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){
   if($('#recScrim').classList.contains('open')){ resolveRec(null); return; }
