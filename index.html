@@ -338,6 +338,83 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 .proj-sel:focus{border-color:var(--border-strong);outline:none}
 .proj-cnt{font-size:12px;color:var(--muted);font-weight:600;background:var(--paper);border:1px solid var(--border);border-radius:20px;padding:3px 9px}
 .client-sel{min-width:140px}
+.pj-cli{color:var(--faint);font-weight:500}
+/* ---------- espace client ---------- */
+.chome{padding:22px 22px 50px;max-width:1080px;margin:0 auto}
+.ch-hero h1{font-family:'Space Grotesk',sans-serif;font-size:25px;font-weight:700;letter-spacing:-.02em;margin:0 0 4px}
+.ch-hero p{color:var(--muted);font-size:14px;margin:0 0 20px}
+.ch-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.ch-kpi{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow)}
+.ch-ic{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:15px;flex:none}
+.ch-v{font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;line-height:1.1}
+.ch-l{font-size:12px;color:var(--muted);margin-top:1px}
+.ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ch-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:17px 18px;box-shadow:var(--shadow)}
+.ch-card.wide{grid-column:1 / -1}
+.ch-card h3{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;margin:0 0 12px}
+.ch-row{display:flex;align-items:flex-start;gap:10px;padding:9px 2px;border-bottom:1px solid var(--border);cursor:pointer}
+.ch-row:last-child{border-bottom:none}
+.ch-row:hover .ch-row-t{color:var(--accent)}
+.ch-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none}
+.ch-row-t{font-size:13.5px;font-weight:600;line-height:1.35}
+.ch-row-m{font-size:11.5px;color:var(--faint);margin-top:2px}
+.ch-empty{font-size:13px;color:var(--faint);padding:14px 2px}
+.ch-projs{display:flex;flex-direction:column;gap:9px}
+.ch-proj{display:block;width:100%;text-align:left;border:1px solid var(--border);border-radius:11px;padding:11px 13px;background:var(--paper);transition:.12s}
+.ch-proj:hover{border-color:var(--accent)}
+.ch-proj-n{display:block;font-size:13.5px;font-weight:600}
+.ch-proj-m{display:block;font-size:11.5px;color:var(--faint);margin:2px 0 7px}
+.ch-bar{display:block;height:5px;border-radius:5px;background:var(--border);overflow:hidden}
+.ch-bar i{display:block;height:100%;background:var(--accent);border-radius:5px}
+.ch-team{display:flex;flex-wrap:wrap;gap:14px}
+.ch-mate{width:104px;text-align:center}
+.ch-mate .av{width:42px;height:42px;font-size:14px;margin:0 auto 7px}
+.ch-mate-n{font-size:12.5px;font-weight:600;line-height:1.3}
+.ch-mate-r{font-size:11px;color:var(--faint)}
+@media(max-width:760px){.ch-kpis{grid-template-columns:repeat(2,1fr)}.ch-grid{grid-template-columns:1fr}}
+/* ---------- section RS ---------- */
+.rs{padding:0}
+.rs-sheet{overflow-x:auto;border:1px solid var(--border);border-radius:14px;background:var(--panel);box-shadow:var(--shadow)}
+.rs-sheet .crm-tbl.big{border:none;border-radius:0;box-shadow:none;margin:0}
+.rs-badge{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.rs-edito-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rs-edito-bar .spacer{flex:1}
+.rs-week{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px}
+.gc-nav-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border-strong);background:var(--panel);color:var(--muted);font-size:16px;line-height:1;transition:.12s}
+.gc-nav-btn:hover{border-color:var(--ink);color:var(--ink)}
+.rs-grid{width:100%;border-collapse:collapse;min-width:760px;table-layout:fixed}
+.rs-grid th.rs-day{background:var(--paper);border:1px solid var(--border);padding:7px 8px;text-align:left;position:relative}
+.rs-grid th.rs-day input{width:100%;border:none;background:none;font:inherit;font-size:12.5px;font-weight:700;color:var(--ink);padding:2px 18px 2px 2px}
+.rs-grid th.rs-day input:focus{outline:none;background:var(--panel);border-radius:5px}
+.rs-day-x{position:absolute;right:5px;top:6px;color:var(--faint);font-size:14px;line-height:1;padding:1px 4px;border-radius:4px}
+.rs-day-x:hover{color:var(--bloque);background:var(--panel)}
+.rs-cell{border:1px solid var(--border);vertical-align:top;padding:6px;height:190px}
+.rs-cell-post{border-radius:8px;padding:7px 9px;margin-bottom:6px;cursor:pointer;transition:.12s}
+.rs-cell-post:hover{filter:brightness(.97)}
+.rcp-t{display:block;font-size:12.5px;font-weight:600;line-height:1.35}
+.rcp-s{display:block;font-size:10.5px;font-weight:700;margin-top:3px}
+.rs-cell-add{width:100%;border:1px dashed var(--border-strong);border-radius:8px;color:var(--faint);font-size:15px;line-height:1;padding:5px;transition:.12s}
+.rs-cell-add:hover{border-color:var(--accent);color:var(--accent)}
+.rs-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12.5px;color:var(--muted)}
+.rs-lg{display:inline-flex;align-items:center;gap:6px}
+.rs-lg i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.rs-note{background:var(--accent-soft);border:1px solid var(--border);border-radius:12px;padding:13px 15px;font-size:13.5px;color:var(--muted);line-height:1.55;margin-bottom:14px}
+.rs-note b{color:var(--ink)}
+.rs-empty-row{text-align:center;color:var(--faint);padding:26px !important}
+.rs-card{cursor:pointer}
+.gcal-btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted);background:var(--panel);border:1px solid var(--border-strong);border-radius:9px;padding:6px 11px;transition:.12s;white-space:nowrap}
+.gcal-btn:hover{border-color:var(--accent);color:var(--accent)}
+.pj-cols{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.pjc-row{display:flex;align-items:center;gap:7px;padding:5px 7px;border:1px solid var(--border);border-radius:9px;background:var(--paper)}
+.pjc-row.dragging{opacity:.4}
+.pjc-row.drop-target{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.pjc-grip{color:var(--faint);cursor:grab;font-size:13px;line-height:1;flex:none}
+.pjc-row input[type=color]{width:26px;height:26px;padding:0;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;flex:none}
+.pjc-row input[type=text]{flex:1;min-width:0;border:none;background:none;font-size:13px;padding:3px 2px;color:var(--ink)}
+.pjc-row input[type=text]:focus{outline:none}
+.pjc-x{color:var(--faint);font-size:16px;line-height:1;padding:2px 5px;border-radius:5px;flex:none}
+.pjc-x:hover{background:var(--panel);color:var(--bloque)}
+.fld-hint{font-size:11.5px;color:var(--faint);margin:4px 0 0;line-height:1.45}
 .chip-client{display:inline-flex;align-items:center;gap:5px}
 .chip-client .cdot{width:7px;height:7px;border-radius:50%;flex:none}
 .proj-new{padding:5px 11px;border-radius:9px;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);transition:.12s}
@@ -713,8 +790,10 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 <div class="topbar">
   <div class="brand"><img class="brand-logo" src="logo.png" alt="Percer" onerror="this.remove()"><span class="sub">Espace d'équipe</span></div>
   <div class="viewtog">
+    <button id="vHome" onclick="setView('home')">Accueil</button>
     <button id="vBoard" class="on" onclick="setView('board')">Tableau</button>
     <button id="vCal" onclick="setView('cal')">Calendrier</button>
+    <button id="vRs" onclick="setView('rs')">RS</button>
     <button id="vCrm" onclick="setView('crm')">CRM</button>
   </div>
   <div class="spacer"></div>
@@ -729,10 +808,34 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 </div>
 
 <div id="sortBar" class="sortbar"></div>
+<div id="homeView" style="display:none"></div>
 <div id="boardView"></div>
 <div id="calView" style="display:none"></div>
+<div id="rsView" style="display:none"></div>
 <div id="crmView" style="display:none"></div>
 <div id="gateView" style="display:none"></div>
+
+<!-- modal post RS -->
+<div class="crmscrim" id="postScrim" onclick="if(event.target===this)closePost()">
+  <div class="crmdlg" style="max-width:440px">
+    <div class="crmdlg-h"><h3 id="postTitle">Nouveau post</h3><button class="x" onclick="closePost()">×</button></div>
+    <div class="crmdlg-b">
+      <label class="fld"><span>Titre du post</span><input id="poTitle" type="text" placeholder="Ex : Carrousel — 3 erreurs à éviter"></label>
+      <label class="fld"><span>Angle / thème</span><input id="poAngle" type="text" placeholder="Ex : Personal branding"></label>
+      <div class="fld-row">
+        <label class="fld"><span>Jour de publication</span><select id="poDay"></select></label>
+        <label class="fld"><span>Avancement</span><select id="poStatus"></select></label>
+      </div>
+      <label class="fld"><span>Projet</span><select id="poProjet"></select></label>
+      <label class="fld"><span>Notes</span><textarea id="poNotes" placeholder="Idées, accroche, script…"></textarea></label>
+    </div>
+    <div class="crmdlg-f">
+      <button class="cp-del" id="poDel" onclick="deletePost()" style="display:none">Supprimer</button>
+      <span class="spacer"></span>
+      <button class="crm-new" onclick="savePost()">Enregistrer</button>
+    </div>
+  </div>
+</div>
 
 <!-- modal projet -->
 <div class="crmscrim" id="projScrim" onclick="if(event.target===this)closeProjModal()">
@@ -744,6 +847,11 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
     <div class="crmdlg-b">
       <label class="fld"><span>Nom du projet</span><input id="pjName" type="text" placeholder="Ex : Refonte site"></label>
       <label class="fld"><span>Client lié (optionnel)</span><select id="pjClient"></select></label>
+      <div class="fld"><span>Colonnes du kanban</span>
+        <div id="pjCols" class="pj-cols"></div>
+        <button type="button" class="lnk" onclick="addProjCol()">+ Ajouter une colonne</button>
+        <p class="fld-hint">Glisse ↑↓ pour réordonner. Laisse vide pour utiliser les colonnes par défaut.</p>
+      </div>
       <div class="fld"><span>Qui voit ce projet</span><div id="pjMembers" class="pj-members"></div></div>
     </div>
     <div class="crmdlg-f">
@@ -772,15 +880,15 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h.01M4 12h.01M4 18h.01M9 6h11M9 12h11M9 18h11" stroke-linecap="round"/></svg>Personne</div>
         <div class="prop-v"><div class="pv" id="fPeople" onclick="openPick('people',this)"></div></div>
       </div>
-      <div class="prop" id="rowClient">
-        <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round"/><circle cx="12" cy="7" r="4"/></svg>Client</div>
-        <div class="prop-v"><div class="pv" id="fClient" onclick="openPick('client',this)"></div></div>
+      <div class="prop" id="rowProjet">
+        <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-linejoin="round"/></svg>Projet</div>
+        <div class="prop-v"><div class="pv" id="fProjet" onclick="openPick('projet',this)"></div></div>
       </div>
       <div class="prop">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg>Deadline</div>
         <div class="prop-v"><input type="date" id="fDate"></div>
       </div>
-      <div class="prop">
+      <div class="prop" id="rowHeure">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/></svg>Heure</div>
         <div class="prop-v"><input type="time" id="fTime"></div>
       </div>
@@ -796,7 +904,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" stroke-linejoin="round"/></svg>Énergie</div>
         <div class="prop-v"><div class="pv" id="fEn" onclick="openPick('en',this)"></div></div>
       </div>
-      <div class="prop">
+      <div class="prop" id="rowRec">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l4 4-4 4M21 6H8a5 5 0 0 0-5 5M7 22l-4-4 4-4M3 18h13a5 5 0 0 0 5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Récurrence</div>
         <div class="prop-v"><select id="fRec" onchange="onRecChange()">
           <option value="none">Ne se répète pas</option>
@@ -920,8 +1028,8 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
       <div class="cp-main"><div class="pv" id="cCal" onclick="openPick('cal',this,true)"></div></div>
     </div>
     <div class="cp-row" id="cRowClient">
-      <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round"/><circle cx="12" cy="7" r="4"/></svg></span>
-      <div class="cp-main"><div class="pv" id="cClient" onclick="openPick('client',this,true)"></div></div>
+      <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke-linejoin="round"/></svg></span>
+      <div class="cp-main"><div class="pv" id="cClient" onclick="openPick('projet',this,true)"></div></div>
     </div>
     <div class="cp-row">
       <span class="cp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/></svg></span>
@@ -1242,19 +1350,24 @@ function roleLabel(r){ return ROLES[r]||'Aucun accès'; }
 function isAdmin(id){ return memberRole(id)==='admin'; }
 function iAmAdmin(){ return isAdmin(me); }
 function myRole(){ return memberRole(me); }
+function isClient(id){ return memberRole(id)==='client'; }
+function iAmClient(){ return isClient(me); }
+function canEditBoard(){ return !iAmClient(); }        // le client consulte, il ne modifie pas
 function canSeeProject(p){ return !!p && (iAmAdmin() || (p.members||[]).includes(me)); }
 function myProjects(){ return (state.projects||[]).filter(canSeeProject); }
 function canView(v){
   const r=myRole();
+  if(v==='home') return r==='client';     // espace d'accueil dédié aux clients
   if(r==='admin') return true;
-  if(r==='team')  return v==='cal' || v==='board';
-  if(r==='client')return v==='board';
+  if(r==='team')  return v==='cal' || v==='board' || v==='rs';
+  if(r==='client')return v==='home' || v==='board';
   return false;                                     // none : rien
 }
 function defaultView(){
   const r=myRole();
   if(r==='team') return 'cal';
-  if(r==='client'||r==='admin') return 'board';
+  if(r==='client') return 'home';
+  if(r==='admin') return 'board';
   return 'none';
 }
 
@@ -1284,7 +1397,8 @@ let activeProject = null;      // null = tous les projets, sinon id du projet fi
 let boardClientFilter = '';    // '' = tous les clients, sinon id du client filtré (board)
 let boardPrioView = false;      // false = kanban normal, true = vue par priorités
 let editingProject = null;      // id du projet en cours d'édition dans le modal
-let projMembersDraft = [];      // membres partagés en cours d'édition dans le modal projet
+let projMembersDraft = [];
+let projColsDraft = [];        // colonnes du kanban en cours d'édition dans le modal projet      // membres partagés en cours d'édition dans le modal projet
 
 const $ = s => document.querySelector(s);
 const initials = n => n.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
@@ -1332,6 +1446,11 @@ function ensureState(){
   if(!state.deals) state.deals=[];         // CRM : opportunités / pipeline
   if(!state.crm) state.crm={goal:50000};   // CRM : configuration (objectif de CA)
   if(!state.projects) state.projects=[];   // Projets : kanban par projet
+  // ---- Réseaux sociaux (ajouts non destructifs) ----
+  if(!state.rs) state.rs={};
+  if(!Array.isArray(state.rs.posts)) state.rs.posts=[];        // posts : {id,title,day,week,status,projectId,notes,wall}
+  if(!Array.isArray(state.rs.days)) state.rs.days=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+  if(!Array.isArray(state.rs.competitors)) state.rs.competitors=[];  // veille concurrentielle
   state.projects.forEach(p=>{ if(!Array.isArray(p.members)) p.members=[]; });   // partage de projet
   state.members.forEach(m=>{ if(!m.themes) m.themes={...DEFAULT_THEME}; });
   // migration des rôles : les membres existants gardent l'accès (team), les admins restent admins
@@ -1400,6 +1519,8 @@ function renderMe(){
 function applyAccess(){
   $('#vBoard').style.display = canView('board') ? '' : 'none';
   $('#vCal').style.display   = canView('cal')   ? '' : 'none';
+  $('#vHome').style.display  = canView('home')  ? '' : 'none';
+  $('#vRs').style.display    = canView('rs')    ? '' : 'none';
   $('#vCrm').style.display   = canView('crm')   ? '' : 'none';
   $('#adminBtn').style.display = iAmAdmin() ? '' : 'none';
   const gate=$('#gateView');
@@ -1468,19 +1589,23 @@ let view='board';
 function setView(v){
   if(v!=='none' && !canView(v)) v=defaultView();     // sécurité : pas d'accès → vue autorisée
   view=v;
-  const isB=v==='board', isC=v==='cal', isX=v==='crm', isNone=v==='none';
+  const isH=v==='home', isB=v==='board', isC=v==='cal', isX=v==='crm', isR=v==='rs', isNone=v==='none';
+  $('#vHome').classList.toggle('on',isH);
   $('#vBoard').classList.toggle('on',isB);
   $('#vCal').classList.toggle('on',isC);
+  $('#vRs').classList.toggle('on',isR);
   $('#vCrm').classList.toggle('on',isX);
+  $('#homeView').style.display = isH?'':'none';
   $('#boardView').style.display = isB?'':'none';
   $('#calView').style.display = isC?'':'none';
+  $('#rsView').style.display = isR?'':'none';
   $('#crmView').style.display = isX?'':'none';
   $('#sortBar').style.display = isB?'':'none';
   const gate=$('#gateView'); if(gate) gate.style.display = isNone?'':'none';
   if(isNone){ applyAccess(); return; }
   renderAll();
 }
-function renderAll(){ if(view==='board')renderBoard(); else if(view==='cal')renderCal(); else if(view==='crm')renderCrm(); }
+function renderAll(){ if(view==='home')renderHome(); else if(view==='board')renderBoard(); else if(view==='cal')renderCal(); else if(view==='rs')renderRs(); else if(view==='crm')renderCrm(); }
 
 /* ---------- board ---------- */
 function avStack(ids){
@@ -1492,9 +1617,9 @@ function cardHTML(t){
   const cal=catById(t.cal);
   // personne (avatars + noms)
   const names=t.people.map(id=>{const m=memberById(id);return m?`<span class="av sm" style="background:${m.color}">${initials(m.name)}</span><span class="pn">${esc(m.name)}</span>`:''}).join('');
-  const personRow = t.people.length
-    ? `<div class="crow person">${names}</div>`
-    : `<div class="crow person empty">Non assignée</div>`;
+  const personRow = iAmClient() ? ''
+    : (t.people.length ? `<div class="crow person">${names}</div>`
+                       : `<div class="crow person empty">Non assignée</div>`);
   const calRow = cal ? `<div class="crow"><span class="chip" style="background:${hexRgba(catColor(t.cal),0.16)};color:${catColor(t.cal)}">${esc(cal.name)}</span></div>` : '';
   const impRow = t.urg ? `<div class="crow"><span class="chip" style="background:${URG_COLOR[t.urg]};color:#fff">${capit(t.urg)}</span></div>` : '';
   const enRow = t.en==='haute'
@@ -1508,8 +1633,13 @@ function cardHTML(t){
     : '';
   const nf=(t.files||[]).length;
   const filesRow = nf ? `<div class="crow"><span class="chip" style="background:var(--paper);color:var(--muted)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21.4 11.05 12.25 20.2a5 5 0 0 1-7.07-7.07l9.19-9.19a3 3 0 0 1 4.24 4.24l-9.2 9.19a1 1 0 0 1-1.41-1.41l8.48-8.49" stroke-linecap="round" stroke-linejoin="round"/></svg>${nf}</span></div>` : '';
-  const cli=clientById(t.clientId);
-  const clientRow = cli ? `<div class="crow"><span class="chip chip-client" style="background:${hexRgba(cli.color||'#888',0.16)};color:${cli.color||'var(--muted)'}"><span class="cdot" style="background:${cli.color||'var(--accent)'}"></span>${esc(cli.name)}</span></div>` : '';
+  // projet de la tâche (couleur du client lié) — remplace l'ancienne puce client
+  const pj=(state.projects||[]).find(p=>p.id===t.projectId);
+  const pjCli=pj?clientById(pj.clientId):null;
+  const pjCol=(pjCli&&pjCli.color)||'#8B8B95';
+  const clientRow = pj ? `<div class="crow"><span class="chip chip-client" style="background:${hexRgba(pjCol,0.16)};color:${pjCol}"><span class="cdot" style="background:${pjCol}"></span>${esc(pj.name)}</span></div>` : '';
+  if(iAmClient()) return `<div class="card" data-id="${t.id}" onclick="openModal('${t.id}')">
+    <p class="ttl">${esc(t.title)}</p>${clientRow}${calRow}</div>`;
   return `<div class="card" draggable="true" data-id="${t.id}" onclick="openModal('${t.id}')" oncontextmenu="return onCardContext(event,'${t.id}')">
     <p class="ttl">${esc(t.title)}</p>
     ${blockRow}${clientRow}${personRow}${calRow}${impRow}${enRow}${filesRow}
@@ -1579,6 +1709,11 @@ function colHeaderStyle(color){ return `color:${color}`; }
 function colBodyStyle(color){ return ''; }
 
 function buildColumns(){
+  // colonnes personnalisées du projet actif, si définies
+  const proj = activeProject && (state.projects||[]).find(p=>p.id===activeProject);
+  if(proj && Array.isArray(proj.cols) && proj.cols.length){
+    return proj.cols.map(c=>({key:c.id, col:c.id, name:c.name, color:c.color||'#8B8B95'}));
+  }
   const cols=[];
   COLS_BEFORE.forEach(c=>cols.push({key:c.id, col:c.id, name:c.name, color:c.color}));
   activeList().forEach(m=>{
@@ -1590,7 +1725,6 @@ function buildColumns(){
 }
 function tasksForColumn(c){
   let base = state.tasks.filter(t=>t.kind==='board' && t.col===c.col && t.cal!=='repos');
-  if(boardClientFilter) base = base.filter(t=>(t.clientId||'')===boardClientFilter);   // filtre par client
   if(activeProject) return sortTasks(base.filter(t=>(t.projectId||null)===activeProject));
   if(c.col==='encours') return sortTasks(base.filter(t=>isVisible(t) && t.people.includes(c.owner)));
   return sortTasks(base.filter(t=>isVisible(t)));
@@ -1614,14 +1748,15 @@ function renderBoard(){
   const wrap=$('#boardView'); wrap.className='board';
   wrap.innerHTML = cols.map(c=>{
     const items=tasksForColumn(c);
-    const addBtn=`<button class="col-newcard" onclick="openModal(null,'${c.col}',{owner:'${c.owner||''}'})"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Nouvelle tâche</button>`;
+    const canAdd=canEditBoard();
+    const addBtn=canAdd?`<button class="col-newcard" onclick="openModal(null,'${c.col}',{owner:'${c.owner||''}'})"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Nouvelle tâche</button>`:'';
     const body = items.map(cardHTML).join('') + addBtn;
     return `<div class="col" style="background:${hexRgba(c.color,0.10)}">
       <div class="col-head" style="${colHeaderStyle(c.color)}">
         <span class="col-dot" style="background:${c.color}"></span>
         <span class="col-title">${c.name}</span>
         <span class="col-count" style="color:${c.color}">${items.length}</span>
-        <button class="col-add" onclick="openModal(null,'${c.col}',{owner:'${c.owner||''}'})" title="Ajouter"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg></button>
+        ${canAdd?`<button class="col-add" onclick="openModal(null,'${c.col}',{owner:'${c.owner||''}'})" title="Ajouter"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg></button>`:''}
       </div>
       <div class="col-body" data-col="${c.col}" data-owner="${c.owner||''}" style="${colBodyStyle(c.color)}">${body}</div>
     </div>`;
@@ -1636,7 +1771,7 @@ const PRIO_COLS=[
 function renderBoardPrio(){
   const base = state.tasks.filter(t=>{
     if(t.kind!=='board'||t.cal==='repos') return false;
-    if(boardClientFilter && (t.clientId||'')!==boardClientFilter) return false;   // filtre par client
+    if(t.col==='termine') return false;                              // vue Priorités : sans les terminées
     if(activeProject) return (t.projectId||null)===activeProject;   // projet : toutes ses tâches
     return isVisible(t);                                             // vue globale : filtre « Voir »
   });
@@ -1657,7 +1792,7 @@ function renderBoardPrio(){
   wirePrioDnD();
 }
 function openModalPrio(urgId){
-  openModal(null, 'backlog', {});
+  openModal(null, 'backlog', {projet:activeProject||''});
   setTimeout(()=>{ draft.urg=urgId; renderProps(); }, 0);
 }
 function wirePrioDnD(){
@@ -1678,16 +1813,25 @@ function wirePrioDnD(){
   });
 }
 
-/* ---------- barre tableau : filtre (gauche) + contrôles projets (droite) ---------- */
+/* ---------- barre tableau : filtre (gauche) + sélecteur projet unique (droite) ----------
+   Projets et clients sont fusionnés : un seul menu liste les projets, groupés par
+   « Clients » (projet rattaché à un client) et « Projets internes ». */
 function renderBoardBar(){
   const admin=iAmAdmin();
   const projs = admin ? (state.projects||[]) : myProjects();
   const projCount = activeProject
     ? state.tasks.filter(t=>t.kind==='board'&&(t.projectId||null)===activeProject).length
     : state.tasks.filter(t=>t.kind==='board').length;
-  // les non-admins n'ont pas de vue globale « Tous les projets »
+  const optFor = p => {
+    const c=clientById(p.clientId);
+    return `<option value="${p.id}"${activeProject===p.id?' selected':''}>${esc(p.name)}${c?` — ${esc(c.name)}`:''}</option>`;
+  };
+  const withCli = projs.filter(p=>p.clientId && clientById(p.clientId));
+  const internes = projs.filter(p=>!(p.clientId && clientById(p.clientId)));
+  // les non-admins n'ont pas de vue globale « Tout »
   const opts = (admin?`<option value="">Tous les projets</option>`:'')
-    + projs.map(p=>`<option value="${p.id}"${activeProject===p.id?' selected':''}>${esc(p.name)}</option>`).join('');
+    + (withCli.length?`<optgroup label="Clients">${withCli.map(optFor).join('')}</optgroup>`:'')
+    + (internes.length?`<optgroup label="Projets internes">${internes.map(optFor).join('')}</optgroup>`:'');
   $('#sortBar').innerHTML = `
     <span class="filter-lbl">Voir</span>
     <div class="filterbar" id="filterBar"></div>
@@ -1700,13 +1844,11 @@ function renderBoardBar(){
       <span class="proj-cnt">(${projCount})</span>
       ${admin?`<button class="proj-new" onclick="openProjModal(null)">+ Projet</button>`:''}
       ${admin&&activeProject?`<button class="proj-edit" onclick="openProjModal('${activeProject}')">✎</button>`:''}
-      ${(memberRole(me)!=='client' && clientsAll().length)?`<select class="proj-sel client-sel" onchange="setBoardClient(this.value)"><option value="">Tous les clients</option>${clientsAll().map(c=>`<option value="${c.id}"${boardClientFilter===c.id?' selected':''}>${esc(c.name)}</option>`).join('')}</select>`:''}
       <div class="sorttool" id="sortTool"></div>
     </div>`;
   renderPeopleFilter('#filterBar');
   renderSortTool();
 }
-function setBoardClient(id){ boardClientFilter=id||''; renderBoard(); }
 function setProject(id){
   activeProject = id || null;
   boardPrioView = false;
@@ -1728,9 +1870,43 @@ function openProjModal(id){
   $('#pjClient').value = proj ? (proj.clientId||'') : '';
   projMembersDraft = proj ? [...(proj.members||[])] : [];
   renderProjMembers();
+  projColsDraft = proj && Array.isArray(proj.cols) && proj.cols.length
+    ? proj.cols.map(c=>({...c}))
+    : buildColumns().filter(c=>!c.owner).map(c=>({id:c.col,name:c.name,color:c.color}));
+  renderProjCols();
   $('#pjDel').style.display = proj ? '' : 'none';
   $('#projScrim').classList.add('open');
   setTimeout(()=>$('#pjName').focus(), 50);
+}
+/* ---- colonnes du kanban propres au projet ---- */
+function renderProjCols(){
+  const host=$('#pjCols'); if(!host) return;
+  host.innerHTML = projColsDraft.map((c,i)=>`
+    <div class="pjc-row" draggable="true" data-i="${i}">
+      <span class="pjc-grip">⠿</span>
+      <input type="color" value="${c.color&&c.color.startsWith('#')?c.color:'#8B8B95'}" oninput="setProjCol(${i},'color',this.value)" title="Couleur">
+      <input type="text" value="${escAttr(c.name)}" oninput="setProjCol(${i},'name',this.value)" placeholder="Nom de la colonne">
+      <button type="button" class="pjc-x" onclick="removeProjCol(${i})" title="Retirer">×</button>
+    </div>`).join('') || '<div class="pm-empty">Aucune colonne — les colonnes par défaut seront utilisées.</div>';
+  wireProjColsDnD();
+}
+function setProjCol(i,k,v){ if(projColsDraft[i]) projColsDraft[i][k]=v; }
+function addProjCol(){ projColsDraft.push({id:'c'+uid(), name:'Nouvelle colonne', color:'#8B8B95'}); renderProjCols(); }
+function removeProjCol(i){ projColsDraft.splice(i,1); renderProjCols(); }
+function wireProjColsDnD(){
+  let from=null;
+  document.querySelectorAll('#pjCols .pjc-row').forEach(row=>{
+    row.addEventListener('dragstart',()=>{ from=+row.dataset.i; row.classList.add('dragging'); });
+    row.addEventListener('dragend',()=>{ row.classList.remove('dragging'); document.querySelectorAll('#pjCols .pjc-row').forEach(r=>r.classList.remove('drop-target')); });
+    row.addEventListener('dragover',e=>{ e.preventDefault(); if(from!==null && +row.dataset.i!==from) row.classList.add('drop-target'); });
+    row.addEventListener('dragleave',()=>row.classList.remove('drop-target'));
+    row.addEventListener('drop',e=>{
+      e.preventDefault(); const to=+row.dataset.i;
+      if(from===null||from===to) return;
+      const [m]=projColsDraft.splice(from,1); projColsDraft.splice(to,0,m);
+      from=null; renderProjCols();
+    });
+  });
 }
 function renderProjMembers(){
   const host=$('#pjMembers'); if(!host) return;
@@ -1755,11 +1931,12 @@ function saveProjModal(){
   const name=$('#pjName').value.trim();
   if(!name) return alert('Donne un nom au projet.');
   const clientId=$('#pjClient').value||'';
+  const cols = projColsDraft.filter(c=>(c.name||'').trim()).map(c=>({id:c.id,name:c.name.trim(),color:c.color}));
   if(editingProject){
     const proj = state.projects.find(p=>p.id===editingProject);
-    if(proj){ proj.name=name; proj.members=[...projMembersDraft]; proj.clientId=clientId; }
+    if(proj){ proj.name=name; proj.members=[...projMembersDraft]; proj.clientId=clientId; proj.cols=cols; }
   }else{
-    state.projects.push({id:uid(), name, members:[...projMembersDraft], clientId});
+    state.projects.push({id:uid(), name, members:[...projMembersDraft], clientId, cols});
   }
   save(); closeProjModal(); renderBoard();
 }
@@ -1773,11 +1950,24 @@ function deleteProjModal(){
   save(); closeProjModal(); renderBoard();
 }
 
+/* membres proposés au filtre « Voir » : dans un projet, seulement les gens concernés
+   (membres du projet + personnes assignées à une de ses tâches) */
+function filterMembers(){
+  if(!activeProject) return state.members;
+  const p=(state.projects||[]).find(x=>x.id===activeProject);
+  if(!p) return state.members;
+  const ids=new Set([...(p.members||[])]);
+  state.tasks.forEach(t=>{ if((t.projectId||null)===activeProject) (t.people||[]).forEach(x=>ids.add(x)); });
+  ids.add(me);
+  const list=state.members.filter(m=>ids.has(m.id));
+  return list.length?list:state.members;
+}
 function renderPeopleFilter(sel){
   const host=$(sel); if(!host)return;
-  const all = state.members.every(m=>activeUsers.has(m.id));
+  const mem=filterMembers();
+  const all = mem.every(m=>activeUsers.has(m.id));
   let html = `<button class="favatar tous ${all?'on':''}" onclick="toggleAll()"><span class="fn">Tout</span></button>`;
-  html += state.members.map(m=>{
+  html += mem.map(m=>{
     const on=activeUsers.has(m.id), isMe=m.id===me;
     return `<button class="favatar ${on?'on':''}" onclick="toggleUser('${m.id}')" title="${m.name}${isMe?' (moi)':''}" style="${on?`--uc:${m.color}`:''}">
       <span class="av sm" style="background:${m.color}">${initials(m.name)}</span>
@@ -1787,8 +1977,9 @@ function renderPeopleFilter(sel){
   host.innerHTML = html;
 }
 function toggleAll(){
-  const all = state.members.every(m=>activeUsers.has(m.id));
-  activeUsers = all ? new Set([me]) : new Set(state.members.map(m=>m.id));
+  const mem=filterMembers();
+  const all = mem.every(m=>activeUsers.has(m.id));
+  activeUsers = all ? new Set([me]) : new Set(mem.map(m=>m.id));
   renderAll();
 }
 function toggleUser(id){
@@ -1843,7 +2034,7 @@ function occursOn(t,dateISO){
   return t.date===dateISO;
 }
 function eventsOn(dateISO){ return state.tasks.filter(t=>t.kind==='cal' && occursOn(t,dateISO)); }
-function eventsVisibleOn(dateISO){ return eventsOn(dateISO).filter(t=>isVisible(t) && (!t.cal || activeCats.has(t.cal)) && (!calClientFilter || (t.clientId||'')===calClientFilter)); }
+function eventsVisibleOn(dateISO){ return eventsOn(dateISO).filter(t=>isVisible(t) && (!t.cal || activeCats.has(t.cal))); }
 function effStart(t){ return t.time || (t.en==='haute'?'09:00':'14:00'); } // énergie haute = tôt, basse = aprèm
 function effStartMin(t){ const[h,m]=effStart(t).split(':').map(Number); return h*60+(m||0); }
 function minToHM(min){ min=Math.max(0,Math.min(1439,min)); const h=Math.floor(min/60), m=min%60; return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'); }
@@ -1860,6 +2051,11 @@ function colForDate(dateISO){
 
 function setCalMode(m){ calMode=m; if(m==='next4') calCursor=new Date(); renderCal(); }
 function setCalClient(id){ calClientFilter=id||''; renderCal(); }
+/* Synchro Google Agenda — l'interface est prête ; le branchement réel demande un
+   petit serveur (OAuth Google), il sera ajouté dans un second temps. */
+function connectGoogleCalendar(){
+  alert("Synchronisation Google Agenda\n\nL'interface est prête, mais la connexion à ton agenda Google demande un petit serveur (autorisation OAuth) que le fichier seul ne peut pas assurer.\n\nOn le branchera dans un second temps.");
+}
 function calShift(n){
   if(calMode==='month') calCursor=new Date(calCursor.getFullYear(),calCursor.getMonth()+n,1);
   else calCursor=addDays(calCursor,n*(calMode==='week'?7:calMode==='next4'?4:1));
@@ -1897,7 +2093,9 @@ function renderCal(){
     <div class="gc-views">${viewBtns}</div>
   </div>
   <div class="gc-cals"><span class="filter-lbl">Calendriers</span><div class="filterbar" id="calFilter"></div>
-    ${clientsAll().length?`<select class="proj-sel client-sel" style="margin-left:auto" onchange="setCalClient(this.value)"><option value="">Tous les clients</option>${clientsAll().map(c=>`<option value="${c.id}"${calClientFilter===c.id?' selected':''}>${esc(c.name)}</option>`).join('')}</select>`:''}
+    <button class="gcal-btn" style="margin-left:auto" onclick="connectGoogleCalendar()" title="Synchroniser avec Google Agenda">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg>
+      Connecter Google Agenda</button>
   </div>`;
   const grid = calMode==='month' ? monthHTML() : timeGridHTML(calMode==='week'?7:calMode==='next4'?4:1);
   $('#calView').innerHTML = head + `<div class="gc-body">
@@ -2183,14 +2381,24 @@ function chipEn(v){ return v==='haute'?`<span class="chip energy-haute">Haute</s
 function chipCal(id){ const c=catById(id); if(!c)return ''; const col=catColor(id,me); return `<span class="chip" style="background:${hexRgba(col,0.16)};color:${col}">${esc(c.name)}</span>`; }
 function chipPerson(id){ const m=memberById(id); return m?`<span class="ppl-mini"><span class="av sm" style="background:${m.color}">${initials(m.name)}</span>${esc(m.name)}</span>`:''; }
 function chipClient(id){ const c=clientById(id); return c?`<span class="ppl-mini"><span class="av sm" style="background:${c.color||'var(--accent)'}">${initials(c.name)}</span>${esc(c.name)}</span>`:''; }
+// puce d'un projet : couleur du client lié si présent, nom du client en second
+function chipProjet(id){
+  const p=(state.projects||[]).find(x=>x.id===id); if(!p) return '';
+  const c=clientById(p.clientId); const col=(c&&c.color)||'var(--accent)';
+  return `<span class="ppl-mini"><span class="av sm" style="background:${col}">${initials(p.name)}</span>${esc(p.name)}${c?` <span class="pj-cli">· ${esc(c.name)}</span>`:''}</span>`;
+}
 function placeholder(){ return `<span class="ph">Vide</span>`; }
 function renderProps(){
   $('#fUrg').innerHTML    = draft.urg ? chipUrg(draft.urg) : placeholder();
   $('#fEn').innerHTML     = draft.en  ? chipEn(draft.en)   : placeholder();
   $('#fCal').innerHTML    = draft.cal ? chipCal(draft.cal) : placeholder();
   $('#fPeople').innerHTML = draft.people.length ? draft.people.map(chipPerson).join('') : placeholder();
-  const rc=$('#rowClient'); if(rc) rc.style.display = clientsAll().length ? '' : 'none';   // masqué s'il n'y a pas de clients
-  const fc=$('#fClient'); if(fc) fc.innerHTML = draft.client ? chipClient(draft.client) : placeholder();
+  const rp=$('#rowProjet'); if(rp) rp.style.display = (state.projects||[]).length ? '' : 'none';   // masqué s'il n'y a pas de projet
+  const fp=$('#fProjet'); if(fp) fp.innerHTML = draft.projet ? chipProjet(draft.projet) : placeholder();
+  // Heure & Récurrence : réservées aux événements du calendrier, masquées sur une tâche du tableau
+  const board = draftKind!=='cal';
+  ['#rowHeure','#rowRec'].forEach(s=>{ const el=$(s); if(el) el.style.display = board ? 'none' : ''; });
+  if(board){ const rd=$('#recDaysField'); if(rd) rd.style.display='none'; }
 }
 
 let pickOpen=false, pickType=null, pickIsCal=false;
@@ -2217,10 +2425,10 @@ function buildPickBody(){
     rows=['haute','basse'].map(v=>opt(v,chipEn(v),o.en===v)).join(''); }
   else if(pickType==='cal'){ title='Catégorie';
     rows=state.categories.map(c=>opt(c.id,chipCal(c.id),o.cal===c.id)).join(''); }
-  else if(pickType==='client'){ title='Client';
-    rows = clientsAll().length
-      ? clientsAll().map(c=>opt(c.id,chipClient(c.id),o.client===c.id)).join('')
-      : `<div class="pick-empty">Aucun client. Ajoute-les dans le CRM.</div>`; }
+  else if(pickType==='projet'){ title='Projet';
+    rows = (state.projects||[]).length
+      ? (state.projects||[]).map(p=>opt(p.id,chipProjet(p.id),o.projet===p.id)).join('')
+      : `<div class="pick-empty">Aucun projet. Crée-en un depuis le Tableau.</div>`; }
   else if(pickType==='people'){ title=pickIsCal?'Invités':'Personne';
     rows = state.members.length
       ? state.members.map(m=>opt(m.id,chipPerson(m.id),o.people.includes(m.id))).join('')
@@ -2239,7 +2447,13 @@ function openPick(type,anchor,isCal=false){
   if(top+h>innerHeight-10) top=Math.max(10,r.top-6-h);   // sinon au-dessus
   pop.style.left=left+'px'; pop.style.top=top+'px';
 }
-function fillColSelect(){ $('#fCol').innerHTML=ALL_COL_IDS.map(id=>`<option value="${id}">${COL_NAME[id]}</option>`).join(''); }
+function fillColSelect(){
+  const cols=buildColumns();
+  // dédoublonne (les colonnes « En cours · X » partagent le même id de colonne)
+  const seen=new Set(), opts=[];
+  cols.forEach(c=>{ if(seen.has(c.col)) return; seen.add(c.col); opts.push({id:c.col, name:(COL_NAME[c.col]||c.name)}); });
+  $('#fCol').innerHTML=opts.map(o=>`<option value="${o.id}">${esc(o.name)}</option>`).join('');
+}
 
 function onColChange(){ $('#blockField').style.display = $('#fCol').value==='bloquant' ? '' : 'none'; }
 function onRecChange(){ $('#recDaysField').style.display = $('#fRec').value==='custom' ? '' : 'none'; }
@@ -2259,7 +2473,7 @@ function openModal(id=null, presetCol=null, preset={}){
     $('#fTitle').value=t.title; $('#fDesc').value=t.desc||'';
     $('#fDate').value=t.date||''; $('#fTime').value=t.time||'';
     $('#fRec').value=t.rec||'none'; $('#fCol').value=t.col; $('#fBlock').value=t.block||'';
-    draft={urg:t.urg||'',en:t.en||'',cal:catById(t.cal)?t.cal:'',people:[...t.people],recDays:[...(t.recDays||[])],dur:t.dur||60,client:t.clientId||''};
+    draft={urg:t.urg||'',en:t.en||'',cal:catById(t.cal)?t.cal:'',people:[...t.people],recDays:[...(t.recDays||[])],dur:t.dur||60,projet:t.projectId||''};
     draftKind = t.kind || 'board';
   }else{
     modalReadOnly = false;
@@ -2267,16 +2481,30 @@ function openModal(id=null, presetCol=null, preset={}){
     $('#mActions').style.display='none';
     $('#fTitle').value='';$('#fDesc').value='';$('#fBlock').value='';
     $('#fDate').value=preset.date||''; $('#fTime').value=preset.time||''; $('#fRec').value='none';
-    $('#fCol').value=presetCol||'backlog';
-    const projClient = activeProject ? ((state.projects.find(p=>p.id===activeProject)||{}).clientId||'') : '';
-    draft={urg:'',en:'',cal:'',people: preset.owner?[preset.owner]:[],recDays:[],dur:preset.dur||60,client:preset.client||projClient||''};   // hérite du client du projet si lié
+    const firstCol=(buildColumns()[0]||{}).col||'backlog';
+    $('#fCol').value=presetCol||firstCol;
+    // créée depuis un projet → ce projet lui est associé directement
+    draft={urg:'',en:'',cal:'',people: preset.owner?[preset.owner]:[],recDays:[],dur:preset.dur||60,projet:preset.projet||activeProject||''};
   }
   onColChange(); onRecChange(); renderRecDays(); updateDiversRows();
   renderProps(); renderFiles();
   applyReadOnly();
+  applyClientPeek();
   origSnap = editingId ? currentSnap() : null;   // référence pour détecter les changements (récurrence)
   $('#scrim').classList.add('open');
   if(!modalReadOnly) setTimeout(()=>$('#fTitle').focus(),50);
+}
+/* fiche vue par un client : titre + avancement uniquement */
+function applyClientPeek(){
+  const peek=document.querySelector('#scrim .peek'); if(!peek) return;
+  // repart d'une fiche complète — sauf les lignes pilotées par renderProps()
+  const owned=['rowHeure','rowRec','recDaysField','rowProjet'];
+  peek.querySelectorAll('.prop').forEach(p=>{ if(!owned.includes(p.id)) p.style.display=''; });
+  if(!iAmClient()) return;
+  peek.querySelectorAll('.prop').forEach(p=>{ if(p.id!=='rowEtat') p.style.display='none'; });
+  peek.querySelectorAll('input,select,textarea').forEach(el=>{ el.disabled=true; });
+  $('#mActions').style.display='none';
+  const ro=$('#roNote'); if(ro) ro.style.display='none';
 }
 function applyReadOnly(){
   const peek=document.querySelector('#scrim .peek'); if(!peek) return;
@@ -2286,14 +2514,14 @@ function applyReadOnly(){
   $('#roNote').style.display = modalReadOnly ? '' : 'none';
 }
 
-function snapTask(t){ return JSON.stringify({title:t.title||'',desc:t.desc||'',col:t.col,urg:t.urg,en:t.en,cal:t.cal,people:[...(t.people||[])].sort(),date:t.date||'',time:t.time||'',rec:t.rec,recDays:[...(t.recDays||[])].sort(),block:t.block||'',dur:t.dur||60,clientId:t.clientId||''}); }
+function snapTask(t){ return JSON.stringify({title:t.title||'',desc:t.desc||'',col:t.col,urg:t.urg,en:t.en,cal:t.cal,people:[...(t.people||[])].sort(),date:t.date||'',time:t.time||'',rec:t.rec,recDays:[...(t.recDays||[])].sort(),block:t.block||'',dur:t.dur||60,projectId:t.projectId||''}); }
 // instantané construit à partir du formulaire (même structure que snapTask) pour comparer ce qui a changé
 function currentSnap(){
   const col=$('#fCol').value, rec=$('#fRec').value;
   return JSON.stringify({title:$('#fTitle').value.trim(),desc:$('#fDesc').value.trim(),col,
     urg:draft.urg,en:draft.en,cal:draft.cal,people:[...draft.people].sort(),
     date:$('#fDate').value,time:$('#fTime').value,rec,recDays:[...(draft.recDays||[])].sort(),
-    block: col==='bloquant'?$('#fBlock').value.trim():'',dur:draft.dur||60,clientId:draft.client||''});
+    block: col==='bloquant'?$('#fBlock').value.trim():'',dur:draft.dur||60,projectId:draft.projet||''});
 }
 
 function commitDraft(scope){
@@ -2306,7 +2534,7 @@ function commitDraft(scope){
   let people=[...draft.people];
   const fields={ desc:$('#fDesc').value.trim(), col, urg:draft.urg, en:draft.en, cal:draft.cal,
     people, date:$('#fDate').value, time:$('#fTime').value, rec,
-    recDays: rec==='custom'?[...draft.recDays]:[], block, clientId:draft.client||'' };
+    recDays: rec==='custom'?[...draft.recDays]:[], block, projectId:draft.projet||'' };
   let prevPeople=[], tTitle=title, tid=editingId;
   if(editingId){
     const t=state.tasks.find(x=>x.id===editingId); if(!t)return;
@@ -2323,8 +2551,7 @@ function commitDraft(scope){
   }else{
     if(!title) return;                                  // pas de tâche vide
     if(!people.length) people=[me];                     // assigné par défaut = le créateur
-    const projFields = activeProject ? {projectId:activeProject} : {};
-    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],...projFields,...fields,people}; state.tasks.push(t); tid=t.id;
+    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],...fields,people}; state.tasks.push(t); tid=t.id;
   }
   notifyAssign(prevPeople, people, tTitle, tid);
   save();
@@ -2341,9 +2568,8 @@ function ensureTask(){
   let t=currentTask(); if(t) return t;
   const fields={ desc:$('#fDesc').value.trim(), col:$('#fCol').value, urg:draft.urg, en:draft.en, cal:draft.cal,
     people: draft.people.length?[...draft.people]:[me], date:$('#fDate').value, time:$('#fTime').value, rec:$('#fRec').value,
-    recDays: $('#fRec').value==='custom'?[...draft.recDays]:[], block: $('#fCol').value==='bloquant'?$('#fBlock').value.trim():'', clientId:draft.client||'' };
-  const _pf = activeProject ? {projectId:activeProject} : {};
-  t={ id:uid(), kind:draftKind, dur:draft.dur||60, title:($('#fTitle').value.trim()||'Sans titre'), files:[], ..._pf, ...fields };
+    recDays: $('#fRec').value==='custom'?[...draft.recDays]:[], block: $('#fCol').value==='bloquant'?$('#fBlock').value.trim():'', projectId:draft.projet||'' };
+  t={ id:uid(), kind:draftKind, dur:draft.dur||60, title:($('#fTitle').value.trim()||'Sans titre'), files:[], ...fields };
   state.tasks.push(t); editingId=t.id; $('#mActions').style.display=''; origSnap=currentSnap();
   return t;
 }
@@ -2480,7 +2706,7 @@ function deleteTask(){
 
 /* ============ popup calendrier (création / édition façon Google Agenda) ============ */
 let calEditId=null, calOccDate=null, calReadOnly=false, origCalSnap=null, calOpenedAt=0;
-let calDraft={ people:[], cal:'', recDays:[], dur:60, client:'' };
+let calDraft={ people:[], cal:'', recDays:[], dur:60, projet:'' };
 function hmToMin(s){ if(!s) return 0; const p=s.split(':'); return (+p[0]||0)*60+(+p[1]||0); }
 function cRecChange(){ $('#cRecDays').style.display = $('#cRec').value==='custom' ? '' : 'none'; renderCalRecDays(); }
 function cToggleRecDay(i){ calDraft.recDays = calDraft.recDays.includes(i) ? calDraft.recDays.filter(x=>x!==i) : [...calDraft.recDays,i].sort(); renderCalRecDays(); }
@@ -2490,8 +2716,8 @@ function cSyncDur(){ const s=$('#cStart').value,e=$('#cEnd').value; if(s&&e){ co
 function renderCalProps(){
   $('#cPeople').innerHTML = calDraft.people.length ? calDraft.people.map(chipPerson).join('') : `<span class="ph">Ajouter des invités</span>`;
   $('#cCal').innerHTML    = calDraft.cal ? chipCal(calDraft.cal) : `<span class="ph">Sans catégorie</span>`;
-  const rc=$('#cRowClient'); if(rc) rc.style.display = clientsAll().length ? '' : 'none';
-  const cc=$('#cClient'); if(cc) cc.innerHTML = calDraft.client ? chipClient(calDraft.client) : `<span class="ph">Sans client</span>`;
+  const rc=$('#cRowClient'); if(rc) rc.style.display = (state.projects||[]).length ? '' : 'none';
+  const cc=$('#cClient'); if(cc) cc.innerHTML = calDraft.projet ? chipProjet(calDraft.projet) : `<span class="ph">Sans projet</span>`;
 }
 function openCalEvt(e,id,di){ openCalPop(id,{occDate:di, anchorRect:e.currentTarget.getBoundingClientRect()}); }
 function readCalForm(){
@@ -2501,7 +2727,7 @@ function readCalForm(){
   const rec=$('#cRec').value;
   return { title:$('#cTitle').value.trim(), desc:$('#cDesc').value.trim(),
     date:$('#cDate').value||iso(new Date()), time:start||'', dur,
-    cal:calDraft.cal, people:[...calDraft.people], rec, recDays: rec==='custom'?[...calDraft.recDays]:[], clientId:calDraft.client||'' };
+    cal:calDraft.cal, people:[...calDraft.people], rec, recDays: rec==='custom'?[...calDraft.recDays]:[], projectId:calDraft.projet||'' };
 }
 function calSnap(){ const f=readCalForm(); return JSON.stringify({...f, people:[...f.people].sort(), recDays:[...f.recDays].sort()}); }
 function applyCalReadOnly(){
@@ -2527,7 +2753,7 @@ function openCalPop(id=null, opts={}){
     $('#cEnd').value = minToHM(Math.min(1439,hmToMin(start)+(t.dur||60)));
     $('#cRec').value = t.rec||'none';
     $('#cDesc').value = t.desc||'';
-    calDraft = { people:[...(t.people||[])], cal: catById(t.cal)?t.cal:'', recDays:[...(t.recDays||[])], dur:t.dur||60, client:t.clientId||'' };
+    calDraft = { people:[...(t.people||[])], cal: catById(t.cal)?t.cal:'', recDays:[...(t.recDays||[])], dur:t.dur||60, projet:t.projectId||'' };
     $('#cDel').style.display=''; $('#cDup').style.display='';
   }else{
     calReadOnly=false;
@@ -2537,7 +2763,7 @@ function openCalPop(id=null, opts={}){
     $('#cTitle').value=''; $('#cDate').value=date; $('#cStart').value=start;
     $('#cEnd').value=minToHM(Math.min(1439,hmToMin(start)+dur));
     $('#cRec').value='none'; $('#cDesc').value='';
-    calDraft = { people:[me], cal:'', recDays:[], dur, client: opts.client||'' };
+    calDraft = { people:[me], cal:'', recDays:[], dur, projet: opts.projet||activeProject||'' };
     $('#cDel').style.display='none'; $('#cDup').style.display='none';
   }
   cRecChange(); renderCalProps(); applyCalReadOnly();
@@ -2654,6 +2880,273 @@ function toast(msg,color,ini){
 
 /* ============ utils ============ */
 function esc(s){return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function escAttr(s){return esc(s).replace(/'/g,'&#39;');}   // texte inséré dans un attribut HTML
+
+/* ============ Espace client : accueil ============ */
+function renderHome(){
+  const host=$('#homeView'); host.className='chome';
+  const m=memberById(me)||{name:''};
+  const mine=myProjects();
+  const pids=new Set(mine.map(p=>p.id));
+  const tasks=state.tasks.filter(t=>t.kind==='board' && pids.has(t.projectId));
+  const aValider=tasks.filter(t=>t.col==='check');
+  const enCours =tasks.filter(t=>t.col==='encours'||t.col==='prochainement');
+  const finies  =tasks.filter(t=>t.col==='termine');
+  const total   =tasks.length;
+  const pct     = total ? Math.round(finies.length/total*100) : 0;
+
+  const kpi=(v,l,ic)=>`<div class="ch-kpi"><span class="ch-ic">${ic}</span><div><div class="ch-v">${v}</div><div class="ch-l">${l}</div></div></div>`;
+  const kpis=`<div class="ch-kpis">
+    ${kpi(aValider.length,'À valider','\u2713')}
+    ${kpi(enCours.length,'En cours','\u25CF')}
+    ${kpi(finies.length,'Terminées','\u2605')}
+    ${kpi(pct+'%','Avancement','\u25D0')}</div>`;
+
+  const actions = aValider.length
+    ? aValider.slice(0,6).map(t=>{
+        const pj=mine.find(p=>p.id===t.projectId);
+        return `<div class="ch-row" onclick="openModal('${t.id}')">
+          <span class="ch-dot" style="background:var(--check,#CA8A04)"></span>
+          <div class="ch-row-main"><div class="ch-row-t">${esc(t.title)}</div>
+            <div class="ch-row-m">${pj?esc(pj.name):''}${t.date?' · '+fmtDateFR(t.date):''}</div></div>
+        </div>`;}).join('')
+    : `<div class="ch-empty">Rien à valider pour le moment.</div>`;
+
+  // l'équipe qui suit ses projets
+  const teamIds=new Set();
+  mine.forEach(p=>(p.members||[]).forEach(id=>{ if(!isClient(id)) teamIds.add(id); }));
+  tasks.forEach(t=>(t.people||[]).forEach(id=>{ if(!isClient(id)) teamIds.add(id); }));
+  const team=state.members.filter(x=>teamIds.has(x.id));
+  const teamHTML = team.length
+    ? `<div class="ch-team">${team.map(x=>`<div class="ch-mate"><span class="av" style="background:${x.color}">${initials(x.name)}</span>
+         <div class="ch-mate-n">${esc(x.name)}</div><div class="ch-mate-r">${roleLabel(memberRole(x.id))}</div></div>`).join('')}</div>`
+    : `<div class="ch-empty">Ton équipe apparaîtra ici.</div>`;
+
+  const projHTML = mine.length
+    ? `<div class="ch-projs">${mine.map(p=>{
+        const tp=tasks.filter(t=>t.projectId===p.id);
+        const done=tp.filter(t=>t.col==='termine').length;
+        const pc = tp.length?Math.round(done/tp.length*100):0;
+        return `<button class="ch-proj" onclick="openClientProject('${p.id}')">
+          <span class="ch-proj-n">${esc(p.name)}</span>
+          <span class="ch-proj-m">${done}/${tp.length} terminées</span>
+          <span class="ch-bar"><i style="width:${pc}%"></i></span></button>`;}).join('')}</div>`
+    : `<div class="ch-empty">Aucun projet partagé pour l'instant.</div>`;
+
+  host.innerHTML=`
+    <div class="ch-hero">
+      <h1>Bienvenue dans votre espace</h1>
+      <p>Tout le suivi de vos projets chez Percer, en un coup d'œil.</p>
+    </div>
+    ${kpis}
+    <div class="ch-grid">
+      <section class="ch-card"><h3>Vos actions à valider</h3>${actions}</section>
+      <section class="ch-card"><h3>Vos projets</h3>${projHTML}</section>
+      <section class="ch-card wide"><h3>L'équipe qui vous accompagne</h3>${teamHTML}</section>
+    </div>`;
+}
+
+/* ============ RS : mur de post, calendrier éditorial, concurrence, kanban ============ */
+let rsTab='wall';                       // 'wall' | 'edito' | 'veille' | 'kanban'
+let rsWeek=0;                           // 0 = semaine en cours, -1 précédente, +1 suivante…
+
+/* avancement d'un post — sert de couleur partout (calendrier édito + kanban) */
+const RS_STATUS=[
+  {id:'todo',   name:'À faire',       color:'#8B8B95', soft:'#EFEFF2'},
+  {id:'visuel', name:'Visuel fait',   color:'#9333EA', soft:'#F0E4FB'},
+  {id:'texte',  name:'Texte fait',    color:'#CA8A04', soft:'#FBF2D8'},
+  {id:'pret',   name:'Prêt à poster', color:'#1F8A5B', soft:'#DFF3E5'},
+  {id:'poste',  name:'Posté',         color:'#3B74C4', soft:'#E2ECFB'},
+];
+const rsStatus = id => RS_STATUS.find(s=>s.id===id) || RS_STATUS[0];
+const rsPosts  = () => state.rs.posts || [];
+function rsWeekStart(off){ const d=startOfWeek(new Date()); d.setDate(d.getDate()+(off||0)*7); return d; }
+function rsWeekLabel(off){
+  const s=rsWeekStart(off), e=addDays(s,(state.rs.days.length||7)-1);
+  const sm=MONTHS[s.getMonth()], em=MONTHS[e.getMonth()];
+  return s.getMonth()===e.getMonth() ? `${s.getDate()} – ${e.getDate()} ${em} ${e.getFullYear()}`
+                                     : `${s.getDate()} ${sm} – ${e.getDate()} ${em} ${e.getFullYear()}`;
+}
+function rsWeekKey(off){ return iso(rsWeekStart(off)); }
+
+function renderRs(){
+  const host=$('#rsView'); host.className='rs';
+  const tabs=[['wall','Mur de post'],['edito','Calendrier éditorial'],['veille','Concurrence'],['kanban','Kanban']]
+    .map(([k,n])=>`<button class="${rsTab===k?'on':''}" onclick="setRsTab('${k}')">${n}</button>`).join('');
+  let body='', action='';
+  if(rsTab==='wall'){ body=rsWallHTML();  action=`<button class="crm-new" onclick="openPost()">+ Nouveau post</button>`; }
+  else if(rsTab==='edito'){ body=rsEditoHTML(); action=`<button class="crm-new" onclick="openPost()">+ Nouveau post</button>`; }
+  else if(rsTab==='veille'){ body=rsVeilleHTML(); action=`<button class="crm-new" onclick="addCompetitor()">+ Concurrent</button>`; }
+  else { body=rsKanbanHTML(); }
+  host.innerHTML=`<div class="crm-head"><div class="crm-tabs">${tabs}</div><div class="spacer"></div>${action}</div><div class="crm-body">${body}</div>`;
+  if(rsTab==='kanban') wireRsKanbanDnD();
+}
+function setRsTab(t){ rsTab=t; renderRs(); }
+function setRsWeek(n){ rsWeek+=n; renderRs(); }
+
+/* ---------- mur de post : tableau façon tableur ---------- */
+function rsWallHTML(){
+  const posts=rsPosts().slice().sort((a,b)=>(b.at||0)-(a.at||0));
+  if(!posts.length) return `<div class="crm-empty big">Aucun post pour l'instant.<button class="crm-new" onclick="openPost()">+ Créer ton premier post</button></div>`;
+  const rows=posts.map(p=>{
+    const st=rsStatus(p.status), pj=(state.projects||[]).find(x=>x.id===p.projectId);
+    return `<tr onclick="openPost('${p.id}')">
+      <td><b>${esc(p.title||'Sans titre')}</b></td>
+      <td>${esc(p.angle||'—')}</td>
+      <td>${pj?esc(pj.name):'—'}</td>
+      <td>${p.day?esc(p.day):'—'}</td>
+      <td><span class="rs-badge" style="background:${st.soft};color:${st.color}">${st.name}</span></td>
+    </tr>`;
+  }).join('');
+  return `<div class="rs-sheet"><table class="crm-tbl big">
+    <thead><tr><th>Post</th><th>Angle / thème</th><th>Projet</th><th>Jour</th><th>Avancement</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+
+/* ---------- calendrier éditorial : grille type tableur, jours modifiables ---------- */
+function rsEditoHTML(){
+  const days=state.rs.days, wk=rsWeekKey(rsWeek);
+  const head=days.map((d,i)=>`<th class="rs-day"><input value="${escAttr(d)}" onchange="renameRsDay(${i},this.value)" title="Renommer ce jour">
+      ${days.length>1?`<button class="rs-day-x" onclick="removeRsDay(${i})" title="Retirer ce jour">×</button>`:''}</th>`).join('');
+  const cells=days.map(d=>{
+    const list=rsPosts().filter(p=>p.week===wk && p.day===d);
+    const items=list.map(p=>{ const st=rsStatus(p.status);
+      return `<div class="rs-cell-post" style="background:${st.soft};border-left:3px solid ${st.color}" onclick="openPost('${p.id}')">
+        <span class="rcp-t">${esc(p.title||'Sans titre')}</span><span class="rcp-s" style="color:${st.color}">${st.name}</span></div>`;
+    }).join('');
+    return `<td class="rs-cell">${items}<button class="rs-cell-add" onclick="openPost(null,'${escAttr(d)}')">+</button></td>`;
+  }).join('');
+  const legend=RS_STATUS.map(s=>`<span class="rs-lg"><i style="background:${s.color}"></i>${s.name}</span>`).join('');
+  return `<div class="rs-edito-bar">
+      <button class="gc-nav-btn" onclick="setRsWeek(-1)">‹</button>
+      <span class="rs-week">${rsWeekLabel(rsWeek)}</span>
+      <button class="gc-nav-btn" onclick="setRsWeek(1)">›</button>
+      ${rsWeek!==0?`<button class="lnk" onclick="rsWeek=0;renderRs()">Cette semaine</button>`:''}
+      <span class="spacer"></span>
+      <button class="lnk" onclick="addRsDay()">+ Ajouter un jour</button>
+    </div>
+    <div class="rs-sheet"><table class="rs-grid"><thead><tr>${head}</tr></thead><tbody><tr>${cells}</tr></tbody></table></div>
+    <div class="rs-legend">${legend}</div>`;
+}
+function renameRsDay(i,v){ const n=(v||'').trim(); if(!n) return renderRs();
+  const old=state.rs.days[i]; state.rs.days[i]=n;
+  rsPosts().forEach(p=>{ if(p.day===old) p.day=n; });          // les posts suivent le renommage
+  save(); renderRs();
+}
+function addRsDay(){ const n=prompt('Nom du jour :',''); if(!n||!n.trim()) return; state.rs.days.push(n.trim()); save(); renderRs(); }
+function removeRsDay(i){
+  const d=state.rs.days[i];
+  if(rsPosts().some(p=>p.day===d) && !confirm(`Retirer « ${d} » ? Les posts de ce jour resteront dans le mur de post.`)) return;
+  state.rs.days.splice(i,1); save(); renderRs();
+}
+
+/* ---------- concurrence : veille (analyse IA prévue plus tard) ---------- */
+function rsVeilleHTML(){
+  const list=state.rs.competitors||[];
+  const rows=list.length ? list.map((c,i)=>`<tr>
+      <td><b>${esc(c.name)}</b></td>
+      <td>${c.url?`<a href="${escAttr(c.url)}" target="_blank" rel="noopener">${esc(c.url)}</a>`:'—'}</td>
+      <td>${esc(c.notes||'—')}</td>
+      <td class="r"><button class="mini-btn" onclick="removeCompetitor(${i})">Retirer</button></td>
+    </tr>`).join('')
+    : `<tr><td colspan="4" class="rs-empty-row">Aucun concurrent suivi. Ajoute-en un pour préparer la veille.</td></tr>`;
+  return `<div class="rs-note">
+      <b>Analyse automatique — bientôt.</b> Récupérer les publications de tes concurrents et en faire des comptes rendus
+      demande un serveur (accès aux réseaux + IA). L'écran est prêt : ajoute déjà les concurrents à suivre.
+    </div>
+    <div class="rs-sheet"><table class="crm-tbl big">
+      <thead><tr><th>Concurrent</th><th>Lien</th><th>Notes</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>`;
+}
+function addCompetitor(){
+  const name=prompt('Nom du concurrent :',''); if(!name||!name.trim()) return;
+  const url=prompt('Lien de son profil (optionnel) :','')||'';
+  state.rs.competitors.push({name:name.trim(), url:url.trim(), notes:''});
+  save(); renderRs();
+}
+function removeCompetitor(i){ if(!confirm('Retirer ce concurrent ?')) return; state.rs.competitors.splice(i,1); save(); renderRs(); }
+
+/* ---------- kanban RS : alimenté automatiquement par le calendrier éditorial ---------- */
+function rsKanbanHTML(){
+  const cols=RS_STATUS.filter(s=>s.id!=='poste').concat(RS_STATUS.filter(s=>s.id==='poste'));
+  return `<div class="board">${cols.map(st=>{
+    const items=rsPosts().filter(p=>(p.status||'todo')===st.id);
+    const cards=items.map(p=>{
+      const pj=(state.projects||[]).find(x=>x.id===p.projectId);
+      return `<div class="card rs-card" draggable="true" data-id="${p.id}" onclick="openPost('${p.id}')">
+        <p class="ttl">${esc(p.title||'Sans titre')}</p>
+        ${pj?`<div class="crow"><span class="chip chip-client" style="background:${hexRgba(st.color,.14)};color:${st.color}">${esc(pj.name)}</span></div>`:''}
+        ${p.day?`<div class="crow"><span class="chip" style="background:var(--paper);color:var(--muted)">${esc(p.day)}</span></div>`:''}
+      </div>`;
+    }).join('');
+    return `<div class="col" style="background:${hexRgba(st.color,.08)}">
+      <div class="col-head" style="color:${st.color}">
+        <span class="col-dot" style="background:${st.color}"></span>
+        <span class="col-title">${st.name}</span>
+        <span class="col-count" style="color:${st.color}">${items.length}</span>
+      </div>
+      <div class="col-body" data-rs="${st.id}">${cards||'<div class="col-empty">—</div>'}</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+function wireRsKanbanDnD(){
+  let dragId=null;
+  document.querySelectorAll('.rs-card').forEach(c=>{
+    c.addEventListener('dragstart',e=>{ dragId=c.dataset.id; c.classList.add('dragging'); e.stopPropagation(); });
+    c.addEventListener('dragend',()=>c.classList.remove('dragging'));
+  });
+  document.querySelectorAll('[data-rs]').forEach(z=>{
+    z.addEventListener('dragover',e=>{ e.preventDefault(); z.classList.add('drag-over'); });
+    z.addEventListener('dragleave',()=>z.classList.remove('drag-over'));
+    z.addEventListener('drop',e=>{
+      e.preventDefault(); z.classList.remove('drag-over');
+      const p=rsPosts().find(x=>x.id===dragId); if(!p) return;
+      const ns=z.dataset.rs;
+      if(p.status!==ns){ p.status=ns; save(); renderRs(); }
+    });
+  });
+}
+
+/* ---------- fiche post ---------- */
+let editingPost=null;
+function openPost(id=null, presetDay=null){
+  editingPost=(typeof id==='string')?id:null;
+  const p=editingPost?rsPosts().find(x=>x.id===editingPost):null;
+  $('#postTitle').textContent = p ? 'Modifier le post' : 'Nouveau post';
+  $('#poTitle').value = p?(p.title||''):'';
+  $('#poAngle').value = p?(p.angle||''):'';
+  $('#poNotes').value = p?(p.notes||''):'';
+  $('#poDay').innerHTML = `<option value="">— Non planifié —</option>`+state.rs.days.map(d=>`<option value="${escAttr(d)}">${esc(d)}</option>`).join('');
+  $('#poDay').value = p?(p.day||''):(presetDay||'');
+  $('#poStatus').innerHTML = RS_STATUS.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  $('#poStatus').value = p?(p.status||'todo'):'todo';
+  $('#poProjet').innerHTML = `<option value="">— Aucun —</option>`+(state.projects||[]).map(x=>{
+    const c=clientById(x.clientId); return `<option value="${x.id}">${esc(x.name)}${c?` — ${esc(c.name)}`:''}</option>`; }).join('');
+  $('#poProjet').value = p?(p.projectId||''):(activeProject||'');
+  $('#poDel').style.display = p?'':'none';
+  $('#postScrim').classList.add('open'); setTimeout(()=>$('#poTitle').focus(),40);
+}
+function closePost(){ $('#postScrim').classList.remove('open'); editingPost=null; }
+function savePost(){
+  const title=$('#poTitle').value.trim();
+  if(!title){ toast('Donne un titre au post.'); return; }
+  const data={ title, angle:$('#poAngle').value.trim(), notes:$('#poNotes').value.trim(),
+    day:$('#poDay').value, status:$('#poStatus').value, projectId:$('#poProjet').value,
+    week:rsWeekKey(rsWeek) };
+  if(editingPost){ Object.assign(rsPosts().find(x=>x.id===editingPost), data); }
+  else {
+    // un post planifié apparaît aussitôt dans le kanban RS (même liste, colonne = avancement)
+    state.rs.posts.push({ id:uid(), at:Date.now(), ...data });
+    toast(data.day ? 'Post ajouté au calendrier et au kanban ✓' : 'Post créé ✓');
+  }
+  save(); closePost(); renderRs();
+}
+function deletePost(){
+  if(!editingPost) return;
+  if(!confirm('Supprimer ce post ?')) return;
+  state.rs.posts = rsPosts().filter(x=>x.id!==editingPost);
+  save(); closePost(); renderRs();
+}
 
 /* ============ CRM : clients, pipeline, tableau de bord ============ */
 let crmTab='dashboard';                 // 'dashboard' | 'pipeline' | 'clients'
@@ -2978,7 +3471,14 @@ function saveClient(){
   const data={ name, company:$('#clCompany').value.trim(), status:$('#clStatus').value,
     email:$('#clEmail').value.trim(), phone:$('#clPhone').value.trim(), notes:$('#clNotes').value.trim() };
   if(editingClient){ Object.assign(clientById(editingClient), data); }
-  else { const color=PALETTE[clientsAll().length%PALETTE.length]; state.clients.push({ id:uid(), createdAt:todayISO(), color, ...data }); }
+  else {
+    const color=PALETTE[clientsAll().length%PALETTE.length];
+    const cid=uid();
+    state.clients.push({ id:cid, createdAt:todayISO(), color, ...data });
+    // un nouveau client obtient automatiquement son projet
+    state.projects.push({ id:uid(), name, clientId:cid, members:[], cols:[] });
+    toast(`Client créé — son projet « ${name} » est prêt ✓`);
+  }
   save(); closeClient(); renderCrm();
 }
 function deleteClient(){
@@ -3033,6 +3533,7 @@ function openClientTask(tid){ closeClient(); openModal(tid); }
 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){
   if($('#recScrim').classList.contains('open')){ resolveRec(null); return; }
+  if($('#postScrim').classList.contains('open')){ closePost(); return; }
   if($('#dealScrim').classList.contains('open')){ closeDeal(); return; }
   if($('#clientScrim').classList.contains('open')){ closeClient(); return; }
   if($('#teamScrim').classList.contains('open')){ closeTeam(); return; }
