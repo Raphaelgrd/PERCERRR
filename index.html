@@ -1007,7 +1007,7 @@ input,select,textarea{font-family:inherit;font-size:var(--fs-md);color:var(--ink
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9" stroke-linecap="round"/></svg>État</div>
         <div class="prop-v"><select id="fCol" onchange="onColChange()"></select></div>
       </div>
-      <div class="prop">
+      <div class="prop" id="rowPeople">
         <div class="prop-l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h.01M4 12h.01M4 18h.01M9 6h11M9 12h11M9 18h11" stroke-linecap="round"/></svg>Personne</div>
         <div class="prop-v"><div class="pv" id="fPeople" onclick="openPick('people',this)"></div></div>
       </div>
@@ -2633,7 +2633,9 @@ function renderProps(){
   $('#fCal').innerHTML    = draft.cal ? chipCal(draft.cal) : placeholder();
   // client : les noms ne sont pas rendus du tout (pas seulement masqués)
   $('#fPeople').innerHTML = iAmClient() ? '' : (draft.people.length ? draft.people.map(chipPerson).join('') : placeholder());
-  const rp=$('#rowProjet'); if(rp) rp.style.display = (state.projects||[]).length ? '' : 'none';   // masqué s'il n'y a pas de projet
+  // le client ne choisit jamais le projet : il est déduit du sien
+  const rp=$('#rowProjet'); if(rp) rp.style.display = (iAmClient() || !(state.projects||[]).length) ? 'none' : '';
+  const rpe=$('#rowPeople'); if(rpe) rpe.style.display = iAmClient() ? 'none' : '';
   const fp=$('#fProjet'); if(fp) fp.innerHTML = draft.projet ? chipProjet(draft.projet) : placeholder();
   // Heure & Récurrence : réservées aux événements du calendrier, masquées sur une tâche du tableau
   const board = draftKind!=='cal';
@@ -2676,7 +2678,10 @@ function buildPickBody(){
   pop.innerHTML=`<div class="pickpop-h">${title}</div>${rows}`;
 }
 function openPick(type,anchor,isCal=false){
-  if(iAmClient()) return;                          // le client consulte, il ne choisit rien
+  // le client consulte ; seul un « Client + » en cours de création choisit (jamais les personnes)
+  const composing = iAmClientPlus() && !editingId && !isCal;
+  const forbidden = ['people','projet'];              // révéleraient l'équipe ou les autres clients
+  if(iAmClient() && !(composing && !forbidden.includes(type))) return;
   if(isCal ? calReadOnly : modalReadOnly) return;
   if(pickOpen && pickType===type && pickIsCal===isCal){ closePick(); return; }
   pickIsCal=isCal; pickType=type; pickOpen=true; buildPickBody();
@@ -2742,15 +2747,17 @@ function applyClientPeek(){
   const owned=['rowHeure','rowRec','recDaysField','rowProjet'];
   peek.querySelectorAll('.prop').forEach(p=>{ if(!owned.includes(p.id)) p.style.display=''; });
   if(!iAmClient()) return;
-  peek.querySelectorAll('.prop').forEach(p=>{ if(p.id!=='rowEtat') p.style.display='none'; });
-  // « Client + » : il rédige sa tâche à la création, mais consulte celles qui existent
-  const composing = iAmClientPlus() && !editingId;
-  peek.querySelectorAll('input,select,textarea').forEach(el=>{
-    el.disabled = composing ? !['fTitle','fDesc','fCol'].includes(el.id) : true;
-  });
-  if(composing){ const re=$('#rowEtat'); if(re) re.style.display=''; }
-  $('#mActions').style.display='none';
   const ro=$('#roNote'); if(ro) ro.style.display='none';
+  // « Client + » en création : fiche complète, sauf ce qui révélerait l'équipe
+  if(iAmClientPlus() && !editingId){
+    ['rowPeople','rowProjet'].forEach(id=>{ const el=$('#'+id); if(el) el.style.display='none'; });
+    $('#mActions').style.display='none';
+    return;
+  }
+  // consultation : titre + avancement uniquement
+  peek.querySelectorAll('.prop').forEach(p=>{ if(p.id!=='rowEtat') p.style.display='none'; });
+  peek.querySelectorAll('input,select,textarea').forEach(el=>{ el.disabled=true; });
+  $('#mActions').style.display='none';
 }
 function applyReadOnly(){
   const peek=document.querySelector('#scrim .peek'); if(!peek) return;
@@ -2797,8 +2804,9 @@ function commitDraft(scope){
     }
   }else{
     if(!title) return;                                  // pas de tâche vide
-    if(!people.length) people=[me];                     // assigné par défaut = le créateur
-    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],...fields,people}; state.tasks.push(t); tid=t.id;
+    if(!people.length && !iAmClient()) people=[me];     // assigné par défaut = le créateur
+    if(iAmClient()) people=[];                          // une demande client reste à assigner
+    const t={id:uid(),kind:draftKind,dur:draft.dur||60,title,files:[],createdBy:me,...fields,people}; state.tasks.push(t); tid=t.id;
   }
   notifyAssign(prevPeople, people, tTitle, tid);
   save();
