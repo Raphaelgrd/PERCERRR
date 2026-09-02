@@ -667,6 +667,13 @@ input,select,textarea{font-family:inherit;font-size:var(--fs-md);color:var(--ink
 .team-tab.on .team-cnt{background:rgba(255,255,255,.22);color:var(--panel)}
 .team-tab.alert:not(.on) .team-cnt{background:var(--accent);color:#fff}
 .team-hint{font-size:var(--fs-xs);color:var(--muted);line-height:1.5;background:var(--accent-soft);border-radius:var(--r-sm);padding:9px 11px;margin:0 0 var(--sp-1)}
+.team-banned{margin-top:var(--sp-2);padding-top:var(--sp-2);border-top:1px solid var(--border)}
+.tb-h{display:flex;align-items:center;justify-content:space-between;font-size:var(--fs-3xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:6px}
+.tb-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 2px;border-bottom:1px solid var(--border)}
+.tb-row:last-of-type{border-bottom:none}
+.tb-n{font-size:var(--fs-sm);color:var(--muted);display:flex;align-items:baseline;gap:7px}
+.tb-id{font-size:var(--fs-3xs);color:var(--faint);font-family:ui-monospace,monospace}
+.tb-note{font-size:var(--fs-2xs);color:var(--faint);margin:7px 0 0;line-height:1.45}
 .admin-btn{position:relative}
 .admin-btn.has-pending::after{content:attr(data-n);position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:var(--r-full);background:var(--accent);color:#fff;font-size:var(--fs-3xs);font-weight:700;display:grid;place-items:center;border:2px solid var(--paper);line-height:1}
 .team-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--border)}
@@ -1329,7 +1336,12 @@ function subscribeWorkspace(){
       if($('#scrim').classList.contains('open')) return; // ne pas écraser une fiche en cours d'édition
       try{
         const fresh = await cloudLoad();
-        if(fresh && JSON.stringify(fresh)!==JSON.stringify(state)){ state=fresh; ensureState(); renderMe(); if(view!=='none'&&!canView(view)){ setView(defaultView()); } else { renderAll(); } }
+        if(fresh && JSON.stringify(fresh)!==JSON.stringify(state)){
+          state=fresh; ensureState();
+          if(stateRepaired){ stateRepaired=false; save(); }   // fiches manquantes : on les persiste
+          renderMe();
+          if(view!=='none'&&!canView(view)){ setView(defaultView()); } else { renderAll(); }
+        }
       }catch(e){}
     })
     .subscribe();
@@ -1559,7 +1571,9 @@ function seedState(){
     crm:{ goal:50000 },
   };
 }
+let stateRepaired=false;      // ensureState() a créé des fiches/conversations à enregistrer
 function ensureState(){
+  stateRepaired=false;
   if(!state.members) state.members=[];
   if(!state.tasks) state.tasks=[];
   if(!state.notifs) state.notifs=[];
@@ -1580,7 +1594,10 @@ function ensureState(){
   // rattrapage : tout compte client doit avoir sa fiche CRM et sa messagerie
   (state.members||[]).forEach(m=>{
     if((m.role||'')!=='client') return;
-    if(m.clientId && (state.clients||[]).some(c=>c.id===m.clientId)) return;
+    if(m.clientId && (state.clients||[]).some(c=>c.id===m.clientId)){
+      if(!state.chats[m.clientId]){ state.chats[m.clientId]=[]; stateRepaired=true; }
+      return;
+    }
     const email=(m.email||'').toLowerCase();
     let c = email ? (state.clients||[]).find(x=>(x.email||'').toLowerCase()===email) : null;
     if(!c){
@@ -1594,6 +1611,7 @@ function ensureState(){
     }
     m.clientId=c.id;
     if(!state.chats[c.id]) state.chats[c.id]=[];
+    stateRepaired=true;                     // à persister : voir boot()
   });
   // mur de post : tableur libre — colonnes = thèmes, lignes = idées
   if(!state.rs.wall || !Array.isArray(state.rs.wall.cols)) state.rs.wall={
@@ -1641,11 +1659,12 @@ async function boot(){
   if(!loaded){ try{ await cloudSave(state); }catch(e){} }
   ensureState();
   // accès retiré par un admin : on bloque (le super-admin n'est jamais bloqué)
-  if((state.removed||[]).includes(me) && (authUser.email||'').toLowerCase()!==SUPER_ADMIN){
+  if(isBanned(me) && (authUser.email||'').toLowerCase()!==SUPER_ADMIN){
     alert("Ton accès à Percerr a été retiré par un administrateur.");
     return logout();
   }
   await ensureMember();
+  if(stateRepaired){ await save(); stateRepaired=false; }   // fiches CRM / messageries créées au chargement
   activeUsers = new Set([me]);
   activeCats = new Set(state.categories.map(c=>c.id));   // toutes par défaut
   if($('#loading')) $('#loading').remove();
@@ -1707,7 +1726,7 @@ function renderTeam(){
       : `<select class="role-sel" onchange="setMemberRole('${m.id}',this.value)">
            ${['none','client','team','admin'].map(r=>`<option value="${r}"${role===r?' selected':''}>${ROLES[r]}</option>`).join('')}
          </select>`;
-    const rm = (!sup && !mine) ? `<button class="danger" onclick="removeMember('${m.id}')">Retirer</button>` : '';
+    const rm = (!sup && !mine) ? `<button class="danger" onclick="removeMember('${m.id}')">Retirer l'accès</button>` : '';
     return `<div class="team-row">
       <span class="av" style="background:${m.color}">${initials(m.name)}</span>
       <div class="team-info">
@@ -1734,10 +1753,36 @@ function renderTeam(){
                  attente:'Aucune demande en attente. 👌'}[teamTab];
   const hint = (teamTab==='attente' && list.length)
     ? `<p class="team-hint">Ces personnes ont créé un compte et n'ont accès à rien. Attribue-leur un rôle pour leur ouvrir l'app.</p>` : '';
+  // comptes bloqués par l'ancien système : on propose de les débloquer
+  const banned = teamTab==='attente' ? (state.removed||[]) : [];
+  const bannedHTML = banned.length ? `<div class="team-banned">
+      <div class="tb-h">Comptes bloqués<button class="lnk" onclick="unbanAll()">Tout débloquer</button></div>
+      ${banned.map(x=>{ const id=banId(x), o=(typeof x==='object')?x:{};
+        return `<div class="tb-row"><span class="tb-n">${esc(o.name||o.email||'Compte bloqué')}<span class="tb-id">${esc(String(id).slice(0,8))}</span></span>
+          <button class="lnk" onclick="unbanMember('${id}')">Débloquer</button></div>`; }).join('')}
+      <p class="tb-note">Un compte débloqué réapparaît « en attente » à sa prochaine connexion.</p>
+    </div>` : '';
   $('#teamBody').innerHTML = `<div class="team-tabs">${tabs}</div>${hint}`
-    + (list.length ? list.map(rowFor).join('') : `<p class="sub">${empty}</p>`);
+    + (list.length ? list.map(rowFor).join('') : `<p class="sub">${empty}</p>`)
+    + bannedHTML;
 }
 function setTeamTab(t){ teamTab=t; renderTeam(); }
+/* Anciens comptes bloqués : la liste ne sert plus qu'à les débloquer.
+   Elle peut contenir des identifiants seuls (ancien format) ou des fiches. */
+function banId(x){ return (x && typeof x==='object') ? x.id : x; }
+function isBanned(id){ return (state.removed||[]).some(x=>banId(x)===id); }
+function unbanMember(id){
+  if(!iAmAdmin()) return;
+  state.removed=(state.removed||[]).filter(x=>banId(x)!==id);
+  save(); renderTeam();
+  toast('Compte débloqué — il réapparaîtra à sa prochaine connexion');
+}
+function unbanAll(){
+  if(!iAmAdmin()) return;
+  if(!confirm('Débloquer tous les comptes ?\nIls réapparaîtront « en attente » à leur prochaine connexion.')) return;
+  state.removed=[]; save(); renderTeam();
+  toast('Tous les comptes ont été débloqués');
+}
 function pendingCount(){ return state.members.filter(m=>memberRole(m.id)==='none').length; }
 function setMemberRole(id, role){
   if(!iAmAdmin()) return;
@@ -1760,13 +1805,15 @@ function removeMember(id){
   const m=memberById(id); if(!m) return;
   if((m.email||'').toLowerCase()===SUPER_ADMIN){ toast('Impossible de retirer le super-admin.'); return; }
   if(id===me){ toast('Tu ne peux pas te retirer toi-même.'); return; }
-  if(!confirm(`Retirer ${m.name} de l'équipe ?\nSes tâches seront désassignées et il perdra l'accès à l'app.`)) return;
-  state.members = state.members.filter(x=>x.id!==id);
+  if(!confirm(`Retirer l'accès de ${m.name} ?\nSes tâches seront désassignées et son compte repassera « en attente ».\nTu pourras lui redonner un rôle à tout moment.`)) return;
+  m.role='none'; m.admin=false;                      // repasse en attente, le compte est conservé
   state.tasks.forEach(t=>{ if(t.people) t.people=t.people.filter(p=>p!==id); });
-  state.removed = [...(state.removed||[]), id];     // empêche sa réapparition automatique
+  state.projects.forEach(pr=>{ if(pr.members) pr.members=pr.members.filter(x=>x!==id); });
+  state.removed = (state.removed||[]).filter(x=>banId(x)!==id);   // jamais banni
   activeUsers.delete(id);
+  teamTab='attente';
   save(); renderTeam(); renderMe(); renderAll();
-  toast(`${m.name} a été retiré de l'équipe`);
+  toast(`Accès retiré · ${m.name} est en attente`);
 }
 function changeName(){
   const m = memberById(me); if(!m) return;
@@ -3201,7 +3248,8 @@ function fmtChatTime(ts){
 function renderChat(){
   const host=$('#chatView'); host.className='climsg';
   if(iAmClient()){
-    const cid=myClientId();
+    let cid=myClientId();
+    if(!cid){ cid=linkClientRecord(me); if(cid) save(); }   // dernier recours : on la crée maintenant
     if(!cid){ host.innerHTML=`<div class="gate-card"><div class="gate-emoji">💬</div><h2>Messagerie indisponible</h2><p>Votre espace n'est pas encore relié à un projet.<br>L'équipe Percer va s'en occuper.</p></div>`; return; }
     markChatRead(cid);
     host.innerHTML=`<div class="climsg-solo">${chatPanelHTML(cid)}</div>`;
