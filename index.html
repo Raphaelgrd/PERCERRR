@@ -1577,6 +1577,24 @@ function ensureState(){
   if(!Array.isArray(state.rs.competitors)) state.rs.competitors=[];  // veille concurrentielle
   // ---- messagerie client <-> team (une conversation par client) ----
   if(!state.chats) state.chats={};
+  // rattrapage : tout compte client doit avoir sa fiche CRM et sa messagerie
+  (state.members||[]).forEach(m=>{
+    if((m.role||'')!=='client') return;
+    if(m.clientId && (state.clients||[]).some(c=>c.id===m.clientId)) return;
+    const email=(m.email||'').toLowerCase();
+    let c = email ? (state.clients||[]).find(x=>(x.email||'').toLowerCase()===email) : null;
+    if(!c){
+      const p=(state.projects||[]).find(x=>(x.members||[]).includes(m.id) && x.clientId);
+      if(p) c=(state.clients||[]).find(x=>x.id===p.clientId);
+    }
+    if(!c){
+      c={ id:uid(), createdAt:todayISO(), color:m.color||'#8B8B95', name:m.name||email||'Client',
+          company:'', status:'client', email:m.email||'', phone:'', notes:'' };
+      state.clients.push(c);
+    }
+    m.clientId=c.id;
+    if(!state.chats[c.id]) state.chats[c.id]=[];
+  });
   // mur de post : tableur libre — colonnes = thèmes, lignes = idées
   if(!state.rs.wall || !Array.isArray(state.rs.wall.cols)) state.rs.wall={
     cols:['Redesign','Analyse','Lead magnet / livre blanc','Infographie','Personal brand','Questions presta','Appel à l\'action'],
@@ -1726,8 +1744,16 @@ function setMemberRole(id, role){
   const m=memberById(id); if(!m) return;
   if((m.email||'').toLowerCase()===SUPER_ADMIN) return;   // le super-admin reste toujours admin
   m.role=role; m.admin=(role==='admin');                  // on garde le flag admin synchronisé
+  let extra='';
+  if(role==='client'){                                    // fiche CRM + messagerie immédiates
+    const before=state.clients.length;
+    const cid=linkClientRecord(id);
+    if(cid && state.clients.length>before) extra=' · fiche CRM créée';
+    else if(cid) extra=' · relié à sa fiche CRM';
+  }
   save(); renderTeam(); renderMe();
-  toast(`${m.name} · ${ROLES[role]}`);
+  if(view==='crm') renderCrm();
+  toast(`${m.name} · ${ROLES[role]}${extra}`);
 }
 function removeMember(id){
   if(!iAmAdmin()) return;
@@ -2102,6 +2128,12 @@ function saveProjModal(){
   if(!name) return alert('Donne un nom au projet.');
   const clientId=$('#pjClient').value||'';
   const cols = projColsDraft.filter(c=>(c.name||'').trim()).map(c=>({id:c.id,name:c.name.trim(),color:c.color}));
+  if(clientId) chatOf(clientId);                          // relier un client ouvre sa messagerie
+  // les comptes clients ajoutés au projet sont rattachés à cette fiche CRM
+  if(clientId) projMembersDraft.forEach(mid=>{
+    const mm=memberById(mid);
+    if(mm && memberRole(mid)==='client' && !mm.clientId) mm.clientId=clientId;
+  });
   if(editingProject){
     const proj = state.projects.find(p=>p.id===editingProject);
     if(proj){ proj.name=name; proj.members=[...projMembersDraft]; proj.clientId=clientId; proj.cols=cols; }
@@ -3127,8 +3159,27 @@ function chatOf(cid){ if(!state.chats[cid]) state.chats[cid]=[]; return state.ch
 // le client connecté appartient au client CRM de ses projets
 function myClientId(){
   if(!iAmClient()) return null;
-  const p=myProjects().find(x=>x.clientId);
+  const m=memberById(me);
+  if(m && m.clientId && clientById(m.clientId)) return m.clientId;   // lien direct
+  const p=myProjects().find(x=>x.clientId);                          // sinon, via ses projets
   return p ? p.clientId : null;
+}
+/* Rattache un compte client à une fiche CRM — la crée si elle n'existe pas.
+   Rapprochement par e-mail pour ne pas dupliquer une fiche déjà saisie. */
+function linkClientRecord(memberId){
+  const m=memberById(memberId); if(!m) return null;
+  if(m.clientId && clientById(m.clientId)){ chatOf(m.clientId); return m.clientId; }
+  const email=(m.email||'').toLowerCase();
+  let c = email ? clientsAll().find(x=>(x.email||'').toLowerCase()===email) : null;
+  if(!c){
+    c = { id:uid(), createdAt:todayISO(), color:m.color||PALETTE[state.clients.length%PALETTE.length],
+          name:m.name||email||'Client', company:'', status:'client',
+          email:m.email||'', phone:'', notes:'' };
+    state.clients.push(c);
+  }
+  m.clientId=c.id;
+  chatOf(c.id);                       // ouvre sa messagerie
+  return c.id;
 }
 function chatUnread(cid){ return chatOf(cid).filter(m=>m.from!==me && !(m.readBy||[]).includes(me)).length; }
 function chatTotalUnread(){
@@ -3784,8 +3835,9 @@ function saveClient(){
     const color=PALETTE[clientsAll().length%PALETTE.length];
     const cid=uid();
     state.clients.push({ id:cid, createdAt:todayISO(), color, ...data });
-    // un nouveau client obtient automatiquement son projet
+    // un nouveau client obtient automatiquement son projet et sa messagerie
     state.projects.push({ id:uid(), name, clientId:cid, members:[], cols:[] });
+    chatOf(cid);
     toast(`Client créé — son projet « ${name} » est prêt ✓`);
   }
   save(); closeClient(); renderCrm();
