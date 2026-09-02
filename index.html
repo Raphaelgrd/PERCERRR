@@ -619,6 +619,17 @@ input,select,textarea{font-family:inherit;font-size:var(--fs-md);color:var(--ink
 .teamdlg{background:var(--panel);border-radius:var(--r-lg);width:100%;max-width:440px;max-height:86vh;overflow-y:auto;padding:22px;box-shadow:var(--sh-pop);animation:pop .16s ease}
 .teamdlg h3{font-family:var(--font-display);font-size:var(--fs-lg);margin:0 0 3px;font-weight:600}
 .teamdlg .sub{font-size:var(--fs-sm);color:var(--muted);margin:0 0 16px;line-height:1.4}
+.team-tabs{display:flex;gap:var(--sp-1);margin-bottom:var(--sp-2)}
+.team-tab{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--panel);color:var(--muted);font-size:var(--fs-sm);font-weight:600;transition:.12s}
+.team-tab:hover{border-color:var(--border-strong);color:var(--ink)}
+.team-tab.on{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.team-tab.alert:not(.on){border-color:var(--accent);color:var(--accent)}
+.team-cnt{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:var(--r-full);background:var(--neutral-soft);color:var(--muted);font-size:var(--fs-3xs);font-weight:700}
+.team-tab.on .team-cnt{background:rgba(255,255,255,.22);color:var(--panel)}
+.team-tab.alert:not(.on) .team-cnt{background:var(--accent);color:#fff}
+.team-hint{font-size:var(--fs-xs);color:var(--muted);line-height:1.5;background:var(--accent-soft);border-radius:var(--r-sm);padding:9px 11px;margin:0 0 var(--sp-1)}
+.admin-btn{position:relative}
+.admin-btn.has-pending::after{content:attr(data-n);position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:var(--r-full);background:var(--accent);color:#fff;font-size:var(--fs-3xs);font-weight:700;display:grid;place-items:center;border:2px solid var(--paper);line-height:1}
 .team-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--border)}
 .team-row:last-of-type{border-bottom:none}
 .team-info{flex:1;min-width:0}
@@ -1555,6 +1566,11 @@ async function ensureMember(){
   const isSup = email===SUPER_ADMIN;
   // nouveau compte : aucun accès par défaut (sauf le super-admin) — un admin devra attribuer un rôle
   state.members.push({ id:me, name, color, email, admin:isSup, role:isSup?'admin':'none', themes:{...DEFAULT_THEME} });
+  // prévenir les admins qu'un compte attend un accès
+  if(!isSup){
+    state.members.filter(x=>memberRole(x.id)==='admin').forEach(a=>
+      pushNotif(a.id, `${name} (${email}) vient de créer un compte et attend un accès`, null));
+  }
   await save();
 }
 async function boot(){
@@ -1600,7 +1616,13 @@ function applyAccess(){
   $('#vHome').style.display  = canView('home')  ? '' : 'none';
   $('#vRs').style.display    = canView('rs')    ? '' : 'none';
   $('#vCrm').style.display   = canView('crm')   ? '' : 'none';
-  $('#adminBtn').style.display = iAmAdmin() ? '' : 'none';
+  const ab=$('#adminBtn');
+  ab.style.display = iAmAdmin() ? '' : 'none';
+  if(iAmAdmin()){                            // pastille : nombre de comptes en attente
+    const n=pendingCount();
+    ab.classList.toggle('has-pending', n>0);
+    ab.dataset.n = n>9 ? '9+' : String(n);
+  }
   const gate=$('#gateView');
   if(gate && myRole()==='none'){
     gate.innerHTML=`<div class="gate-card"><div class="gate-emoji">🔒</div><h2>Compte en attente d'accès</h2><p>Ton compte a bien été créé.<br>Un administrateur doit t'attribuer un accès (<b>Client</b> ou <b>Team PRC</b>) pour que tu puisses voir les projets.</p></div>`;
@@ -1608,10 +1630,15 @@ function applyAccess(){
 }
 
 /* ============ administration : panneau Équipe ============ */
-function openTeam(){ if(!iAmAdmin()) return; renderTeam(); $('#teamScrim').classList.add('open'); }
+let teamTab='equipe';                       // 'equipe' | 'clients' | 'attente'
+function openTeam(){
+  if(!iAmAdmin()) return;
+  if(pendingCount()) teamTab='attente';     // des demandes en attente : on les montre d'abord
+  renderTeam(); $('#teamScrim').classList.add('open');
+}
 function closeTeam(){ $('#teamScrim').classList.remove('open'); }
 function renderTeam(){
-  const rows = state.members.map(m=>{
+  const rowFor = m => {
     const sup=(m.email||'').toLowerCase()===SUPER_ADMIN, mine=m.id===me, role=memberRole(m.id);
     const ctrl = sup
       ? '<span class="team-badge">super-admin</span>'
@@ -1627,9 +1654,29 @@ function renderTeam(){
       </div>
       <div class="team-act">${ctrl}${rm}</div>
     </div>`;
-  }).join('');
-  $('#teamBody').innerHTML = rows || '<p class="sub">Aucun membre pour le moment.</p>';
+  };
+  const groups = {
+    equipe:  state.members.filter(m=>['team','admin'].includes(memberRole(m.id))),
+    clients: state.members.filter(m=>memberRole(m.id)==='client'),
+    attente: state.members.filter(m=>memberRole(m.id)==='none'),
+  };
+  const tabs = [
+    ['equipe','Équipe',groups.equipe.length],
+    ['clients','Clients',groups.clients.length],
+    ['attente','En attente',groups.attente.length],
+  ].map(([k,label,n])=>`<button class="team-tab ${teamTab===k?'on':''} ${k==='attente'&&n?'alert':''}" onclick="setTeamTab('${k}')">
+      ${label}<span class="team-cnt">${n}</span></button>`).join('');
+  const list = groups[teamTab]||[];
+  const empty = {equipe:"Personne dans l'équipe pour l'instant.",
+                 clients:'Aucun client pour le moment.',
+                 attente:'Aucune demande en attente. 👌'}[teamTab];
+  const hint = (teamTab==='attente' && list.length)
+    ? `<p class="team-hint">Ces personnes ont créé un compte et n'ont accès à rien. Attribue-leur un rôle pour leur ouvrir l'app.</p>` : '';
+  $('#teamBody').innerHTML = `<div class="team-tabs">${tabs}</div>${hint}`
+    + (list.length ? list.map(rowFor).join('') : `<p class="sub">${empty}</p>`);
 }
+function setTeamTab(t){ teamTab=t; renderTeam(); }
+function pendingCount(){ return state.members.filter(m=>memberRole(m.id)==='none').length; }
 function setMemberRole(id, role){
   if(!iAmAdmin()) return;
   const m=memberById(id); if(!m) return;
